@@ -1,8 +1,8 @@
-import { login } from "./handlers/auth";
-import { home } from "./handlers/home";
-import { signup } from "./handlers/user";
-import { deleteVault, getVault, putVault } from "./handlers/vault";
-import {  wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./handlers/well-known";
+import { login } from "./controllers/auth";
+import { home } from "./controllers/home";
+import { signup } from "./controllers/user";
+import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
+import {  wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
 import { requestLogger } from "./middleware/requestLogger";
 import { Route } from "./types";
 
@@ -47,11 +47,17 @@ export const routes: Route[] = [
     method: "get",
     path: "/vault",
     middleware: [requestLogger],
+    handler: getVaults,
+  },
+  {
+    method: "get",
+    path: "/vault/:id",
+    middleware: [requestLogger],
     handler: getVault,
   },
   {
     method: "put",
-    path: "/vault",
+    path: "/vault/:id",
     middleware: [requestLogger],
     handler: putVault,
   },
