@@ -1,58 +1,16 @@
-// var UserService = require('../services/user.service')
-
-// import { VaultService } from '../services/vault';
-
-// exports.getUsers = async function (req, res, next) {
-//     // Validate request parameters, queries using express-validator
-
-//     var page = req.params.page ? req.params.page : 1;
-//     var limit = req.params.limit ? req.params.limit : 10;
-//     try {
-//         var users = await UserService.getUsers({}, page, limit)
-//         return res.status(200).json({ status: 200, data: users, message: "Succesfully Users Retrieved" });
-//     } catch (e) {
-//         return res.status(400).json({ status: 400, message: e.message });
-//     }
-// }
-
 import { addUser } from "../data/users";
 import { Handler } from "../types";
-
-// import Vault = require("../data/models");
-// import Vault = require("../data/models/vault");
-
 import { Vault, IVault } from '../data/models/vault';
 
-export const getVaults: Handler = async (req, res) => {
+export const getVerifiableCredentials: Handler = async (req, res) => {
 
-    // destructure page and limit and set default values
     const { page = 1, limit = 10 } = req.query;
     var pageNumber = page as number;
     var limitNumber = limit as number;
 
-    if (limitNumber > 100)
-    {
+    if (limitNumber > 100) {
         res.status(500).json({ status: 500, message: 'The limit can be maxium 100.' });
     }
-
-    // const page = parseInt(req.query.page, 10) || 1; // getting the 'page' value
-    // const limit = parseInt(req.query.limit, 10) || 25; // getting the 'limit' value
-    // const startIndex = (page - 1) * limit; // this is how we would calculate the start index aka the SKIP value
-    // const endIndex = page * limit; // this is how we would calculate the end index
-
-    // var limit = parseInt(req.query.limit);
-    // var skip = (parseInt(body.page)-1) * parseInt(limit);
-
-    // const pageOptions = {
-    //     page: parseInt(req.query.page, 10) || 0,
-    //     limit: parseInt(req.query.limit, 10) || 10
-    // }
-
-    // var page = req.params.page ? req.params.page as unknown as number : 1;
-    // var limit = req.params.limit ? req.params.limit as unknown as number : 10;
-
-    // const user: IUser = await User.findOne({ email: 'bill@microsoft.com' });
-    // const users: Array<IUser> = await User.find({ email: 'bill@microsoft.com' });
 
     try {
         // execute query with page and limit values
@@ -75,13 +33,6 @@ export const getVaults: Handler = async (req, res) => {
         console.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
-
-    // try {
-    //     var users = await VaultService.getUsers({}, page, limit)
-    //     return res.status(200).json({ status: 200, data: users, message: "Succesfully Users Retrieved" });
-    // } catch (e) {
-    //     return res.status(400).json({ status: 400, message: e.message });
-    // }
 };
 
 export const putVault: Handler = async (req, res) => {
@@ -139,3 +90,73 @@ export const getVault: Handler = async (req, res) => {
     });
 };
 
+
+
+export const getDocument: Handler = async (req, res) => {
+
+    res.send({
+        "id": "urn:uuid:94684128-c42c-4b28-adb0-aec77bf76044",
+        "meta": {
+            "created": "2019-06-18"
+        },
+        "content": {
+            "message": "Hello World!"
+        }
+    });
+};
+
+export const getStream: Handler = async (req, res) => {
+
+    res.send({
+        "id": "urn:uuid:41289468-c42c-4b28-adb0-bf76044aec77",
+        "meta": {
+            "created": "2019-06-19",
+            "contentType": "video/mpeg",
+            "chunks": 16
+        },
+        "stream": {
+            "id": "https://example.com/encrypted-data-vaults/zMbxmSDn2Xzz?hl=zb47JhaKJ3hJ5Jkw8oan35jK23289Hp"
+        }
+    });
+};
+
+export const getEncryptedDocument: Handler = async (req, res) => {
+
+    res.send({
+        "id": "z19x9iFMnfo4YLsShKAvnJk4L",
+        "sequence": 0,
+        "indexed": [
+            {
+                "hmac": {
+                    "id": "did:ex:12345#key1",
+                    "type": "Sha256HmacKey2019"
+                },
+                "sequence": 0,
+                "attributes": [
+                ]
+            }
+        ],
+        "jwe": {
+            "protected": "eyJlbmMiOiJDMjBQIn0",
+            "recipients": [
+                {
+                    "header": {
+                        "kid": "urn:123",
+                        "alg": "ECDH-ES+A256KW",
+                        "epk": {
+                            "kty": "OKP",
+                            "crv": "X25519",
+                            "x": "d7rIddZWblHmCc0mYZJw39SGteink_afiLraUb-qwgs"
+                        },
+                        "apu": "d7rIddZWblHmCc0mYZJw39SGteink_afiLraUb-qwgs",
+                        "apv": "dXJuOjEyMw"
+                    },
+                    "encrypted_key": "4PQsjDGs8IE3YqgcoGfwPTuVG25MKjojx4HSZqcjfkhr0qhwqkpUUw"
+                }
+            ],
+            "iv": "FoJ5uPIR6HDPFCtD",
+            "ciphertext": "tIupQ-9MeYLdkAc1Us0Mdlp1kZ5Dbavq0No-eJ91cF0R0hE",
+            "tag": "TMRcEPc74knOIbXhLDJA_w"
+        }
+    });
+};
