@@ -8,8 +8,10 @@ interface IDID extends Document {
 const DIDSchema: Schema = new Schema({
   '@context': { type: String, required: true },
   id: { type: String, required: true },
+}, {
+  versionKey: false
 });
 
-const DIDDocument: Model<IDID> = model('DIDDocument', DIDSchema);
+const DID: Model<IDID> = model('DIDDocument', DIDSchema);
 
-export { DIDDocument, IDID };
+export { DID, IDID };

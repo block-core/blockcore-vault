@@ -50,15 +50,19 @@ http://localhost:3000/data/z4sRgBJJLnYy
 
 All operations on the Vault requires requests to be signed by the keys specified in the DID Document. If the software is unable to resolve the DID Document, then verification will fail and storage will not be possible.
 
+Replication configuration is part of the vault creation operation.
+
+Vault type should be part of the vault creation operation. Vault types could be encrypted, unencrypted, immutable, mutable, etc.
+
 ### Identity ("DID") API
 
 Allows operations for decentralized identity (DID), including registering new DIDs, updating DID Documents and resolving DID Documents.
 
 Example public permalink for an `did:is` (DID Method) identity profile:
 
-https://did.is/P41321351345asdjkldgdsfg
+https://did.is/PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd
 
-The ID of this identity: `did:is:P41321351345asdjkldgdsfg`
+The ID of this identity: `did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd`
 
 ### Server ("Management") API
 
@@ -68,7 +72,7 @@ Allows a storage provider (administrator) to register and manage trusted Blockco
 
 Allows for public discovery using known URLs to find DID, DID Configuration and Vault Configuration.
 
-### Statistics API
+### Statistics ("Stats") API
 
 Used to retrieve various metrics recorded by the Blockcore Vault instance. This can be used to analyze the usage performed by various vault contributors.
 

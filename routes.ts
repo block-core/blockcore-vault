@@ -1,6 +1,7 @@
 import { login } from "./controllers/auth";
 import { home } from "./controllers/home";
-import { signup } from "./controllers/user";
+import { createDIDDocument, deleteDIDDocument, getDIDDocument, getDIDDocuments, handleOperation, updateDIDDocument } from "./controllers/identity";
+import { createServer, deleteServer, getServer, getServers, updateServer } from "./controllers/server";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
 import {  wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
 import { requestLogger } from "./middleware/requestLogger";
@@ -12,12 +13,6 @@ export const routes: Route[] = [
     path: "/",
     middleware: [],
     handler: home,
-  },
-  {
-    method: "post",
-    path: "/users",
-    middleware: [],
-    handler: signup,
   },
   {
     method: "post",
@@ -66,5 +61,77 @@ export const routes: Route[] = [
     path: "/vault",
     middleware: [requestLogger],
     handler: deleteVault,
+  },
+
+
+  {
+    method: "get",
+    path: "/management/server",
+    middleware: [requestLogger],
+    handler: getServers,
+  },
+  {
+    method: "get",
+    path: "/management/server/:id",
+    middleware: [requestLogger],
+    handler: getServer,
+  },
+  {
+    method: "post",
+    path: "/management/server",
+    middleware: [requestLogger],
+    handler: createServer,
+  },
+  {
+    method: "put",
+    path: "/management/server/:id",
+    middleware: [requestLogger],
+    handler: updateServer,
+  },
+  {
+    method: "delete",
+    path: "/management/server/:id",
+    middleware: [requestLogger],
+    handler: deleteServer,
+  },
+
+
+  {
+    method: "post",
+    path: "/operation",
+    middleware: [requestLogger],
+    handler: handleOperation,
+  },
+
+
+  {
+    method: "get",
+    path: "/identity",
+    middleware: [requestLogger],
+    handler: getDIDDocuments,
+  },
+  {
+    method: "get",
+    path: "/identity/:id",
+    middleware: [requestLogger],
+    handler: getDIDDocument,
+  },
+  {
+    method: "post",
+    path: "/identity",
+    middleware: [requestLogger],
+    handler: createDIDDocument,
+  },
+  {
+    method: "put",
+    path: "/identity/:id",
+    middleware: [requestLogger],
+    handler: updateDIDDocument,
+  },
+  {
+    method: "delete",
+    path: "/identity/:id",
+    middleware: [requestLogger],
+    handler: deleteDIDDocument,
   },
 ];

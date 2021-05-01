@@ -1,36 +1,72 @@
 import { Schema, model, Document, Model } from 'mongoose';
 
+interface VerificationMethod {
+  id: string,
+  type: string,
+  controller: string,
+  publicKeyBase58?: string,
+  publicKeyJwk?: any
+}
+
+interface Service {
+  id: string,
+  type: string,
+  serviceEndpoint: string
+}
+
 interface IDIDDocument extends Document {
-    id: string,
-    enabled: boolean,
-    name: string,
-    url: string
-  }
-  
-  const DIDDocumentSchema: Schema = new Schema({
-    id: { type: String, required: true },
-    enabled: Boolean,
-    name: { type: String, index: true, required: true },
-    description: String,
-    url: { type: String, required: true },
-    created: Date,
-    modified: Date,
-    lastSeen: Date,
-    lastFullSync: Date,
-    wellKnownConfiguration: String,
-    state: String
-  });
-  
+  '@context': string[] | string,
+  id: string,
+  verificationMethod: VerificationMethod,
+  name: string,
+  url: string,
+  service: Service[],
+  authentication: string[] | any[],
+  assertionMethod: string[] | any[]
+}
+
+interface IIdentityDocument extends Document {
+  id: string,
+  sequence: Number,
+  document: IDIDDocument
+}
+
+const DIDDocumentSchema: Schema = new Schema({
+  '@context': String,
+  id: { type: String, required: true },
+  verificationMethod: String,
+  name: String,
+  url: String,
+  service: String,
+  authentication: String,
+  assertionMethod: String
+}, {
+  versionKey: false
+});
+
+const IdentityDocumentSchema: Schema = new Schema({
+  id: String,
+  sequence: Number,
+  document: DIDDocumentSchema
+});
+
+IdentityDocumentSchema.index({
+  id: 1,
+  sequence: 1,
+}, {
+  unique: true,
+});
+
 //   VaultSchema.method('getVaults', function (cb: any) {
 //     return Vault.find().where('boss').in(this.id).exec();
 //   });
-  
-  // VaultSchema.plugin(mongoosePaginate);
-  
-  const DIDDocument: Model<IDIDDocument> = model('DIDDocument', DIDDocumentSchema);
-  
-  export { DIDDocument, IDIDDocument };
 
+// VaultSchema.plugin(mongoosePaginate);
+
+const DIDDocument: Model<IDIDDocument> = model('DIDDocument', DIDDocumentSchema);
+const Identity: Model<IIdentityDocument> = model('Identity', IdentityDocumentSchema);
+
+export { Identity, IIdentityDocument, DIDDocument, IDIDDocument };
 
 // 'use strict';
 

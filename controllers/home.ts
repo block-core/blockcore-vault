@@ -1,5 +1,5 @@
 import { Handler } from "../types";
 
 export const home: Handler = (req, res) => {
-  res.send("Welcome to Blockcore Vault ⚡️👾🦄🐘🐹🏵🍩🧊🗺⛰🏔🏛🏟🧱🚀🌌💎📕📗📘📙📒📓📦📥📤✉📧💼🗂📁📂🗃🗄🔒🔐🔑🛡🧰🏴‍☠️");
+  res.send("Blockcore Vault 🧊<br><br>🔐📒⚡️👾🦄🐘🐹🏵🍩🗺⛰🏔🏛🏟🧱🚀🌌💎📕📗📘📙📒📓📦📥📤✉📧💼🗂📁📂🗃🗄🔒🔐🔑🛡🧰🏴‍☠️");
 };

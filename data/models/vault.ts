@@ -91,6 +91,8 @@ const VaultSchema: Schema = new Schema({
   lastFullSync: Date,
   wellKnownConfiguration: String,
   state: String
+}, {
+  versionKey: false
 });
 
 VaultSchema.method('getVaults', function (cb: any) {

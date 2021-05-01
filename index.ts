@@ -56,6 +56,21 @@ if (env === 'development') {
 // Is this needed?
 mongoose.Promise = global.Promise;
 
+// mongoose.set('toObject', {
+//   virtuals: true,
+//   transform: (doc: any, converted: { id: any, _id: any; }) => {
+//     converted._id = converted.id;
+//     delete converted.id;
+//   }
+// });
+
+mongoose.set('toJSON', {
+  virtuals: true,
+  transform: (doc: any, converted: { id: any, _id: any; }) => {
+    delete converted._id;
+  }
+});
+
 mongoose
   .connect(config.db,
     {

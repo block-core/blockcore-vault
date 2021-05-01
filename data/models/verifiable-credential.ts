@@ -35,6 +35,8 @@ const VerifiableCredentialSchema: Schema = new Schema({
     //   lastFullSync: Date,
     //   wellKnownConfiguration: String,
     //   state: String
+}, {
+    versionKey: false
 });
 
 // VerifiableCredentialSchema.method('getVaults', function (cb: any) {
