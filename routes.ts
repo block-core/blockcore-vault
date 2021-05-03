@@ -1,6 +1,6 @@
 import { login } from "./controllers/auth";
 import { home } from "./controllers/home";
-import { createDIDDocument, deleteDIDDocument, getDIDDocument, getDIDDocuments, handleOperation, updateDIDDocument } from "./controllers/identity";
+import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getServer, getServers, updateServer } from "./controllers/server";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
 import {  wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
@@ -104,12 +104,12 @@ export const routes: Route[] = [
   },
 
 
-  {
-    method: "get",
-    path: "/identity",
-    middleware: [requestLogger],
-    handler: getDIDDocuments,
-  },
+  // {
+  //   method: "get",
+  //   path: "/identity",
+  //   middleware: [requestLogger],
+  //   handler: getDIDDocuments,
+  // },
   {
     method: "get",
     path: "/identity/:id",

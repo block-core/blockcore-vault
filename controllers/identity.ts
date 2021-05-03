@@ -1,11 +1,13 @@
 import { addUser } from "../data/users";
 import { Handler } from "../types";
 import { Vault, IVault } from '../data/models/vault';
-import { DIDDocument, Identity } from "../data/models/identity";
+import { Identity, IIdentityDocument } from "../data/models/identity";
 import { storeEvent, storeOperation } from "../data/event-store";
 import { decodeJWT, verifyJWS, verifyJWT } from "did-jwt";
 import { Resolver } from "did-resolver";
 import { getResolver } from "../services/resolver";
+import * as bs58 from 'bs58';
+import { payments } from "bitcoinjs-lib";
 
 export const getVerifiableCredentials: Handler = async (req, res) => {
 
@@ -198,39 +200,59 @@ var deleteOperation = {
     "payload": "string" // { id: 'id' }
 };
 
-export const getDIDDocuments: Handler = async (req, res) => {
-    const { page = 1, limit = 10 } = req.query;
-    var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?
-    var limitNumber = limit as number;
+// export const getDIDDocuments: Handler = async (req, res) => {
+//     const { page = 1, limit = 10 } = req.query;
+//     var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?
+//     var limitNumber = limit as number;
 
-    if (limitNumber > 100) {
-        res.status(500).json({ status: 500, message: 'The limit can be maxium 100.' });
-    }
+//     if (limitNumber > 100) {
+//         res.status(500).json({ status: 500, message: 'The limit can be maxium 100.' });
+//     }
 
-    try {
-        const data = await DIDDocument.find()
-            .limit(limitNumber * 1)
-            .skip((pageNumber - 1) * limitNumber)
-            .exec();
+//     try {
+//         const data = await DIDDocument.find()
+//             .limit(limitNumber * 1)
+//             .skip((pageNumber - 1) * limitNumber)
+//             .exec();
 
-        const count = await DIDDocument.countDocuments();
+//         const count = await DIDDocument.countDocuments();
 
-        res.json({
-            data,
-            totalNumber: count,
-            totalPages: Math.ceil(count / limitNumber),
-            currentPage: page
-        });
-    } catch (err) {
-        console.error(err.message);
-        return res.status(400).json({ status: 400, message: err.message });
-    }
-};
+//         res.json({
+//             data,
+//             totalNumber: count,
+//             totalPages: Math.ceil(count / limitNumber),
+//             currentPage: page
+//         });
+//     } catch (err) {
+//         console.error(err.message);
+//         return res.status(400).json({ status: 400, message: err.message });
+//     }
+// };
+
+/** Gets the latest available instance of the identity document. */
+const getLatestIdentity = async (id: string) => {
+
+    const item = await Identity.findOne({ id: id }, null, { sort: { sequence: -1 } });
+    return item;
+}
 
 export const getDIDDocument: Handler = async (req, res) => {
     try {
-        const item = await DIDDocument.findOne({ id: req.params.id });
-        res.json(item);
+        const item = await getLatestIdentity(req.params.id);
+
+        var didResolution: any = {
+            "@context": "https://w3id.org/did-resolution/v1"
+        }
+
+        if (!item) {
+            didResolution.metadata = { error: 'notFound' };
+            return res.json(didResolution);
+        }
+
+        didResolution.didDocument = item.document;
+        didResolution.didDocumentMetadata = item.metadata;
+
+        return res.json(didResolution);
     } catch (err) {
         console.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
@@ -243,8 +265,53 @@ const inputValidation = (value: any, message?: string) => {
     }
 };
 
+const getProfileNetwork = () => {
+    return {
+        messagePrefix: '\x18Identity Signed Message:\n',
+        bech32: 'id',
+        bip32: {
+            public: 0x0488b21e,
+            private: 0x0488ade4
+        },
+        pubKeyHash: 55,
+        scriptHash: 117,
+        wif: 0x08
+    };
+}
+
+/** Get the address (identity) of this DID. Returned format is "did:is:[identity]" */
+const getIdentity = (options: { publicKeyBase58?: string | any, publicKeyBuffer?: Buffer }) => {
+    // If the buffer is not supplied, then we'll convert base58 to buffer.
+    var publicKeyBuffer = options.publicKeyBuffer || bs58.decode(options.publicKeyBase58)
+
+    const { address } = payments.p2pkh({
+        pubkey: publicKeyBuffer,
+        network: getProfileNetwork(),
+    });
+
+    // TODO: Make this configureable or move somewhere it's a shared value.
+    const PREFIX = 'did:is:';
+
+    return `${PREFIX}${address}`;
+}
+
+const verifyPublicKeyId = (identity: string, verificationMethod: any[]) => {
+    for (var index in verificationMethod) {
+        var method = verificationMethod[index];
+
+        if (identity = getIdentity(method)) {
+            return;
+        }
+    }
+
+    throw Error('The value of the DID must be linked to one of the public keys in verificationMethod.');
+}
+
 export const handleOperation: Handler = async (req, res) => {
     console.log('Process a signed operation request...');
+
+    // This method is written with verbose documentation and examples, to help onboard new devs making it easier to understand and relate the
+    // various formats and structures.
 
     try {
         // The only payload is the JSON Web Token.
@@ -257,8 +324,11 @@ export const handleOperation: Handler = async (req, res) => {
         // Decode the payload, we'll store both decoded and original value in MongoDB for purposes of Vault Sync.
         var decoded = decodeJWT(jwt);
 
+        var documentJwt = decoded.payload.content;
+        var documentJwtExample = "eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ.3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA";
+
         // Decode the content, we'll get the unique document ID from there.
-        var decodedContent = decodeJWT(decoded.payload.content);
+        var decodedContent = decodeJWT(documentJwt);
 
         var decodedExample = {
             header: {
@@ -298,24 +368,77 @@ export const handleOperation: Handler = async (req, res) => {
         // Perform input validation after decoding.
         inputValidation(operation.type, '"type" is required on the operation.');
         inputValidation(operation.operation, '"operation" is required on the operation.');
-        inputValidation(operation.sequence, '"sequence" is required on the operation.');
+        inputValidation(operation.sequence != null, '"sequence" is required on the operation.'); // null/undefined not allowed, but "0" is correct.
         inputValidation(decodedContent.payload.id, '"id" is required on the payload.');
-        inputValidation((operation.operation == 'create' && operation.sequence == 0), '"sequence" must be 0 for all "create" operations.');
+
+        if (operation.operation == 'create' && operation.sequence != 0) {
+            inputValidation(false, '"sequence" must be 0 for all "create" operations.');
+        }
 
         var verificationMethod = null;
+        var documentId = decodedContent.payload.id;
+        var sequence = operation.sequence;
 
         // When the operation type is identity, we'll get the 'verificationMethod' directly from the payload.
         // For all other operations, we will use DID Resolve to get the correct verification method.
         if (operation.type == 'identity') {
             verificationMethod = decodedContent.payload.verificationMethod;
 
-            // Verify will will throw error if verification fails.
+            // Make sure we don't process DID Documents with a lot of keys, a minor validation to reduce attack surface.
+            if (verificationMethod.length > 10) {
+                throw Error('Only 10 or less active verification methods support.');
+            }
 
-            // Verify the operation token.
-            verifyJWS(jwt, verificationMethod);
+            // TODO: Add support for "controller" on the DID Document. This can be used to define which DIDs should be allowed to run
+            // updates on the DID Document. The initial creation must still include public key of the DID in question for DID ID verification,
+            // but future updates can be verified by doing an DID Resolve based upon the controllers and getting the authentication keys from
+            // that DID Document.
 
-            // Verify the document token.
-            verifyJWS(decoded.payload.content, verificationMethod);
+            // Upon initial create, we'll verify that the DID ID corresponds to one of the verification method public keys.
+            if (sequence == 0) {
+                // Verify will will throw error if verification fails.
+
+                // Verify the operation token.
+                // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
+                verifyJWS(jwt, verificationMethod);
+
+                // Verify the document token.
+                verifyJWS(decoded.payload.content, verificationMethod);
+
+                // Verify that the issuer of both JWTs and DID Document ID is same.
+                if ((new Set([decoded.header.issuer, decodedContent.header.issuer, documentId])).size !== 1) {
+                    throw Error('The issuer of both operation and document must be equal to the DID Document ID');
+                }
+
+                // Verify that the DID ID is correctly correlated with at least one of the keys provided in verificationMethod.
+                // This will stop using random/custom "did:is:VALUE" for the initial creation. Upon later updates, the verificationMethod
+                // can be updated and the original public key that correspond with the VALUE part of the DID ID can be recycled/removed.
+                verifyPublicKeyId(documentId, verificationMethod);
+            } else {
+                // Upon updates, we'll allow replacement of verification method if needed.
+                // On updates, we need to get existing verification methods and verify against that, to ensure that 
+                // only existing owners are allowed to perform updates.
+                const latestIdentity = await getLatestIdentity(documentId);
+
+                if (!latestIdentity) {
+                    throw Error('Unable to find the previous DID Document. Cannot update. Ensure that the sequence number is correct.');
+                }
+
+                // If the previous sequence is not exactly one less, don't allow this update to continue.
+                if ((latestIdentity.sequence != (sequence - 1))) {
+                    throw Error(`Unable to update DID Document. Sequence number is incorrect. Current ${latestIdentity.sequence} and supplied ${sequence}.`);
+                }
+
+                // Verify the operation token based upon existing verification method.
+                // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
+                verifyJWS(jwt, latestIdentity.document.verificationMethod);
+
+                // Verify the document token based on existing verification method.
+                verifyJWS(decoded.payload.content, latestIdentity.document.verificationMethod);
+
+                // TODO: Should we ensure that there is always one verificationMethod? Do we want to allow users to publish DID Documents that cannot
+                // be updated in the future? Perhaps that is a use-case that is valid when "controller" support is added?
+            }
         }
         else {
             // TODO: Implement DID Resolver lookup for verification.
@@ -345,12 +468,18 @@ export const handleOperation: Handler = async (req, res) => {
             // console.log(verified);
         }
 
-        // Store the original JSON Web Token, which is used for syncing original operations between Vaults.
-        operation.jwt = jwt;
-        operation.received = new Date();
-
         // Get the document identity from the decoded content's payload.
         operation.id = decodedContent.payload.id;
+
+        operation.received = new Date();
+
+        // Get the IP of external user, used for surveilance of abuse.
+        // TODO: Verify if we should get IP using any methods here: https://stackoverflow.com/questions/19266329/node-js-get-clients-ip
+        // TODO: Consider skipping storing this for privacy reasons.
+        operation.ip = req.ip;
+
+        // Store the original JSON Web Token, which is used for syncing original operations between Vaults.
+        operation.jwt = jwt;
 
         // Delete extra duplicate fields.
         delete operation.content;
@@ -371,11 +500,30 @@ export const handleOperation: Handler = async (req, res) => {
         // Store the verified identity in our identity store.
         //var document = new DIDDocument(req.body);
 
+        // Entity to be stored in a collection. IIdentityDocument
+        var entity = {
+            id: documentId,
+            sequence: sequence,
+            document: decodedContent.payload,
+            metadata: {
+                created: operation.received, // TODO: We probably should require "iat" (issued at) for the operation request.
+                proof: {
+                    "type": "JwtProof2020",
+                    "jwt": documentJwt
+                }
+            },
+        };
+
         // var identity = new Identity();
         // identity.id = 
+        console.log('Entity Store entry:');
+        console.log(entity);
 
-        var vault = new DIDDocument(req.body);
-        await vault.save();
+        var identity = new Identity(entity);
+        await identity.save();
+
+        // var vault = new DIDDocument(entity);
+        // await vault.save();
         res.json({ "success": true });
     } catch (err) {
         console.error(err.message);
@@ -434,8 +582,8 @@ export const createDIDDocument: Handler = async (req, res) => {
 
 
 
-        var vault = new DIDDocument(req.body);
-        await vault.save();
+        // var vault = new DIDDocument(req.body);
+        // await vault.save();
         res.json({ "success": true });
     } catch (err) {
         console.error(err.message);
@@ -451,9 +599,9 @@ export const updateDIDDocument: Handler = async (req, res) => {
 
         // TODO: We should probably do input validation and mapping here? This is now 
         // simply done quick and dirty.
-        await DIDDocument.updateOne({
-            id: id
-        }, req.body, { upsert: true });
+        // await DIDDocument.updateOne({
+        //     id: id
+        // }, req.body, { upsert: true });
         res.json({ "success": true });
     } catch (err) {
         console.error(err.message);

@@ -14,12 +14,15 @@ interface Service {
   serviceEndpoint: string
 }
 
+interface JwtProof2020 {
+  type: string;
+  jwt: string;
+}
+
 interface IDIDDocument extends Document {
   '@context': string[] | string,
   id: string,
   verificationMethod: VerificationMethod,
-  name: string,
-  url: string,
   service: Service[],
   authentication: string[] | any[],
   assertionMethod: string[] | any[]
@@ -28,26 +31,70 @@ interface IDIDDocument extends Document {
 interface IIdentityDocument extends Document {
   id: string,
   sequence: Number,
-  document: IDIDDocument
+  document: IDIDDocument,
+  metadata: IDIDDocumentMetadata
 }
 
+interface IDIDDocumentMetadata {
+  error?: string,
+  created?: Date,
+  updated?: Date,
+  decativated?: boolean,
+  nextUpdate?: any,
+  versionId?: string,
+  nextVerionId?: string,
+  equivalentId?: string,
+  proof: JwtProof2020
+}
+
+// TODO: Improve the schema.
 const DIDDocumentSchema: Schema = new Schema({
-  '@context': String,
+  '@context': Schema.Types.Mixed,
   id: { type: String, required: true },
-  verificationMethod: String,
-  name: String,
-  url: String,
-  service: String,
-  authentication: String,
-  assertionMethod: String
-}, {
-  versionKey: false
+  // verificationMethod: [{
+  //   id: String,
+  //   type: String,
+  //   controller: String,
+  //   publicKeyBase58: String,
+  //   publicKeyJwk: Schema.Types.Mixed,
+  //   publicKeyBuffer: Buffer
+  // }],
+  verificationMethod: [Schema.Types.Mixed],
+  service: [Schema.Types.Mixed],
+  authentication: [Schema.Types.Mixed],
+  assertionMethod: [Schema.Types.Mixed]
+}, { _id: false });
+
+const ProofSchema: Schema = new Schema({
+  type: { type: String, required: true },
+  jwt: { type: String, required: true },
+}, { _id: false });
+
+const DIDDocumentMetadataSchema: Schema = new Schema({
+  created: { type: Date, required: true },
+  proof: ProofSchema
+}, { _id: false });
+
+// TODO: Figure out how to avoid having the JSON serialized entity set "id": null" for sub-documents.
+DIDDocumentMetadataSchema.set('toJSON', {
+  transform: (doc: any, converted: { id: any }) => {
+    delete converted.id;
+  }
+});
+
+ProofSchema.set('toJSON', {
+  transform: (doc: any, converted: { id: any }) => {
+    delete converted.id;
+  }
 });
 
 const IdentityDocumentSchema: Schema = new Schema({
   id: String,
   sequence: Number,
-  document: DIDDocumentSchema
+  document: DIDDocumentSchema,
+  metadata: DIDDocumentMetadataSchema
+}, {
+  versionKey: false
 });
 
 IdentityDocumentSchema.index({
@@ -63,10 +110,10 @@ IdentityDocumentSchema.index({
 
 // VaultSchema.plugin(mongoosePaginate);
 
-const DIDDocument: Model<IDIDDocument> = model('DIDDocument', DIDDocumentSchema);
+// const DIDDocument: Model<IDIDDocument> = model('DIDDocument', DIDDocumentSchema);
 const Identity: Model<IIdentityDocument> = model('Identity', IdentityDocumentSchema);
 
-export { Identity, IIdentityDocument, DIDDocument, IDIDDocument };
+export { Identity, IIdentityDocument, IDIDDocument };
 
 // 'use strict';
 

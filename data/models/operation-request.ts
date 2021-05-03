@@ -8,7 +8,8 @@ interface IOperationRequest extends Document {
   sequence: number,
   operation: string, // Various APIs will have various operations, so we'll keep this as string (undetermined type).
   jwt: string,
-  received: Date
+  received: Date,
+  ip: string
 }
 
 // var addOperation = {
@@ -32,19 +33,22 @@ const OperationRequestSchema: Schema = new Schema({
   sequence: { type: Number, required: true },
   operation: { type: String, required: true },
   jwt: { type: String, required: true },
-  received: Date
+  received: Date,
+  ip: String
 }, {
   versionKey: false
 });
 
 // Make a unique index combining DOCUMENT ID ("did:is:blablah"), TYPE ID ("identity") and SEQUENCE ("0").
-OperationRequestSchema.index({
-  type: 1,
-  id: 1,
-  sequence: 1,
-}, {
-  unique: true,
-});
+// We drop index validation for the operation, to allow re-post of operations if needed / failed on first attempts.
+// We will instead validate the index on the different type collections.
+// OperationRequestSchema.index({
+//   type: 1,
+//   id: 1,
+//   sequence: 1,
+// }, {
+//   unique: true,
+// });
 
 const OperationRequest: Model<IOperationRequest> = model('Event', OperationRequestSchema);
 
