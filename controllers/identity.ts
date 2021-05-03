@@ -580,8 +580,6 @@ export const createDIDDocument: Handler = async (req, res) => {
         // var identity = new Identity();
         // identity.id = 
 
-
-
         // var vault = new DIDDocument(req.body);
         // await vault.save();
         res.json({ "success": true });
@@ -610,7 +608,6 @@ export const updateDIDDocument: Handler = async (req, res) => {
 };
 
 export const deleteDIDDocument: Handler = async (req, res) => {
-
     try {
         var id = req.params.id;
         await storeEvent('replace', 'identity', { id });
@@ -621,5 +618,4 @@ export const deleteDIDDocument: Handler = async (req, res) => {
         console.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
-
 };

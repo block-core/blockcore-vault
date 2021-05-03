@@ -6,9 +6,9 @@ const compression = require('compression');
 const env = process.env.NODE_ENV || 'development';
 const pkg = require('./package.json');
 const config = require('./config');
-
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
+const uWS = require('uWebSockets.js');
 
 const app = express();
 const PORT = 3000;
@@ -93,6 +93,27 @@ routes.forEach((route) => {
 
 app.listen(PORT, () => {
   console.log(`Blockcore Vault @ http://localhost:${PORT}`);
+});
+
+// an "app" is much like Express.js apps with URL routes,
+// here we handle WebSocket traffic on the wildcard "/*" route
+const app2 = uWS.App().ws('/*', {  // handle messages from client
+
+  open: (socket: { subscribe: (arg0: string) => void; }, req: any) => {
+    /* For now we only have one canvas */
+    socket.subscribe("drawing/canvas1");
+  },
+  message: (socket: any, message: any, isBinary: any) => {
+    /* In this simplified example we only have drawing commands */
+    app2.publish("drawing/canvas1", message, true);
+  }
+});
+
+// finally listen using the app on port 9001
+app2.listen(9001, (listenSocket: any) => {
+  if (listenSocket) {
+    console.log('Listening to port 9001');
+  }
 });
 
 async function seed() {
