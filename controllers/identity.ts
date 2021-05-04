@@ -8,6 +8,7 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "../services/resolver";
 import * as bs58 from 'bs58';
 import { payments } from "bitcoinjs-lib";
+const { performance } = require('perf_hooks');
 
 export const getVerifiableCredentials: Handler = async (req, res) => {
 
@@ -238,19 +239,49 @@ const getLatestIdentity = async (id: string) => {
 
 export const getDIDDocument: Handler = async (req, res) => {
     try {
-        const item = await getLatestIdentity(req.params.id);
+        // Specification: https://w3c-ccg.github.io/did-resolution/
 
         var didResolution: any = {
             "@context": "https://w3id.org/did-resolution/v1"
         }
 
-        if (!item) {
-            didResolution.metadata = { error: 'notFound' };
+        const metadata: any = {
+            retrieved: new Date(),
+            'content-type': 'application/json',
+            sequence: -1
+        };
+        const id = req.params.id;
+
+        // TODO: Add full validation of DID ID.
+        if (!id || id.length < 8) {
+            metadata.error = 'invalid-did';
+        }
+
+        if (!id.startsWith('did:is:')) {
+            metadata.error = 'method-not-supported';
+        }
+
+        if (metadata.error) {
+            didResolution.didResolutionMetadata = metadata;
             return res.json(didResolution);
         }
 
+        var t0 = performance.now();
+
+        const item = await getLatestIdentity(req.params.id);
+
+        if (!item) {
+            didResolution.didResolutionMetadata = { error: 'not-found' };
+            return res.json(didResolution);
+        }
+
+        var t1 = performance.now();
+        metadata.duration = Math.round((t1 - t0));
+        metadata.sequence = item.sequence; // Consider using "seqNo" to use same as other DID Methods.
+
         didResolution.didDocument = item.document;
-        didResolution.didDocumentMetadata = item.metadata;
+        didResolution.didResolutionMetadata = metadata; // Resolution metadata
+        didResolution.didDocumentMetadata = item.metadata; // Document metadata, blockchain attestation should be added here.
 
         return res.json(didResolution);
     } catch (err) {
