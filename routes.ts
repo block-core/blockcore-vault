@@ -1,4 +1,3 @@
-import { login } from "./controllers/auth";
 import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, updateLocalServer, updateServer } from "./controllers/server";
@@ -13,12 +12,6 @@ export const routes: Route[] = [
     path: "/",
     middleware: [],
     handler: home,
-  },
-  {
-    method: "post",
-    path: "/login",
-    middleware: [requestLogger],
-    handler: login,
   },
   {
     method: "get",

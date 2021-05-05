@@ -1,56 +1,60 @@
-import { addUser } from "../data/users";
 import { Handler } from "../types";
+import { Server } from '../data/models';
 
-export const wellKnownVaultConfiguration: Handler = (req, res) => {
-    // const { username, password } = req.body;
+export const wellKnownVaultConfiguration: Handler = async (req, res) => {
+    try {
+        const item = await Server.findOne({ self: true });
 
-    // console.log(req.body);
+        if (!item) {
+            return res.json({ error: 'Vault has not been configured.' });
+        }
 
-    // if (!username?.trim() || !password?.trim()) {
-    //     return res.status(400).send("Bad username or password");
-    // }
+        return res.send({
+            '@context': 'https://w3id.org/encrypted-data-vaults/v1',
+            "id": item.id,
+            "name": item.name,
+            "dataVaultCreationService": item.url
+        });
 
-    // addUser({ username, password });
-
-    // res.status(201).send("User created");
-
-    res.send({
-        // "@context": "https://schemas.blockcore.net/data-vault/v1",
-        '@context': 'https://w3id.org/encrypted-data-vaults/v1',
-        "id": "did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd",
-        "name": "Blockcore Vault #1",
-        "dataVaultCreationService": "https://dv1.blockcore.net/"
-    });
-
-    // res.send({
-    //     "id": "https://example.com/edvs/z4sRgBJJLnYy",
-    //     "sequence": 0,
-    //     "controller": "did:example:123456789",
-    //     "referenceId": "my-primary-data-vault",
-    //     "keyAgreementKey": {
-    //         "id": "https://example.com/kms/12345",
-    //         "type": "X25519KeyAgreementKey2019"
-    //     },
-    //     "hmac": {
-    //         "id": "https://example.com/kms/67891",
-    //         "type": "Sha256HmacKey2019"
-    //     }
-    // });
-
+    } catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
 };
 
-export const wellKnownDid: Handler = (req, res) => {
-    res.send({
-        '@context': 'https://www.w3.org/ns/did/v1',
-        'id': 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd'
-        // 'id': 'did:web:dv1.blockcore.net'
-    });
+export const wellKnownDid: Handler = async (req, res) => {
+    try {
+        const item = await Server.findOne({ self: true });
+
+        if (!item) {
+            return res.json({ error: 'Vault has not been configured.' });
+        }
+
+        return res.send({
+            '@context': 'https://www.w3.org/ns/did/v1',
+            'id': item.id
+        });
+    } catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
 };
 
-export const wellKnownDidConfiguration: Handler = (req, res) => {
-    res.send({
-        '@context': 'https://identity.foundation/.well-known/did-configuration/v1',
-        'linked_dids': []
-    });
-};
+export const wellKnownDidConfiguration: Handler = async (req, res) => {
+    try {
+        const item = await Server.findOne({ self: true });
 
+        if (!item) {
+            return res.json({ error: 'Vault has not been configured.' });
+        }
+
+        return res.send({
+            '@context': 'https://identity.foundation/.well-known/did-configuration/v1',
+            'linked_dids': item.linked_dids
+        });
+
+    } catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};

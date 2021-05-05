@@ -20,6 +20,7 @@ interface IServer extends Document {
   updated: Date,
   lastSeen: Date,
   lastFullSync: Date,
+  linked_dids: any[],
   wellKnownConfiguration: string,
   state: ServerState
 }
@@ -36,6 +37,7 @@ const ServerSchema: Schema = new Schema({
   // modified: Date,
   lastSeen: Date,
   lastFullSync: Date,
+  linked_dids: [Schema.Types.Mixed],
   wellKnownConfiguration: String,
   state: String
 }, {

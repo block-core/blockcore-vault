@@ -15,7 +15,6 @@
 //     }
 // }
 
-import { addUser } from "../data/users";
 import { Handler } from "../types";
 
 // import Vault = require("../data/models");

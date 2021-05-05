@@ -1,4 +1,3 @@
-import { addUser } from "../data/users";
 import { Handler } from "../types";
 import { Vault, IVault } from '../data/models/vault';
 import { Identity, IIdentityDocument } from "../data/models/identity";
