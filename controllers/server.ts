@@ -48,10 +48,17 @@ export const createServer: Handler = async (req, res) => {
     console.log('Create server...');
 
     try {
-        await storeEvent('create', 'server', req.body);
+        // await storeEvent('create', 'server', req.body);
 
         // TODO: We should probably do input validation and mapping here? This is now 
         // simply done quick and dirty.
+
+        // Set the current time as created.
+        // req.body.created = new Date();
+
+        // Make sure we can't create multiple self entries using this API.
+        delete req.body.self;
+
         var vault = new Server(req.body);
         await vault.save();
         res.json({ "success": true });
@@ -64,9 +71,15 @@ export const createServer: Handler = async (req, res) => {
 export const updateServer: Handler = async (req, res) => {
 
     try {
-        await storeEvent('replace', 'server', req.body);
+        // await storeEvent('replace', 'server', req.body);
 
         var id = req.params.id;
+
+        // Set the update time right now.
+        // req.body.updated = new Date();
+
+        // Make sure we can't create multiple self entries using this API.
+        delete req.body.self;
 
         // TODO: We should probably do input validation and mapping here? This is now 
         // simply done quick and dirty.
@@ -127,7 +140,6 @@ export const updateServer: Handler = async (req, res) => {
 // });
 
 export const deleteServer: Handler = async (req, res) => {
-
     try {
         var id = req.params.id;
         await storeEvent('delete', 'server', { id });
@@ -138,5 +150,38 @@ export const deleteServer: Handler = async (req, res) => {
         console.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
+};
 
+export const getLocalServer: Handler = async (req, res) => {
+    try {
+        const item = await Server.findOne({ self: true });
+        res.json(item);
+    } catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};
+
+export const updateLocalServer: Handler = async (req, res) => {
+    try {
+        console.log('UPDATE LOCAL SERVER!');
+
+        // if (!req.body.created) {
+        //     req.body.created = new Date();
+        // }
+
+        // Set the update time right now.
+        // req.body.updated = new Date();
+
+        // Force the self to always be true on this entity.
+        req.body.self = true;
+
+        await Server.updateOne({
+            self: true
+        }, req.body, { upsert: true });
+        res.json({ "success": true });
+    } catch (err) {
+        console.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
 };

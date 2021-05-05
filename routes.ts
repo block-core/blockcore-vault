@@ -1,9 +1,9 @@
 import { login } from "./controllers/auth";
 import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
-import { createServer, deleteServer, getServer, getServers, updateServer } from "./controllers/server";
+import { createServer, deleteServer, getLocalServer, getServer, getServers, updateLocalServer, updateServer } from "./controllers/server";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
-import {  wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
+import { wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
 import { requestLogger } from "./middleware/requestLogger";
 import { Route } from "./types";
 
@@ -93,6 +93,19 @@ export const routes: Route[] = [
     path: "/management/server/:id",
     middleware: [requestLogger],
     handler: deleteServer,
+  },
+
+  {
+    method: "get",
+    path: "/management/setup",
+    middleware: [requestLogger],
+    handler: getLocalServer,
+  },
+  {
+    method: "put",
+    path: "/management/setup",
+    middleware: [requestLogger],
+    handler: updateLocalServer,
   },
 
 

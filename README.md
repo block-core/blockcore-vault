@@ -28,6 +28,9 @@ To run with the different environment configuration, you can set the ENV variabl
 # Windows
 set NODE_ENV=production
 
+# PowerShell
+$env:NODE_ENV="production"
+
 # Linux/Mac
 export NODE_ENV=production
 ```
@@ -94,3 +97,32 @@ Used to retrieve various metrics recorded by the Blockcore Vault instance. This 
 
 Data from this API is used to enforce throtteling rules that an administrator applies to individual vaults.
 
+# Using Blockcore Vault
+
+After launching the Blockcore Vault instance, you can use the Blockcore Vault UI to manage your Blockcore Vault instance(s).
+
+The first task to configure a Blockcore Vault, is to create an decentralized identity (DID) and publish the DID Document that describes your Vault to 
+an public DID registry.
+
+After you have initialized your Blockcore Vault, you can start adding communication with other trusted Vaults to become part of a network of Vault instances.
+
+You can run your own network of Vault instances, or join other networks.
+
+When you connect with other Vault instances, you will always sync the full repository of DID Documents that exists on the other Vaults.
+
+Other data will be synced based upon the configuration you setup on your Blockcore Vault UI.
+
+## Register a trusted Vault
+
+TODO: When you want to add trust between two Blockcore Vault, you will from the Vault UI perform queries against the URL you provide.
+
+1. The web UI will query the .well-known/did-configuration.json of the server you provided.
+2. The web UI will run call with a universal resolver that will attempt to resolve the DID Document based on the DID provided in the did-configuration.json.
+3. Verification between the domain you supplied and the DID Document is performed.
+4. Name of the Vault is retrieved from the .well-known/vault-configuration.json. It also has the `dataVaultCreationService` URL which might be used, or the `serviceEndpoint` of the `EncryptedDataVault` entry in the DID Document will be used. Could maybe used either or, depending on what is available. Perhaps prefer the service entry in DID Document, and fallback to vault-configuration.json which is Blockcore custom specification.
+5. An initiation request to be sent to the Vault is created and signed in the web UI with the private key never leaving the local browser. The initiation request is sent and stored on the users own Vault, and is sent to the external Vault when the server is registered.
+6. The users Vault will keep checking at intervals the approval status of the initiation request.
+7. Upon approval (which can be automatic depending on the Vault being connected with) the Vault will open up Web Socket connection, perform authentication based on the key specified in its own DID Document.
+8. Upon valid authentication, syncronization will start.
+
+CURRENT: Currently the implementation of this is simplified and without any authentication or approval process.
