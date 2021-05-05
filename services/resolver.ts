@@ -29,6 +29,26 @@ function ordered(a: any, b: any) {
     return comparison;
 }
 
+/** Vault resolver that queries did-configuration, vault-configuration and resolves DID Document to verify the DomainLinkage. */
+export function getVaultResolver() {
+    // TODO: Implement the logic for this resolver.
+
+    // #1: Get the did-configuration.json
+
+    // #2: Resolve the DID Document
+
+    // TODO: Consider skipping this and require that the DID Document actually contains the data vault URL.
+    // #3: Get the vault-configuration.json. This is not signed and someone could replace this with an different/hacked data vault service.
+    // 
+    const vaultConfigurationExample = {
+        '@context': 'https://w3id.org/encrypted-data-vaults/v1',
+        "id": "did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd",
+        "name": "Blockcore Vault #1",
+        "dataVaultCreationService": "https://dv1.blockcore.net/"
+    };
+}
+
+/** DID Method resolver for "did:is". */
 export function getResolver(): Record<string, DIDResolver> {
 
     async function resolve(

@@ -3,7 +3,7 @@ import { IVault, Vault } from "./data/models";
 import { Populated, Select } from "./data/mongoose";
 import { routes } from "./routes";
 const compression = require('compression');
-const env = process.env.NODE_ENV || 'development';
+// const env = process.env.NODE_ENV || 'development';
 const pkg = require('./package.json');
 const config = require('./config');
 const mongodb = require('mongodb');
@@ -21,6 +21,11 @@ app.use(
     threshold: 512
   })
 );
+
+const env = require('./config');
+// import env from './config';
+
+console.log(env);
 
 // expose package.json to APIs
 app.use(function (req, res, next) {

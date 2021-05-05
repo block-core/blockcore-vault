@@ -15,26 +15,35 @@ export const wellKnownVaultConfiguration: Handler = (req, res) => {
     // res.status(201).send("User created");
 
     res.send({
-        "id": "https://example.com/edvs/z4sRgBJJLnYy",
-        "sequence": 0,
-        "controller": "did:example:123456789",
-        "referenceId": "my-primary-data-vault",
-        "keyAgreementKey": {
-            "id": "https://example.com/kms/12345",
-            "type": "X25519KeyAgreementKey2019"
-        },
-        "hmac": {
-            "id": "https://example.com/kms/67891",
-            "type": "Sha256HmacKey2019"
-        }
+        // "@context": "https://schemas.blockcore.net/data-vault/v1",
+        '@context': 'https://w3id.org/encrypted-data-vaults/v1',
+        "id": "did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd",
+        "name": "Blockcore Vault #1",
+        "dataVaultCreationService": "https://dv1.blockcore.net/"
     });
+
+    // res.send({
+    //     "id": "https://example.com/edvs/z4sRgBJJLnYy",
+    //     "sequence": 0,
+    //     "controller": "did:example:123456789",
+    //     "referenceId": "my-primary-data-vault",
+    //     "keyAgreementKey": {
+    //         "id": "https://example.com/kms/12345",
+    //         "type": "X25519KeyAgreementKey2019"
+    //     },
+    //     "hmac": {
+    //         "id": "https://example.com/kms/67891",
+    //         "type": "Sha256HmacKey2019"
+    //     }
+    // });
 
 };
 
 export const wellKnownDid: Handler = (req, res) => {
     res.send({
         '@context': 'https://www.w3.org/ns/did/v1',
-        'id': 'did:web:dv1.blockcore.net'
+        'id': 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd'
+        // 'id': 'did:web:dv1.blockcore.net'
     });
 };
 

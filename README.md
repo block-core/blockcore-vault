@@ -20,6 +20,22 @@ npm start
 
 The server should now be running on port 3000.
 
+## Development, Testing & Production
+
+To run with the different environment configuration, you can set the ENV variable like this:
+
+```sh
+# Windows
+set NODE_ENV=production
+
+# Linux/Mac
+export NODE_ENV=production
+```
+
+Available options is `production`, `development`, `test`.
+
+The different configuration is available under `./config/env/*.ts`
+
 ## Making Requests
 
 The server has many different endpoints:
@@ -77,3 +93,4 @@ Allows for public discovery using known URLs to find DID, DID Configuration and 
 Used to retrieve various metrics recorded by the Blockcore Vault instance. This can be used to analyze the usage performed by various vault contributors.
 
 Data from this API is used to enforce throtteling rules that an administrator applies to individual vaults.
+
