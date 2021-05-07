@@ -15,14 +15,15 @@ interface IServer extends Document {
   enabled: boolean, // User controlled if enable connection with this vault or not.
 
   /** Indicates if this entry is the local Vault. */
-  self: boolean,
+  self: boolean | undefined | null,
   created: Date,
   updated: Date,
   lastSeen: Date,
   lastFullSync: Date,
   linked_dids: any[],
   wellKnownConfiguration: string,
-  state: ServerState
+  state: ServerState,
+  error: string
 }
 
 const ServerSchema: Schema = new Schema({
@@ -39,7 +40,8 @@ const ServerSchema: Schema = new Schema({
   lastFullSync: Date,
   linked_dids: [Schema.Types.Mixed],
   wellKnownConfiguration: String,
-  state: String
+  state: String,
+  error: String
 }, {
   versionKey: false, timestamps: { createdAt: 'created', updatedAt: 'updated' }
 });

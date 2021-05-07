@@ -32,19 +32,23 @@ interface IIdentityDocument extends Document {
   id: string,
   sequence: Number,
   document: IDIDDocument,
-  metadata: IDIDDocumentMetadata
+  metadata: IDIDDocumentMetadata,
+  extended: IDIDDocumentResolutionMetadata | any
+}
+
+interface IDIDDocumentResolutionMetadata {
+  error?: string,
+  proof?: JwtProof2020
 }
 
 interface IDIDDocumentMetadata {
-  error?: string,
   created?: Date,
   updated?: Date,
   decativated?: boolean,
   nextUpdate?: any,
   versionId?: string,
   nextVerionId?: string,
-  equivalentId?: string,
-  proof: JwtProof2020
+  equivalentId?: string
 }
 
 // TODO: Improve the schema.
@@ -92,7 +96,8 @@ const IdentityDocumentSchema: Schema = new Schema({
   id: String,
   sequence: Number,
   document: DIDDocumentSchema,
-  metadata: DIDDocumentMetadataSchema
+  metadata: DIDDocumentMetadataSchema,
+  extended: Schema.Types.Mixed
 }, {
   versionKey: false
 });

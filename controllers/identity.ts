@@ -239,16 +239,26 @@ const getLatestIdentity = async (id: string) => {
 export const getDIDDocument: Handler = async (req, res) => {
     try {
         // Specification: https://w3c-ccg.github.io/did-resolution/
+        var t0 = performance.now();
 
         var didResolution: any = {
-            "@context": "https://w3id.org/did-resolution/v1"
+            // "@context": "https://w3id.org/did-resolution/v1" // We only support application/did+json.
+        }
+
+        const item = await getLatestIdentity(req.params.id);
+
+        if (!item) {
+            didResolution.didResolutionMetadata = { error: 'not-found' };
+            return res.json(didResolution);
         }
 
         const metadata: any = {
             retrieved: new Date(),
-            'content-type': 'application/json',
-            sequence: -1
+            contentType: 'application/did+json',
+            sequence: -1,
+            ...item.extended
         };
+
         const id = req.params.id;
 
         // TODO: Add full validation of DID ID.
@@ -265,22 +275,25 @@ export const getDIDDocument: Handler = async (req, res) => {
             return res.json(didResolution);
         }
 
-        var t0 = performance.now();
-
-        const item = await getLatestIdentity(req.params.id);
-
-        if (!item) {
-            didResolution.didResolutionMetadata = { error: 'not-found' };
-            return res.json(didResolution);
-        }
-
         var t1 = performance.now();
         metadata.duration = Math.round((t1 - t0));
         metadata.sequence = item.sequence; // Consider using "seqNo" to use same as other DID Methods.
 
-        didResolution.didDocument = item.document;
-        didResolution.didResolutionMetadata = metadata; // Resolution metadata
-        didResolution.didDocumentMetadata = item.metadata; // Document metadata, blockchain attestation should be added here.
+        // const metaDataJson = JSON.stringify(item.metadata);
+
+        // console.log(metaDataJson);
+
+        // const documentMetadata = { ...JSON.parse(metadata) };
+
+        // We store proof together with other metadata, but the DID specification
+        // does not allow us to put proof on the document metadata, we must move to resolution
+        // metadata.
+        // metadata.proof = item.metadata.proof;
+        // delete documentMetadata.proof;
+
+        didResolution.didDocument = JSON.stringify(item.document);
+        didResolution.didResolutionMetadata = metadata; // Resolution metadata, blockchain attestation should be added here.
+        didResolution.didDocumentMetadata = item.metadata; // Document metadata, can only contain these values: https://w3c.github.io/did-core/#did-document-metadata
 
         return res.json(didResolution);
     } catch (err) {
@@ -535,13 +548,15 @@ export const handleOperation: Handler = async (req, res) => {
             id: documentId,
             sequence: sequence,
             document: decodedContent.payload,
-            metadata: {
+            metadata: { // This must follow spec: https://w3c.github.io/did-core/#did-document-metadata
                 created: operation.received, // TODO: We probably should require "iat" (issued at) for the operation request.
+            },
+            extended: { // Extended metadata, not part of standard specification.
                 proof: {
                     "type": "JwtProof2020",
                     "jwt": documentJwt
                 }
-            },
+            }
         };
 
         // var identity = new Identity();

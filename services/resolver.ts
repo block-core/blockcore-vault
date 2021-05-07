@@ -110,15 +110,15 @@ export function getResolver(): Record<string, DIDResolver> {
         //     ].sort(ordered)
         // };
 
-        const contentType =
-            typeof didDocument?.['@context'] !== 'undefined'
-                ? 'application/did+ld+json'
-                : 'application/did+json';
+        // const contentType =
+        //     typeof didDocument?.['@context'] !== 'undefined'
+        //         ? 'application/did+ld+json'
+        //         : 'application/did+json';
 
         return {
             didDocument,
             didDocumentMetadata,
-            didResolutionMetadata: { contentType }
+            didResolutionMetadata: { contentType: 'application/did+json' }
         };
 
         // TODO: Refactor this and apply verification of signatures for DID Documents provided by the 

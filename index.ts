@@ -1,6 +1,7 @@
 import express from "express";
 import { IVault, Vault } from "./data/models";
 import { Populated, Select } from "./data/mongoose";
+import { Server, IServer } from './data/models';
 import { routes } from "./routes";
 const compression = require('compression');
 // const env = process.env.NODE_ENV || 'development';
@@ -8,10 +9,9 @@ const pkg = require('./package.json');
 const config = require('./config');
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
-const uWS = require('uWebSockets.js');
+const WebSocket = require('ws');
 
 const app = express();
-const PORT = 3000;
 const DEV = true;
 
 app.use(express.json());
@@ -22,15 +22,12 @@ app.use(
   })
 );
 
-const env = require('./config');
-// import env from './config';
-
-console.log(env);
+console.log(config);
 
 // expose package.json to APIs
 app.use(function (req, res, next) {
   res.locals.pkg = pkg;
-  res.locals.env = env;
+  res.locals.env = config;
   next();
 });
 
@@ -54,7 +51,7 @@ app.disable('x-powered-by');
 
 // app.use(customHeaders);
 
-if (env === 'development') {
+if (config.environment === 'development') {
   app.locals.pretty = true;
 }
 
@@ -96,30 +93,40 @@ routes.forEach((route) => {
   app[method](path, ...middleware, handler);
 });
 
-app.listen(PORT, () => {
-  console.log(`Blockcore Vault @ http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Blockcore Vault @ http://localhost:${config.port}`);
 });
 
-// an "app" is much like Express.js apps with URL routes,
-// here we handle WebSocket traffic on the wildcard "/*" route
-const app2 = uWS.App().ws('/*', {  // handle messages from client
+const wss = new WebSocket.Server({ port: config.ws });
 
-  open: (socket: { subscribe: (arg0: string) => void; }, req: any) => {
-    /* For now we only have one canvas */
-    socket.subscribe("drawing/canvas1");
-  },
-  message: (socket: any, message: any, isBinary: any) => {
-    /* In this simplified example we only have drawing commands */
-    app2.publish("drawing/canvas1", message, true);
-  }
+wss.on('connection', function connection(ws: { on: (arg0: string, arg1: (message: any) => void) => void; send: (arg0: string) => void; }) {
+
+  // This is incoming connection messages, the peer that connects is responsible for handshaking the sync status.
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+
+
+    if (message.type == 'sync') {
+
+    }
+
+
+
+  });
+
+  ws.send('something');
 });
 
-// finally listen using the app on port 9001
-app2.listen(9001, (listenSocket: any) => {
-  if (listenSocket) {
-    console.log('Listening to port 9001');
-  }
-});
+// const ws = new WebSocket('ws://localhost:9999/vault/sync');
+
+// ws.on('open', function open() {
+//   ws.send('something');
+// });
+
+// ws.on('message', function incoming(data: any) {
+//   console.log(data);
+// });
+
 
 async function seed() {
   // First delete all vaults 
@@ -142,6 +149,8 @@ async function seed() {
     // boss: smith.id
   })
 }
+
+const syncpeers = [];
 
 async function main() {
   // Simple query
@@ -167,6 +176,92 @@ async function main() {
   // Instance methods
   const smith = await Vault.findOne({ email: 'smith@email.com' })
   // const smithsEmployees = await smith.getEmployees()
+
+
+  const servers = await Server.find({ self: null, enabled: true });
+  // console.log(servers);
+
+  for (var index in servers) {
+    var server = servers[index];
+
+    console.log(server);
+
+    const ws = new WebSocket(server.ws);
+
+    ws.on('open', async () => {
+      ws.send('something');
+
+
+
+      const serverToUpdate = await Server.findOne({ id: ws.server.id });
+
+      console.log('Updating server...');
+      console.log(serverToUpdate);
+
+      if (serverToUpdate) {
+        serverToUpdate.state = "online";
+        serverToUpdate.error = '';
+        await serverToUpdate.save();
+      }
+
+    });
+
+    ws.on('message', function incoming(data: any) {
+      console.log(data);
+
+
+
+    });
+
+    ws.on('close', async () => {
+      console.log('disconnected');
+
+      const serverToUpdate = await Server.findOne({ id: ws.server.id });
+
+      if (serverToUpdate) {
+        serverToUpdate.state = 'offline';
+        serverToUpdate.error = '';
+        await serverToUpdate.save();
+      }
+
+    });
+
+    ws.on('error', async (err: any, server: any) => {
+      console.error('error!');
+      console.error(err);
+      console.log(ws.server);
+
+      const serverToUpdate = await Server.findOne({ id: ws.server.id });
+
+      if (serverToUpdate) {
+
+        // Just an example, likely need to add various handling here.
+        if (err.code == 'ECONNREFUSED') {
+          serverToUpdate.state = 'error';
+        }
+        else {
+          serverToUpdate.state = 'error';
+        }
+
+        serverToUpdate.error = err.code;
+        await serverToUpdate.save();
+      }
+
+      //console.error(e.code);
+    });
+
+    // Keep a reference to the server so we can update status.
+    ws.server = server;
+
+    // const peer = {
+    //   server,
+    //   ws
+    // };
+
+    syncpeers.push(ws);
+  }
+
+  // console.log(syncpeers);
 
   // Statics
   // const usersYoungerThan23 = await Vault.findYoungerThan(23)

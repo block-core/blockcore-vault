@@ -126,3 +126,78 @@ TODO: When you want to add trust between two Blockcore Vault, you will from the 
 8. Upon valid authentication, syncronization will start.
 
 CURRENT: Currently the implementation of this is simplified and without any authentication or approval process.
+
+## Data Sync
+
+When an vault adds another vault, that becomes a client-server relationship. There is not a "two-way" relationship, where the server opens connection or performs data sync operations.
+
+When the client vault connects up to a server vault (which must be accessible through firewall if on public network, client vault can be behind NAT/firewall), it will announce the last document it received from that specific server.
+
+The server does not keep track of sync status of the connected clients, except for when a client vault announces that it is "fully synced". Upon which the server vault will begin to push all new incoming events down to the clients.
+
+Upon connection from client to server, after authentication (To be implemented), the client sends metadata about the last event (operation) it received from the server. Upon which the server will begin looping through all events from that event and further. Each individual event will be pushed by server to the client.
+
+When finished, the server will begin to push all new incoming events directly to the client.
+
+Additionally when finished with initial sync from server to client, the client will begin to push all events (operations) it has received after last received event from the server. This will then ensure that the server receives all operations that the client received, while being offline/disconnected from the server.
+
+Example:
+
+Vault #1 (Server) has document XS1, XS2, YS1. (S = sequence/version).
+
+Vault #2 (Client) has document XS1 and ZS1.
+
+Upon connection, #1 will send XS2 (which has arrived later) and YS1.
+
+When finished, #2 will send ZS1, which is received while being disconnected.
+
+Upon finish, both vault will have XS1, XS2, YS1 and ZS1.
+
+If Vault #1 and Vault #2 receives XS3 while being offline, then Vault #2 upon the initial sync, will ignore the XS3 that exists on Vault #1. If either vault have a higher sequence of X, e.g. XS4, then that will win and be the active document when sync has completed.
+
+This means that two vault instances can host different instances of the same versioned document. This is considered to be a valid state, and it is intentional by the owner of that document. The owner has to make two individual operations that is submitted to two different vaults at different times, while the vaults being disconnected from each other.
+
+## Restrictions
+
+When a Vault has registered an outbound (client/server) relationship, the target Vault cannot register a connection back to the same Vault. This is a limitation in the software and the software should avoid such circular connections.
+
+To setup a resilient network of Blockcore Vault instances, you need at minimum 3 instances.
+
+Vault #1 > Vault #2 > Vault #3 > Vault #1.
+
+Whenever an event enters any of these vaults, it will be immediately delivered to both outgoing and incoming connections. This ensures if there is some issues or drop between #3 and #1, then #1 will still receive the event from #2.
+
+The next level of resilience, is having a total of #5 public vault instances. With 5 instances, each of them can have two outgoing and two incoming connections.
+
+In both of these scenarios, there can be any number of non-public and incoming-only instances of Vault running and receiving data.
+
+It is of course possible to run just a single vault instance, or a single public instance that only have clients connected.
+
+A client vault cannot be used to enable cross-network sync. If a vault connects to two different vault network rings, it will not forward messages it receives from one server and send to another server. This is to avoid various network sync issues and trust-issues.
+
+If a client vault receives an event, it will forward that to all registered and connected server vaults. 
+
+
+
+
+# Vocabulary
+
+- `Vault` - An instance of the Blockcore Vault software.
+- `Data Vault` - An registered store of data that is hosted on Blockcore Vault software.
+- `DID` - Decentralized identity.
+- `DID Document` - A document that describes keys and other information about an DID Subject.
+- `DID Resolver` - A library / code that allows lookup of DID Documents against an "DID Registry"/"DID Hub".
+- `VC` - Verifiable Credentials, a signed JSON-document.
+
+
+# TODO
+
+## Worker Threads
+
+Investigate if we should Worker Threads for data sync between Vaults. We should consider spawning a seperate thread pr. connected Vault, so that it won't affect the main thread.
+
+Performance testing is important to figure out if this has any affect or not.
+
+https://nodejs.org/api/worker_threads.html
+
+https://github.com/uNetworking/uWebSockets.js/blob/master/examples/WorkerThreads.js
