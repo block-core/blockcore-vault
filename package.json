@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "mongodb": "^3.6.6",
     "mongoose": "^5.12.5",
+    "winston": "^3.3.3",
     "ws": "^7.4.5"
   },
   "devDependencies": {

@@ -514,6 +514,11 @@ export const handleOperation: Handler = async (req, res) => {
         // Get the document identity from the decoded content's payload.
         operation.id = decodedContent.payload.id;
 
+
+        // When an operation (event) is first observed, we set the published date. If the payload already has published, we'll use that.
+        // We will additionally verify that the published is never more than few minutes ahead of current time, to avoid anyone manipulating
+        // the dates far into the future.
+        operation.published = new Date();
         operation.received = new Date();
 
         // Get the IP of external user, used for surveilance of abuse.

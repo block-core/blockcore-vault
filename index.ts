@@ -3,6 +3,7 @@ import { IVault, Vault } from "./data/models";
 import { Populated, Select } from "./data/mongoose";
 import { Server, IServer } from './data/models';
 import { routes } from "./routes";
+import { OperationRequest } from "./data/models/operation-request";
 const compression = require('compression');
 // const env = process.env.NODE_ENV || 'development';
 const pkg = require('./package.json');
@@ -10,6 +11,7 @@ const config = require('./config');
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 const WebSocket = require('ws');
+import { log } from './services/logger';
 
 const app = express();
 const DEV = true;
@@ -22,7 +24,7 @@ app.use(
   })
 );
 
-console.log(config);
+log.info(config);
 
 // expose package.json to APIs
 app.use(function (req, res, next) {
@@ -82,11 +84,14 @@ mongoose
       useUnifiedTopology: true
     })
   .then(async () => {
-    console.log("Connected to DB");
+    log.info('Connected to DB');
+
     await seed();
     await main();
   })
-  .catch((err: any) => console.error("Error connecting to DB: ", err))
+  .catch((err: any) => {
+    log.error("Error connecting to DB: ", err);
+  })
 
 routes.forEach((route) => {
   const { method, path, middleware, handler } = route;
@@ -95,6 +100,8 @@ routes.forEach((route) => {
 
 app.listen(config.port, () => {
   console.log(`Blockcore Vault @ http://localhost:${config.port}`);
+  console.log('Check the log file on disk for more information.');
+  log.info(`Blockcore Vault @ http://localhost:${config.port}`);
 });
 
 const wss = new WebSocket.Server({ port: config.ws });
@@ -102,19 +109,60 @@ const wss = new WebSocket.Server({ port: config.ws });
 wss.on('connection', function connection(ws: { on: (arg0: string, arg1: (message: any) => void) => void; send: (arg0: string) => void; }) {
 
   // This is incoming connection messages, the peer that connects is responsible for handshaking the sync status.
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
+  ws.on('message', async (message) => {
 
+    const json = JSON.parse(message);
+    log.debug('received: %s', message);
 
-    if (message.type == 'sync') {
+    if (json.type == 'sync') {
 
-    }
+      const received = json.last.received;
+      const id = json.last.id;
+      const sequence = json.last.sequence;
 
+      // Check if we have the document locally.
+      // If we don't have it, we'll simply remove 1 day from the received date, and 
+      // start sending all those documents.
 
+      // First verify that we have the document.
+      var lastSyncedEvent = await OperationRequest.findOne({ received: received, id: id, sequence: sequence });
 
+      var cursor;
+
+      if (!lastSyncedEvent) {
+        // TODO: need to verify what happens when error is throw on this ws library.
+        // TODO: We should probably send a structured JSON object back that contains this error message and error code so it can be handled.
+        // TODO: Until we implement retry with invalid document, we will simply log error and start from genesis.
+        // throw Error('You attempted to sync based on an non-existing entry. Cannot continue. Please retry with another document or empty to sync from genesis.');
+        log.error('Client attempted to sync based on an non-existing entry. Will sync from genesis.');
+
+        cursor = OperationRequest.find().cursor();
+      }
+      else {
+        var minimumObjectId = new mongoose.Types.ObjectId(lastSyncedEvent._id);
+
+        // Get a cursor for all operations after the ID of last sync event:
+        cursor = OperationRequest.find({ _id: { $gt: minimumObjectId } }).cursor();
+      }
+
+      cursor.on('data', function (event) {
+        //console.log(event);
+        log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
+
+        ws.send(JSON.stringify({
+          type: 'event',
+          payload: event
+        }));
+      });
+
+      cursor.on('close', function () {
+        log.info('LOOPED ALL DOCUMENTS!!');
+        ws.send(JSON.stringify({ type: 'sync-completed' }));
+      });
+    };
   });
 
-  ws.send('something');
+  ws.send(JSON.stringify({ status: 'You have connected to this server.' }));
 });
 
 // const ws = new WebSocket('ws://localhost:9999/vault/sync');
@@ -184,19 +232,16 @@ async function main() {
   for (var index in servers) {
     var server = servers[index];
 
-    console.log(server);
-
+    log.debug(server);
     const ws = new WebSocket(server.ws);
 
     ws.on('open', async () => {
-      ws.send('something');
-
-
+      ws.send(JSON.stringify({ status: 'Connection' }));
 
       const serverToUpdate = await Server.findOne({ id: ws.server.id });
 
-      console.log('Updating server...');
-      console.log(serverToUpdate);
+      log.info('Updating server...');
+      log.info(serverToUpdate);
 
       if (serverToUpdate) {
         serverToUpdate.state = "online";
@@ -204,17 +249,56 @@ async function main() {
         await serverToUpdate.save();
       }
 
+      // After we have recognized the server as online, we'll start sending our latest sync status:
+      // ws.send(JSON.stringify({
+      //   type: 'sync',
+      //   last: {
+      //     id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+      //     received: '2021-05-07T17:58:22.022+00:00',
+      //     sequence: 0
+      //   }
+      // }));
+      ws.send(JSON.stringify({
+        type: 'sync',
+        last: {
+          id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+          received: '2021-05-07T17:58:22.022+00:00',
+          sequence: 1
+        }
+      }));
+
     });
 
+
+
     ws.on('message', function incoming(data: any) {
-      console.log(data);
 
+      log.debug(data);
+      var json = JSON.parse(data);
 
+      if (json.type === 'sync-completed') {
+        log.info('THE SYNC HAS COMPLETED, UPDATE LAST STATE!');
 
+        // Now we save the server so the .last state is persisted.
+        ws.server.lastSync = new Date();
+        ws.server.save();
+
+        log.debug(ws.server);
+
+      } else if (json.type === 'event') {
+        log.info('Received event with payload: ' + JSON.stringify(json.payload));
+
+        // Update the last documented synced.
+        ws.server.last = {
+          id: json.payload.id,
+          received: json.payload.received,
+          sequence: json.payload.sequence
+        };
+      }
     });
 
     ws.on('close', async () => {
-      console.log('disconnected');
+      log.warn('disconnected');
 
       const serverToUpdate = await Server.findOne({ id: ws.server.id });
 
@@ -227,9 +311,8 @@ async function main() {
     });
 
     ws.on('error', async (err: any, server: any) => {
-      console.error('error!');
-      console.error(err);
-      console.log(ws.server);
+      log.error(err);
+      log.error(ws.server);
 
       const serverToUpdate = await Server.findOne({ id: ws.server.id });
 

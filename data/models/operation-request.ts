@@ -8,8 +8,10 @@ interface IOperationRequest extends Document {
   sequence: number,
   operation: string, // Various APIs will have various operations, so we'll keep this as string (undetermined type).
   jwt: string,
+  published: Date,
   received: Date,
   ip: string
+  _id: string
 }
 
 // var addOperation = {
@@ -33,11 +35,16 @@ const OperationRequestSchema: Schema = new Schema({
   sequence: { type: Number, required: true },
   operation: { type: String, required: true },
   jwt: { type: String, required: true },
+  published: Date,
   received: Date,
   ip: String
 }, {
   versionKey: false
 });
+
+
+// TODO: Reintroduce this unique index when finalizing the software. This is useful to simply populate the events store and 
+// to do validation testing.
 
 // Make a unique index combining DOCUMENT ID ("did:is:blablah"), TYPE ID ("identity") and SEQUENCE ("0").
 // We drop index validation for the operation, to allow re-post of operations if needed / failed on first attempts.
