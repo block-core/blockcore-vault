@@ -232,8 +232,17 @@ var deleteOperation = {
 
 /** Gets the latest available instance of the identity document. */
 const getLatestIdentity = async (id: string) => {
-
     const item = await Identity.findOne({ id: id }, null, { sort: { sequence: -1 } });
+    log.info('LATEST IDENTITY');
+    log.info(JSON.stringify(item));
+    return item;
+}
+
+const getIdentityBySequence = async (id: string, sequence: number) => {
+    log.info(`getIdentityBySequence: ${sequence} - ID: ${id}`);
+    const item = await Identity.findOne({ id: id, sequence: sequence });
+    log.info('IDENTITY:');
+    log.info(JSON.stringify(item));
     return item;
 }
 
@@ -351,230 +360,263 @@ const verifyPublicKeyId = (identity: string, verificationMethod: any[]) => {
     throw Error('The value of the DID must be linked to one of the public keys in verificationMethod.');
 }
 
-export const handleOperation: Handler = async (req, res) => {
-    log.info('Process a signed operation request...');
-
+export const processOperation = async (options: { sync: boolean, jwt: string, type?: string, operation?: string, sequence?: number, id?: string, published?: Date, received?: Date }) => {
     // This method is written with verbose documentation and examples, to help onboard new devs making it easier to understand and relate the
     // various formats and structures.
+
+    var jwtExample = {
+        jwt: "eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJ0eXBlIjoiaWRlbnRpdHkiLCJvcGVyYXRpb24iOiJjcmVhdGUiLCJzZXF1ZW5jZSI6MiwiY29udGVudCI6ImV5SnBjM04xWlhJaU9pSmthV1E2YVhNNlVFMVhNVXR6TjJnMFluSndUamhHWkVSV1RIZG9VRVJMU2pkTVpFRTNiVlprWkNJc0ltRnNaeUk2SWtWVE1qVTJTeUo5LmV5SkFZMjl1ZEdWNGRDSTZXeUpvZEhSd2N6b3ZMM2QzZHk1M015NXZjbWN2Ym5NdlpHbGtMM1l4SWwwc0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWlMQ0oyWlhKcFptbGpZWFJwYjI1TlpYUm9iMlFpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWphMlY1TFRFaUxDSjBlWEJsSWpvaVJXTmtjMkZUWldOd01qVTJhekZXWlhKcFptbGpZWFJwYjI1TFpYa3lNREU1SWl3aVkyOXVkSEp2Ykd4bGNpSTZJbVJwWkRwcGN6cFFUVmN4UzNNM2FEUmljbkJPT0Vaa1JGWk1kMmhRUkV0S04weGtRVGR0Vm1Sa0lpd2ljSFZpYkdsalMyVjVRbUZ6WlRVNElqb2lkMEZCUVVSclRVWlJhM0Y0WVZWUVFqaHFSM0UwV205S1ZuTmhTemxaTlUwNGNtbE5Oelo2ZFdkTk5tUWlmVjBzSW5ObGNuWnBZMlVpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpZbXh2WTJ0bGVIQnNiM0psY2lJc0luUjVjR1VpT2lKQ2JHOWphMFY0Y0d4dmNtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTlsZUhCc2IzSmxjaTVpYkc5amEyTnZjbVV1Ym1WMEluMHNleUpwWkNJNkltUnBaRHBwY3pwUVRWY3hTM00zYURSaWNuQk9PRVprUkZaTWQyaFFSRXRLTjB4a1FUZHRWbVJrSTJScFpISmxjMjlzZG1WeUlpd2lkSGx3WlNJNklrUkpSRkpsYzI5c2RtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTl0ZVM1a2FXUXVhWE1pZlN4N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpaV1IySWl3aWRIbHdaU0k2SWtWdVkzSjVjSFJsWkVSaGRHRldZWFZzZENJc0luTmxjblpwWTJWRmJtUndiMmx1ZENJNkltaDBkSEJ6T2k4dmRtRjFiSFF1WW14dlkydGpiM0psTG01bGRDOGlmVjBzSW1GMWRHaGxiblJwWTJGMGFXOXVJanBiSW1ScFpEcHBjenBRVFZjeFMzTTNhRFJpY25CT09FWmtSRlpNZDJoUVJFdEtOMHhrUVRkdFZtUmtJMnRsZVMweElsMHNJbUZ6YzJWeWRHbHZiazFsZEdodlpDSTZXeUprYVdRNmFYTTZVRTFYTVV0ek4yZzBZbkp3VGpoR1pFUldUSGRvVUVSTFNqZE1aRUUzYlZaa1pDTnJaWGt0TVNKZGZRLjNhOTNoV2UyTlZQQWdrZG1uQ0xFNlAyUkN0OVVLMlFRcnBtQjVvM0xfV2xodVdxcW1hVGJza2p2R1lDNVY5NmI2aDhUa2Ewak5zT1N3SFNTd0JHOWpBIn0.xoALgVBL8Qpt5_YZINI-khxDzak-YALWqaGMfp09_zFn-F8366Xc9Ug4qcbzsEMiDx3zpULhV5DoIFqssN9Vxg"
+    };
+
+    // Decode the payload, we'll store both decoded and original value in MongoDB for purposes of Vault Sync.
+    var decoded = decodeJWT(options.jwt);
+
+    var documentJwt = decoded.payload.content;
+    var documentJwtExample = "eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ.3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA";
+
+    var decodedExample = {
+        header: {
+            issuer: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+            alg: 'ES256K'
+        },
+        payload: {
+            type: 'identity',
+            operation: 'create',
+            sequence: 2,
+            content: 'eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ.3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA'
+        },
+        signature: 'xoALgVBL8Qpt5_YZINI-khxDzak-YALWqaGMfp09_zFn-F8366Xc9Ug4qcbzsEMiDx3zpULhV5DoIFqssN9Vxg',
+        data: 'eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJ0eXBlIjoiaWRlbnRpdHkiLCJvcGVyYXRpb24iOiJjcmVhdGUiLCJzZXF1ZW5jZSI6MiwiY29udGVudCI6ImV5SnBjM04xWlhJaU9pSmthV1E2YVhNNlVFMVhNVXR6TjJnMFluSndUamhHWkVSV1RIZG9VRVJMU2pkTVpFRTNiVlprWkNJc0ltRnNaeUk2SWtWVE1qVTJTeUo5LmV5SkFZMjl1ZEdWNGRDSTZXeUpvZEhSd2N6b3ZMM2QzZHk1M015NXZjbWN2Ym5NdlpHbGtMM1l4SWwwc0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWlMQ0oyWlhKcFptbGpZWFJwYjI1TlpYUm9iMlFpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWphMlY1TFRFaUxDSjBlWEJsSWpvaVJXTmtjMkZUWldOd01qVTJhekZXWlhKcFptbGpZWFJwYjI1TFpYa3lNREU1SWl3aVkyOXVkSEp2Ykd4bGNpSTZJbVJwWkRwcGN6cFFUVmN4UzNNM2FEUmljbkJPT0Vaa1JGWk1kMmhRUkV0S04weGtRVGR0Vm1Sa0lpd2ljSFZpYkdsalMyVjVRbUZ6WlRVNElqb2lkMEZCUVVSclRVWlJhM0Y0WVZWUVFqaHFSM0UwV205S1ZuTmhTemxaTlUwNGNtbE5Oelo2ZFdkTk5tUWlmVjBzSW5ObGNuWnBZMlVpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpZbXh2WTJ0bGVIQnNiM0psY2lJc0luUjVjR1VpT2lKQ2JHOWphMFY0Y0d4dmNtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTlsZUhCc2IzSmxjaTVpYkc5amEyTnZjbVV1Ym1WMEluMHNleUpwWkNJNkltUnBaRHBwY3pwUVRWY3hTM00zYURSaWNuQk9PRVprUkZaTWQyaFFSRXRLTjB4a1FUZHRWbVJrSTJScFpISmxjMjlzZG1WeUlpd2lkSGx3WlNJNklrUkpSRkpsYzI5c2RtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTl0ZVM1a2FXUXVhWE1pZlN4N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpaV1IySWl3aWRIbHdaU0k2SWtWdVkzSjVjSFJsWkVSaGRHRldZWFZzZENJc0luTmxjblpwWTJWRmJtUndiMmx1ZENJNkltaDBkSEJ6T2k4dmRtRjFiSFF1WW14dlkydGpiM0psTG01bGRDOGlmVjBzSW1GMWRHaGxiblJwWTJGMGFXOXVJanBiSW1ScFpEcHBjenBRVFZjeFMzTTNhRFJpY25CT09FWmtSRlpNZDJoUVJFdEtOMHhrUVRkdFZtUmtJMnRsZVMweElsMHNJbUZ6YzJWeWRHbHZiazFsZEdodlpDSTZXeUprYVdRNmFYTTZVRTFYTVV0ek4yZzBZbkp3VGpoR1pFUldUSGRvVUVSTFNqZE1aRUUzYlZaa1pDTnJaWGt0TVNKZGZRLjNhOTNoV2UyTlZQQWdrZG1uQ0xFNlAyUkN0OVVLMlFRcnBtQjVvM0xfV2xodVdxcW1hVGJza2p2R1lDNVY5NmI2aDhUa2Ewak5zT1N3SFNTd0JHOWpBIn0'
+    };
+
+    // Decode the content, we'll get the unique document ID from there.
+    var decodedContent = decodeJWT(documentJwt);
+
+    var decodedContentExample = {
+        header: {
+            issuer: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+            alg: 'ES256K'
+        },
+        payload: {
+            '@context': ['https://www.w3.org/ns/did/v1'],
+            id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+            verificationMethod: [[Object]],
+            service: [[Object], [Object], [Object]],
+            authentication: ['did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd#key-1'],
+            assertionMethod: ['did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd#key-1']
+        },
+        signature: '3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA',
+        data: 'eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ'
+    };
+
+    // Get a reference to the payload which we want to store in our event store.
+    var operation = decoded.payload;
+
+    // Perform input validation after decoding.
+    inputValidation(operation.type, '"type" is required on the operation.');
+    inputValidation(operation.operation, '"operation" is required on the operation.');
+    inputValidation(operation.sequence != null, '"sequence" is required on the operation.'); // null/undefined not allowed, but "0" is correct.
+    inputValidation(decodedContent.payload.id, '"id" is required on the payload.');
+
+    if (operation.operation == 'create' && operation.sequence != 0) {
+        inputValidation(false, '"sequence" must be 0 for all "create" operations.');
+    }
+
+    // Make sure that issuer on operation JWT and ID of payload JWT is the same.
+    if (decoded.header.issuer != decodedContent.payload.id) {
+        throw Error('The "id" is incorrect between operation and the payload.');
+    }
+
+    // Make sure that the metadata received from server/client during sync is same as the actually signed JWT. This is important or else a vault can send sequence and ID of
+    // documents and block future sync.
+    if (options.sync) {
+        if (decoded.header.issuer != options.id) {
+            log.error(JSON.stringify(decoded.payload));
+            log.error(JSON.stringify(options));
+            throw Error('The "id" is incorrect between synced event and signed payload.');
+        }
+
+        if (decoded.payload.type != options.type) {
+            log.error(JSON.stringify(decoded.payload));
+            log.error(JSON.stringify(options));
+            throw Error('The "type" is incorrect between synced event and signed payload.');
+        }
+
+        if (decoded.payload.sequence != options.sequence) {
+            log.error(JSON.stringify(decoded.payload));
+            log.error(JSON.stringify(options));
+            throw Error('The "sequence" is incorrect between synced event and signed payload.');
+        }
+    }
+
+    var verificationMethod = null;
+    var documentId = decodedContent.payload.id;
+    var sequence = operation.sequence;
+
+    // When the operation type is identity, we'll get the 'verificationMethod' directly from the payload.
+    // For all other operations, we will use DID Resolve to get the correct verification method.
+    if (operation.type == 'identity') {
+        verificationMethod = decodedContent.payload.verificationMethod;
+
+        // Make sure we don't process DID Documents with a lot of keys, a minor validation to reduce attack surface.
+        if (verificationMethod.length > 10) {
+            throw Error('Only 10 or less active verification methods support.');
+        }
+
+        // TODO: Add support for "controller" on the DID Document. This can be used to define which DIDs should be allowed to run
+        // updates on the DID Document. The initial creation must still include public key of the DID in question for DID ID verification,
+        // but future updates can be verified by doing an DID Resolve based upon the controllers and getting the authentication keys from
+        // that DID Document.
+
+        // Upon initial create, we'll verify that the DID ID corresponds to one of the verification method public keys.
+        if (sequence == 0) {
+            // Verify will will throw error if verification fails.
+
+            // Verify the operation token.
+            // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
+            verifyJWS(options.jwt, verificationMethod);
+
+            // Verify the document token.
+            verifyJWS(decoded.payload.content, verificationMethod);
+
+            // Verify that the issuer of both JWTs and DID Document ID is same.
+            if ((new Set([decoded.header.issuer, decodedContent.header.issuer, documentId])).size !== 1) {
+                throw Error('The issuer of both operation and document must be equal to the DID Document ID');
+            }
+
+            // Verify that the DID ID is correctly correlated with at least one of the keys provided in verificationMethod.
+            // This will stop using random/custom "did:is:VALUE" for the initial creation. Upon later updates, the verificationMethod
+            // can be updated and the original public key that correspond with the VALUE part of the DID ID can be recycled/removed.
+            verifyPublicKeyId(documentId, verificationMethod);
+        } else {
+            // Upon updates, we'll allow replacement of verification method if needed.
+            // On updates, we need to get existing verification methods and verify against that, to ensure that 
+            // only existing owners are allowed to perform updates.
+            // const latestIdentity = await getLatestIdentity(documentId);
+
+            const latestIdentity = await getIdentityBySequence(documentId, (sequence - 1));
+
+            if (!latestIdentity) {
+                throw Error('Unable to find the previous DID Document. Cannot update. Ensure that the sequence number is correct.');
+            }
+
+            // If the previous sequence is not exactly one less, don't allow this update to continue.
+            // if ((latestIdentity.sequence != (sequence - 1))) {
+            //     throw Error(`Unable to update DID Document. Sequence number is incorrect. Current ${latestIdentity.sequence} and supplied ${sequence}.`);
+            // }
+
+            // Verify the operation token based upon existing verification method.
+            // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
+            verifyJWS(options.jwt, latestIdentity.document.verificationMethod);
+
+            // Verify the document token based on existing verification method.
+            verifyJWS(decoded.payload.content, latestIdentity.document.verificationMethod);
+
+            // TODO: Should we ensure that there is always one verificationMethod? Do we want to allow users to publish DID Documents that cannot
+            // be updated in the future? Perhaps that is a use-case that is valid when "controller" support is added?
+        }
+    }
+    else {
+        // TODO: Implement DID Resolver lookup for verification.
+        // Get the Resolver used to resolver DID Documents from REST API.
+        //const resolver = new Resolver(getResolver());
+        // Get the Bitcoin Resolver used to resolver DID Documents from REST API.
+        // const resolver = new Resolver(getResolver());
+
+        // // Verify the payload content, which is an actual DID Document
+        // console.log(decoded.payload.content);
+        // console.log(jwt);
+
+        // var verified = verifyJWS(jwt, verificationMethod);
+
+        // console.log('Verified:');
+        // console.log(verified);
+
+        // Verify the operation, which is signed with same key.
+        // var verified = await verifyJWT(jwt, { resolver: resolver });
+
+        // console.log('Verified:');
+        // console.log(jwt);
+
+        // verified = await verifyJWT(decoded.payload.content, { resolver: resolver });
+
+        // console.log('Verified:');
+        // console.log(verified);
+    }
+
+    // Get the document identity from the decoded content's payload.
+    operation.id = decodedContent.payload.id;
+
+    // When an operation (event) is first observed, we set the published date. If the payload already has published, we'll use that.
+    // We will additionally verify that the published is never more than few minutes ahead of current time, to avoid anyone manipulating
+    // the dates far into the future.
+    operation.published = new Date();
+    operation.received = new Date();
+
+    // Get the IP of external user, used for surveilance of abuse.
+    // TODO: Verify if we should get IP using any methods here: https://stackoverflow.com/questions/19266329/node-js-get-clients-ip
+    // TODO: Consider skipping storing this for privacy reasons.
+    // operation.ip = req.ip;
+
+    // Store the original JSON Web Token, which is used for syncing original operations between Vaults.
+    operation.jwt = options.jwt;
+
+    // Delete extra duplicate fields.
+    delete operation.content;
+    delete operation.signature;
+    delete operation.data;
+
+    log.info('Event Store entry:');
+    log.info(operation);
+
+    // Store a backup of the event in our event store log.
+    await storeOperation(operation);
+
+    // Validate the payload and signature.
+    // TODO: We should probably do input validation and mapping here? This is now 
+    // simply done quick and dirty.
+    // TODO: Validate!
+
+    // Store the verified identity in our identity store.
+    //var document = new DIDDocument(req.body);
+
+    // Entity to be stored in a collection. IIdentityDocument
+    var entity = {
+        id: documentId,
+        sequence: sequence,
+        document: decodedContent.payload,
+        metadata: { // This must follow spec: https://w3c.github.io/did-core/#did-document-metadata
+            created: operation.received, // TODO: We probably should require "iat" (issued at) for the operation request.
+        },
+        extended: { // Extended metadata, not part of standard specification.
+            proof: {
+                "type": "JwtProof2020",
+                "jwt": documentJwt
+            }
+        }
+    };
+
+    // var identity = new Identity();
+    // identity.id = 
+    log.info('Entity Store entry:');
+    log.info(entity);
+
+    var identity = new Identity(entity);
+    await identity.save();
+
+    // var vault = new DIDDocument(entity);
+    // await vault.save();
+}
+
+export const handleOperation: Handler = async (req, res) => {
+    log.info('Process a signed operation request...');
 
     try {
         // The only payload is the JSON Web Token.
         var jwt = req.body.jwt;
 
-        var jwtExample = {
-            jwt: "eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJ0eXBlIjoiaWRlbnRpdHkiLCJvcGVyYXRpb24iOiJjcmVhdGUiLCJzZXF1ZW5jZSI6MiwiY29udGVudCI6ImV5SnBjM04xWlhJaU9pSmthV1E2YVhNNlVFMVhNVXR6TjJnMFluSndUamhHWkVSV1RIZG9VRVJMU2pkTVpFRTNiVlprWkNJc0ltRnNaeUk2SWtWVE1qVTJTeUo5LmV5SkFZMjl1ZEdWNGRDSTZXeUpvZEhSd2N6b3ZMM2QzZHk1M015NXZjbWN2Ym5NdlpHbGtMM1l4SWwwc0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWlMQ0oyWlhKcFptbGpZWFJwYjI1TlpYUm9iMlFpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWphMlY1TFRFaUxDSjBlWEJsSWpvaVJXTmtjMkZUWldOd01qVTJhekZXWlhKcFptbGpZWFJwYjI1TFpYa3lNREU1SWl3aVkyOXVkSEp2Ykd4bGNpSTZJbVJwWkRwcGN6cFFUVmN4UzNNM2FEUmljbkJPT0Vaa1JGWk1kMmhRUkV0S04weGtRVGR0Vm1Sa0lpd2ljSFZpYkdsalMyVjVRbUZ6WlRVNElqb2lkMEZCUVVSclRVWlJhM0Y0WVZWUVFqaHFSM0UwV205S1ZuTmhTemxaTlUwNGNtbE5Oelo2ZFdkTk5tUWlmVjBzSW5ObGNuWnBZMlVpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpZbXh2WTJ0bGVIQnNiM0psY2lJc0luUjVjR1VpT2lKQ2JHOWphMFY0Y0d4dmNtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTlsZUhCc2IzSmxjaTVpYkc5amEyTnZjbVV1Ym1WMEluMHNleUpwWkNJNkltUnBaRHBwY3pwUVRWY3hTM00zYURSaWNuQk9PRVprUkZaTWQyaFFSRXRLTjB4a1FUZHRWbVJrSTJScFpISmxjMjlzZG1WeUlpd2lkSGx3WlNJNklrUkpSRkpsYzI5c2RtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTl0ZVM1a2FXUXVhWE1pZlN4N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpaV1IySWl3aWRIbHdaU0k2SWtWdVkzSjVjSFJsWkVSaGRHRldZWFZzZENJc0luTmxjblpwWTJWRmJtUndiMmx1ZENJNkltaDBkSEJ6T2k4dmRtRjFiSFF1WW14dlkydGpiM0psTG01bGRDOGlmVjBzSW1GMWRHaGxiblJwWTJGMGFXOXVJanBiSW1ScFpEcHBjenBRVFZjeFMzTTNhRFJpY25CT09FWmtSRlpNZDJoUVJFdEtOMHhrUVRkdFZtUmtJMnRsZVMweElsMHNJbUZ6YzJWeWRHbHZiazFsZEdodlpDSTZXeUprYVdRNmFYTTZVRTFYTVV0ek4yZzBZbkp3VGpoR1pFUldUSGRvVUVSTFNqZE1aRUUzYlZaa1pDTnJaWGt0TVNKZGZRLjNhOTNoV2UyTlZQQWdrZG1uQ0xFNlAyUkN0OVVLMlFRcnBtQjVvM0xfV2xodVdxcW1hVGJza2p2R1lDNVY5NmI2aDhUa2Ewak5zT1N3SFNTd0JHOWpBIn0.xoALgVBL8Qpt5_YZINI-khxDzak-YALWqaGMfp09_zFn-F8366Xc9Ug4qcbzsEMiDx3zpULhV5DoIFqssN9Vxg"
-        };
+        await processOperation({ sync: false, jwt: jwt });
 
-        // Decode the payload, we'll store both decoded and original value in MongoDB for purposes of Vault Sync.
-        var decoded = decodeJWT(jwt);
-
-        var documentJwt = decoded.payload.content;
-        var documentJwtExample = "eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ.3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA";
-
-        // Decode the content, we'll get the unique document ID from there.
-        var decodedContent = decodeJWT(documentJwt);
-
-        var decodedExample = {
-            header: {
-                issuer: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
-                alg: 'ES256K'
-            },
-            payload: {
-                type: 'identity',
-                operation: 'create',
-                sequence: 2,
-                content: 'eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ.3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA'
-            },
-            signature: 'xoALgVBL8Qpt5_YZINI-khxDzak-YALWqaGMfp09_zFn-F8366Xc9Ug4qcbzsEMiDx3zpULhV5DoIFqssN9Vxg',
-            data: 'eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJ0eXBlIjoiaWRlbnRpdHkiLCJvcGVyYXRpb24iOiJjcmVhdGUiLCJzZXF1ZW5jZSI6MiwiY29udGVudCI6ImV5SnBjM04xWlhJaU9pSmthV1E2YVhNNlVFMVhNVXR6TjJnMFluSndUamhHWkVSV1RIZG9VRVJMU2pkTVpFRTNiVlprWkNJc0ltRnNaeUk2SWtWVE1qVTJTeUo5LmV5SkFZMjl1ZEdWNGRDSTZXeUpvZEhSd2N6b3ZMM2QzZHk1M015NXZjbWN2Ym5NdlpHbGtMM1l4SWwwc0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWlMQ0oyWlhKcFptbGpZWFJwYjI1TlpYUm9iMlFpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWphMlY1TFRFaUxDSjBlWEJsSWpvaVJXTmtjMkZUWldOd01qVTJhekZXWlhKcFptbGpZWFJwYjI1TFpYa3lNREU1SWl3aVkyOXVkSEp2Ykd4bGNpSTZJbVJwWkRwcGN6cFFUVmN4UzNNM2FEUmljbkJPT0Vaa1JGWk1kMmhRUkV0S04weGtRVGR0Vm1Sa0lpd2ljSFZpYkdsalMyVjVRbUZ6WlRVNElqb2lkMEZCUVVSclRVWlJhM0Y0WVZWUVFqaHFSM0UwV205S1ZuTmhTemxaTlUwNGNtbE5Oelo2ZFdkTk5tUWlmVjBzSW5ObGNuWnBZMlVpT2x0N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpZbXh2WTJ0bGVIQnNiM0psY2lJc0luUjVjR1VpT2lKQ2JHOWphMFY0Y0d4dmNtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTlsZUhCc2IzSmxjaTVpYkc5amEyTnZjbVV1Ym1WMEluMHNleUpwWkNJNkltUnBaRHBwY3pwUVRWY3hTM00zYURSaWNuQk9PRVprUkZaTWQyaFFSRXRLTjB4a1FUZHRWbVJrSTJScFpISmxjMjlzZG1WeUlpd2lkSGx3WlNJNklrUkpSRkpsYzI5c2RtVnlJaXdpYzJWeWRtbGpaVVZ1WkhCdmFXNTBJam9pYUhSMGNITTZMeTl0ZVM1a2FXUXVhWE1pZlN4N0ltbGtJam9pWkdsa09tbHpPbEJOVnpGTGN6ZG9OR0p5Y0U0NFJtUkVWa3gzYUZCRVMwbzNUR1JCTjIxV1pHUWpaV1IySWl3aWRIbHdaU0k2SWtWdVkzSjVjSFJsWkVSaGRHRldZWFZzZENJc0luTmxjblpwWTJWRmJtUndiMmx1ZENJNkltaDBkSEJ6T2k4dmRtRjFiSFF1WW14dlkydGpiM0psTG01bGRDOGlmVjBzSW1GMWRHaGxiblJwWTJGMGFXOXVJanBiSW1ScFpEcHBjenBRVFZjeFMzTTNhRFJpY25CT09FWmtSRlpNZDJoUVJFdEtOMHhrUVRkdFZtUmtJMnRsZVMweElsMHNJbUZ6YzJWeWRHbHZiazFsZEdodlpDSTZXeUprYVdRNmFYTTZVRTFYTVV0ek4yZzBZbkp3VGpoR1pFUldUSGRvVUVSTFNqZE1aRUUzYlZaa1pDTnJaWGt0TVNKZGZRLjNhOTNoV2UyTlZQQWdrZG1uQ0xFNlAyUkN0OVVLMlFRcnBtQjVvM0xfV2xodVdxcW1hVGJza2p2R1lDNVY5NmI2aDhUa2Ewak5zT1N3SFNTd0JHOWpBIn0'
-        };
-
-        var decodedContentExample = {
-            header: {
-                issuer: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
-                alg: 'ES256K'
-            },
-            payload: {
-                '@context': ['https://www.w3.org/ns/did/v1'],
-                id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
-                verificationMethod: [[Object]],
-                service: [[Object], [Object], [Object]],
-                authentication: ['did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd#key-1'],
-                assertionMethod: ['did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd#key-1']
-            },
-            signature: '3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA',
-            data: 'eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ'
-        };
-
-        // Get a reference to the payload which we want to store in our event store.
-        var operation = decoded.payload;
-
-        // Perform input validation after decoding.
-        inputValidation(operation.type, '"type" is required on the operation.');
-        inputValidation(operation.operation, '"operation" is required on the operation.');
-        inputValidation(operation.sequence != null, '"sequence" is required on the operation.'); // null/undefined not allowed, but "0" is correct.
-        inputValidation(decodedContent.payload.id, '"id" is required on the payload.');
-
-        if (operation.operation == 'create' && operation.sequence != 0) {
-            inputValidation(false, '"sequence" must be 0 for all "create" operations.');
-        }
-
-        var verificationMethod = null;
-        var documentId = decodedContent.payload.id;
-        var sequence = operation.sequence;
-
-        // When the operation type is identity, we'll get the 'verificationMethod' directly from the payload.
-        // For all other operations, we will use DID Resolve to get the correct verification method.
-        if (operation.type == 'identity') {
-            verificationMethod = decodedContent.payload.verificationMethod;
-
-            // Make sure we don't process DID Documents with a lot of keys, a minor validation to reduce attack surface.
-            if (verificationMethod.length > 10) {
-                throw Error('Only 10 or less active verification methods support.');
-            }
-
-            // TODO: Add support for "controller" on the DID Document. This can be used to define which DIDs should be allowed to run
-            // updates on the DID Document. The initial creation must still include public key of the DID in question for DID ID verification,
-            // but future updates can be verified by doing an DID Resolve based upon the controllers and getting the authentication keys from
-            // that DID Document.
-
-            // Upon initial create, we'll verify that the DID ID corresponds to one of the verification method public keys.
-            if (sequence == 0) {
-                // Verify will will throw error if verification fails.
-
-                // Verify the operation token.
-                // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
-                verifyJWS(jwt, verificationMethod);
-
-                // Verify the document token.
-                verifyJWS(decoded.payload.content, verificationMethod);
-
-                // Verify that the issuer of both JWTs and DID Document ID is same.
-                if ((new Set([decoded.header.issuer, decodedContent.header.issuer, documentId])).size !== 1) {
-                    throw Error('The issuer of both operation and document must be equal to the DID Document ID');
-                }
-
-                // Verify that the DID ID is correctly correlated with at least one of the keys provided in verificationMethod.
-                // This will stop using random/custom "did:is:VALUE" for the initial creation. Upon later updates, the verificationMethod
-                // can be updated and the original public key that correspond with the VALUE part of the DID ID can be recycled/removed.
-                verifyPublicKeyId(documentId, verificationMethod);
-            } else {
-                // Upon updates, we'll allow replacement of verification method if needed.
-                // On updates, we need to get existing verification methods and verify against that, to ensure that 
-                // only existing owners are allowed to perform updates.
-                const latestIdentity = await getLatestIdentity(documentId);
-
-                if (!latestIdentity) {
-                    throw Error('Unable to find the previous DID Document. Cannot update. Ensure that the sequence number is correct.');
-                }
-
-                // If the previous sequence is not exactly one less, don't allow this update to continue.
-                if ((latestIdentity.sequence != (sequence - 1))) {
-                    throw Error(`Unable to update DID Document. Sequence number is incorrect. Current ${latestIdentity.sequence} and supplied ${sequence}.`);
-                }
-
-                // Verify the operation token based upon existing verification method.
-                // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
-                verifyJWS(jwt, latestIdentity.document.verificationMethod);
-
-                // Verify the document token based on existing verification method.
-                verifyJWS(decoded.payload.content, latestIdentity.document.verificationMethod);
-
-                // TODO: Should we ensure that there is always one verificationMethod? Do we want to allow users to publish DID Documents that cannot
-                // be updated in the future? Perhaps that is a use-case that is valid when "controller" support is added?
-            }
-        }
-        else {
-            // TODO: Implement DID Resolver lookup for verification.
-            // Get the Resolver used to resolver DID Documents from REST API.
-            //const resolver = new Resolver(getResolver());
-            // Get the Bitcoin Resolver used to resolver DID Documents from REST API.
-            // const resolver = new Resolver(getResolver());
-
-            // // Verify the payload content, which is an actual DID Document
-            // console.log(decoded.payload.content);
-            // console.log(jwt);
-
-            // var verified = verifyJWS(jwt, verificationMethod);
-
-            // console.log('Verified:');
-            // console.log(verified);
-
-            // Verify the operation, which is signed with same key.
-            // var verified = await verifyJWT(jwt, { resolver: resolver });
-
-            // console.log('Verified:');
-            // console.log(jwt);
-
-            // verified = await verifyJWT(decoded.payload.content, { resolver: resolver });
-
-            // console.log('Verified:');
-            // console.log(verified);
-        }
-
-        // Get the document identity from the decoded content's payload.
-        operation.id = decodedContent.payload.id;
-
-
-        // When an operation (event) is first observed, we set the published date. If the payload already has published, we'll use that.
-        // We will additionally verify that the published is never more than few minutes ahead of current time, to avoid anyone manipulating
-        // the dates far into the future.
-        operation.published = new Date();
-        operation.received = new Date();
-
-        // Get the IP of external user, used for surveilance of abuse.
-        // TODO: Verify if we should get IP using any methods here: https://stackoverflow.com/questions/19266329/node-js-get-clients-ip
-        // TODO: Consider skipping storing this for privacy reasons.
-        operation.ip = req.ip;
-
-        // Store the original JSON Web Token, which is used for syncing original operations between Vaults.
-        operation.jwt = jwt;
-
-        // Delete extra duplicate fields.
-        delete operation.content;
-        delete operation.signature;
-        delete operation.data;
-
-        log.info('Event Store entry:');
-        log.info(operation);
-
-        // Store a backup of the event in our event store log.
-        await storeOperation(operation);
-
-        // Validate the payload and signature.
-        // TODO: We should probably do input validation and mapping here? This is now 
-        // simply done quick and dirty.
-        // TODO: Validate!
-
-        // Store the verified identity in our identity store.
-        //var document = new DIDDocument(req.body);
-
-        // Entity to be stored in a collection. IIdentityDocument
-        var entity = {
-            id: documentId,
-            sequence: sequence,
-            document: decodedContent.payload,
-            metadata: { // This must follow spec: https://w3c.github.io/did-core/#did-document-metadata
-                created: operation.received, // TODO: We probably should require "iat" (issued at) for the operation request.
-            },
-            extended: { // Extended metadata, not part of standard specification.
-                proof: {
-                    "type": "JwtProof2020",
-                    "jwt": documentJwt
-                }
-            }
-        };
-
-        // var identity = new Identity();
-        // identity.id = 
-        log.info('Entity Store entry:');
-        log.info(entity);
-
-        var identity = new Identity(entity);
-        await identity.save();
-
-        // var vault = new DIDDocument(entity);
-        // await vault.save();
         res.json({ "success": true });
     } catch (err) {
         log.error(err.message);

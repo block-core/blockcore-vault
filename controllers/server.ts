@@ -4,6 +4,7 @@ import { Server, IServer } from '../data/models';
 import { OperationRequest } from "../data/models/operation-request";
 import { storeEvent } from "../data/event-store";
 import { log } from '../services/logger';
+import PubSub from 'pubsub-js';
 
 export const getServers: Handler = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
@@ -60,7 +61,10 @@ export const createServer: Handler = async (req, res) => {
         delete req.body.self;
 
         var vault = new Server(req.body);
-        await vault.save();
+        var saved = await vault.save();
+
+        PubSub.publish('server-created', saved);
+
         res.json({ "success": true });
     } catch (err) {
         log.error(err.message);
@@ -83,9 +87,12 @@ export const updateServer: Handler = async (req, res) => {
 
         // TODO: We should probably do input validation and mapping here? This is now 
         // simply done quick and dirty.
-        await Server.updateOne({
+        var saved = await Server.updateOne({
             id: id
         }, req.body, { upsert: true });
+
+        PubSub.publish('server-replaced', saved);
+
         res.json({ "success": true });
     } catch (err) {
         log.error(err.message);

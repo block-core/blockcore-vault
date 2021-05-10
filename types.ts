@@ -1,6 +1,7 @@
 import { Request, RequestHandler as Middleware, Response } from "express";
+import { IServer } from "./data/models";
 
-export type User = { username: string; password: string };
+// export type User = { username: string; password: string };
 
 export type Vault = {
   id: string, enabled: boolean, name: string,
@@ -27,4 +28,12 @@ export type Route = {
   path: string;
   middleware: Middleware[];
   handler: Handler;
+};
+
+export type SyncState = {
+  server?: IServer | null,
+  syncStart?: Date,
+  syncEnd?: Date,
+  countReceived: number,
+  countSent: number
 };
