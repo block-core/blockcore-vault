@@ -8,6 +8,7 @@ import { getResolver } from "../services/resolver";
 import * as bs58 from 'bs58';
 import { payments } from "bitcoinjs-lib";
 const { performance } = require('perf_hooks');
+import { log } from '../services/logger';
 
 export const getVerifiableCredentials: Handler = async (req, res) => {
 
@@ -37,7 +38,7 @@ export const getVerifiableCredentials: Handler = async (req, res) => {
             currentPage: page
         });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -62,7 +63,7 @@ export const putVault: Handler = async (req, res) => {
 
     //   await user.save();
 
-    console.log(req.body);
+    log.info(req.body);
     res.send({ 'status': 'ok' });
     // const { username, password } = req.body;
 
@@ -297,7 +298,7 @@ export const getDIDDocument: Handler = async (req, res) => {
 
         return res.json(didResolution);
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -351,7 +352,7 @@ const verifyPublicKeyId = (identity: string, verificationMethod: any[]) => {
 }
 
 export const handleOperation: Handler = async (req, res) => {
-    console.log('Process a signed operation request...');
+    log.info('Process a signed operation request...');
 
     // This method is written with verbose documentation and examples, to help onboard new devs making it easier to understand and relate the
     // various formats and structures.
@@ -534,8 +535,8 @@ export const handleOperation: Handler = async (req, res) => {
         delete operation.signature;
         delete operation.data;
 
-        console.log('Event Store entry:');
-        console.log(operation);
+        log.info('Event Store entry:');
+        log.info(operation);
 
         // Store a backup of the event in our event store log.
         await storeOperation(operation);
@@ -566,8 +567,8 @@ export const handleOperation: Handler = async (req, res) => {
 
         // var identity = new Identity();
         // identity.id = 
-        console.log('Entity Store entry:');
-        console.log(entity);
+        log.info('Entity Store entry:');
+        log.info(entity);
 
         var identity = new Identity(entity);
         await identity.save();
@@ -576,13 +577,13 @@ export const handleOperation: Handler = async (req, res) => {
         // await vault.save();
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
 
 export const createDIDDocument: Handler = async (req, res) => {
-    console.log('Create DID Document...');
+    log.info('Create DID Document...');
 
     try {
         // The only payload is the JSON Web Token.
@@ -614,7 +615,7 @@ export const createDIDDocument: Handler = async (req, res) => {
         delete event.signature;
         delete event.data;
 
-        console.log(decoded);
+        log.info(decoded);
 
         // Store a backup of the event in our event store log.
         await storeEvent('create', 'identity', req.body, req.body.sequence);
@@ -634,7 +635,7 @@ export const createDIDDocument: Handler = async (req, res) => {
         // await vault.save();
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -652,7 +653,7 @@ export const updateDIDDocument: Handler = async (req, res) => {
         // }, req.body, { upsert: true });
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -665,7 +666,7 @@ export const deleteDIDDocument: Handler = async (req, res) => {
         await Vault.deleteOne({ id: id });
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };

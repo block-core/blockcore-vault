@@ -99,8 +99,6 @@ routes.forEach((route) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`Blockcore Vault @ http://localhost:${config.port}`);
-  console.log('Check the log file on disk for more information.');
   log.info(`Blockcore Vault @ http://localhost:${config.port}`);
 });
 
@@ -277,7 +275,7 @@ async function main() {
       var json = JSON.parse(data);
 
       if (json.type === 'sync-completed') {
-        log.info('THE SYNC HAS COMPLETED, UPDATE LAST STATE!');
+        log.info(`The sync with ${ws.server.name} has completed, saving the last state.`);
 
         // Now we save the server so the .last state is persisted.
         ws.server.lastSync = new Date();

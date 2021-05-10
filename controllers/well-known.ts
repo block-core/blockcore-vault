@@ -1,5 +1,6 @@
 import { Handler } from "../types";
 import { Server } from '../data/models';
+import { log } from '../services/logger';
 
 export const wellKnownVaultConfiguration: Handler = async (req, res) => {
     try {
@@ -17,7 +18,7 @@ export const wellKnownVaultConfiguration: Handler = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -35,7 +36,7 @@ export const wellKnownDid: Handler = async (req, res) => {
             'id': item.id
         });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -54,7 +55,7 @@ export const wellKnownDidConfiguration: Handler = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };

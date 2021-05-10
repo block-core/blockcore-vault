@@ -16,6 +16,7 @@
 // }
 
 import { Handler } from "../types";
+import { log } from '../services/logger';
 
 // import Vault = require("../data/models");
 // import Vault = require("../data/models/vault");
@@ -71,7 +72,7 @@ export const getVaults: Handler = async (req, res) => {
             currentPage: page
         });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 
@@ -103,7 +104,7 @@ export const putVault: Handler = async (req, res) => {
 
     //   await user.save();
 
-    console.log(req.body);
+    log.info(req.body);
     res.send({ 'status': 'ok' });
     // const { username, password } = req.body;
 

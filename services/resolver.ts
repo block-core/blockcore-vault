@@ -5,6 +5,7 @@ import {
     DIDResolver,
     ParsedDID
 } from 'did-resolver';
+import { log } from '../services/logger';
 
 const DOC_PATH = '/.well-known/did.json';
 const DID_SERVER = 'www.did.is';
@@ -68,7 +69,7 @@ export function getResolver(): Record<string, DIDResolver> {
         const id = parsed.id;
 
         const url: string = `https://${DID_SERVER}/api/identity/${id}`;
-        console.log(url);
+        log.info(url);
 
         const didDocumentMetadata = {
             header: {

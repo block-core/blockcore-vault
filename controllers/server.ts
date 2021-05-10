@@ -3,6 +3,7 @@ import { Vault, IVault } from '../data/models';
 import { Server, IServer } from '../data/models';
 import { OperationRequest } from "../data/models/operation-request";
 import { storeEvent } from "../data/event-store";
+import { log } from '../services/logger';
 
 export const getServers: Handler = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
@@ -28,7 +29,7 @@ export const getServers: Handler = async (req, res) => {
             currentPage: page
         });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -38,13 +39,13 @@ export const getServer: Handler = async (req, res) => {
         const item = await Server.findOne({ id: req.params.id });
         res.json(item);
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
 
 export const createServer: Handler = async (req, res) => {
-    console.log('Create server...');
+    log.info('Create server...');
 
     try {
         // await storeEvent('create', 'server', req.body);
@@ -62,7 +63,7 @@ export const createServer: Handler = async (req, res) => {
         await vault.save();
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -87,7 +88,7 @@ export const updateServer: Handler = async (req, res) => {
         }, req.body, { upsert: true });
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 
@@ -146,7 +147,7 @@ export const deleteServer: Handler = async (req, res) => {
         await Vault.deleteOne({ id: id });
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
@@ -156,14 +157,14 @@ export const getLocalServer: Handler = async (req, res) => {
         const item = await Server.findOne({ self: true });
         res.json(item);
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
 
 export const updateLocalServer: Handler = async (req, res) => {
     try {
-        console.log('UPDATE LOCAL SERVER!');
+        log.info('UPDATE LOCAL SERVER!');
 
         // if (!req.body.created) {
         //     req.body.created = new Date();
@@ -180,7 +181,7 @@ export const updateLocalServer: Handler = async (req, res) => {
         }, req.body, { upsert: true });
         res.json({ "success": true });
     } catch (err) {
-        console.error(err.message);
+        log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
 };
