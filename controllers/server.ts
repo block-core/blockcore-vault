@@ -76,7 +76,6 @@ export const updateServer: Handler = async (req, res) => {
 
     try {
         // await storeEvent('replace', 'server', req.body);
-
         var id = req.params.id;
 
         // Set the update time right now.
@@ -87,9 +86,11 @@ export const updateServer: Handler = async (req, res) => {
 
         // TODO: We should probably do input validation and mapping here? This is now 
         // simply done quick and dirty.
-        var saved = await Server.updateOne({
+        var saved = await Server.findOneAndUpdate({
             id: id
         }, req.body, { upsert: true });
+
+        log.info('The saved server: ' + JSON.stringify(saved));
 
         PubSub.publish('server-replaced', saved);
 
@@ -186,6 +187,7 @@ export const updateLocalServer: Handler = async (req, res) => {
         await Server.updateOne({
             self: true
         }, req.body, { upsert: true });
+
         res.json({ "success": true });
     } catch (err) {
         log.error(err.message);

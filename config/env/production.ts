@@ -9,4 +9,7 @@ module.exports = {
   port: process.env.PORT || 3001,
   ws: process.env.PORT_WS || 9001,
   environment: 'PRD',
+  sync: {
+    limit: 2
+  }
 };

@@ -8,4 +8,7 @@ module.exports = {
   port: process.env.PORT || 3000,
   ws: process.env.PORT_WS || 9000,
   environment: 'DEV',
+  sync: {
+    limit: 2
+  }
 };

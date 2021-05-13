@@ -21,9 +21,12 @@ interface IServer extends Document {
   lastSeen: Date,
   lastSync: Date,
   last: {
-    id: string,
-    received: Date,
-    sequence: Number
+    count: number,
+    page: number,
+    limit: number
+    // id: string,
+    // received: Date,
+    // sequence: Number
   }
   linked_dids: any[],
   wellKnownConfiguration: string,
@@ -44,9 +47,9 @@ const ServerSchema: Schema = new Schema({
   lastSeen: Date,
   lastSync: Date,
   last: {
-    id: String,
-    received: Date,
-    sequence: Number
+    count: Number,
+    page: Number,
+    limit: Number
   },
   linked_dids: [Schema.Types.Mixed],
   wellKnownConfiguration: String,

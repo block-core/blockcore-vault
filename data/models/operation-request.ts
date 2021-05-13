@@ -10,7 +10,6 @@ interface IOperationRequest extends Document {
   jwt: string,
   published: Date,
   received: Date,
-  ip: string
   _id: string
 }
 
@@ -36,12 +35,10 @@ const OperationRequestSchema: Schema = new Schema({
   operation: { type: String, required: true },
   jwt: { type: String, required: true },
   published: Date,
-  received: Date,
-  ip: String
+  received: Date
 }, {
   versionKey: false
 });
-
 
 // TODO: Reintroduce this unique index when finalizing the software. This is useful to simply populate the events store and 
 // to do validation testing.

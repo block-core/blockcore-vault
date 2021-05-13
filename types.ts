@@ -37,3 +37,21 @@ export type SyncState = {
   countReceived: number,
   countSent: number
 };
+
+export type Paged<T> =
+  {
+    data: T[],
+    totalNumber: number,
+    totalPages: number,
+    currentPage: number
+  }
+
+export type EventResponse = {
+  type: string,
+  operation: "create" | "replace" | "delete", // TODO: Add them all, don't remember them right now.
+  sequence: number,
+  id: string,
+  published: Date,
+  received: Date,
+  jwt: string
+}

@@ -9,4 +9,7 @@ module.exports = {
   port: process.env.PORT || 4000,
   ws: process.env.PORT_WS || 5000,
   environment: 'TEST',
+  sync: {
+    limit: 2
+  }
 };

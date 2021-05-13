@@ -1,3 +1,4 @@
+import { getEvents, totalEvents } from "./controllers/event";
 import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, updateLocalServer, updateServer } from "./controllers/server";
@@ -55,6 +56,25 @@ export const routes: Route[] = [
     middleware: [requestLogger],
     handler: deleteVault,
   },
+
+  {
+    method: "get",
+    path: "/event",
+    middleware: [requestLogger],
+    handler: getEvents,
+  },
+  {
+    method: "get",
+    path: "/event/count",
+    middleware: [requestLogger],
+    handler: totalEvents,
+  },
+  // {
+  //   method: "get",
+  //   path: "/event/:id",
+  //   middleware: [requestLogger],
+  //   handler: getEvent,
+  // },
 
 
   {
