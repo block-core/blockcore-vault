@@ -131,31 +131,13 @@ CURRENT: Currently the implementation of this is simplified and without any auth
 
 When an vault adds another vault, that becomes a client-server relationship. There is not a "two-way" relationship, where the server opens connection or performs data sync operations.
 
-When the client vault connects up to a server vault (which must be accessible through firewall if on public network, client vault can be behind NAT/firewall), it will announce the last document it received from that specific server.
+When the client vault connects up to a server vault (which must be accessible through firewall if on public network, client vault can be behind NAT/firewall), it will initially publish all local events, if there are any.
 
-The server does not keep track of sync status of the connected clients, except for when a client vault announces that it is "fully synced". Upon which the server vault will begin to push all new incoming events down to the clients.
+Next step is to start download events from the server. If there is no previous state stored, sync will happen from zero.
 
-Upon connection from client to server, after authentication (To be implemented), the client sends metadata about the last event (operation) it received from the server. Upon which the server will begin looping through all events from that event and further. Each individual event will be pushed by server to the client.
+The server does not keep track of sync status of the connected clients. When the client is finished with sync, it will register itself into the "new data room" on Web Socket to be signaled to query for new data.
 
-When finished, the server will begin to push all new incoming events directly to the client.
-
-Additionally when finished with initial sync from server to client, the client will begin to push all events (operations) it has received after last received event from the server. This will then ensure that the server receives all operations that the client received, while being offline/disconnected from the server.
-
-Example:
-
-Vault #1 (Server) has document XS1, XS2, YS1. (S = sequence/version).
-
-Vault #2 (Client) has document XS1 and ZS1.
-
-Upon connection, #1 will send XS2 (which has arrived later) and YS1.
-
-When finished, #2 will send ZS1, which is received while being disconnected.
-
-Upon finish, both vault will have XS1, XS2, YS1 and ZS1.
-
-If Vault #1 and Vault #2 receives XS3 while being offline, then Vault #2 upon the initial sync, will ignore the XS3 that exists on Vault #1. If either vault have a higher sequence of X, e.g. XS4, then that will win and be the active document when sync has completed.
-
-This means that two vault instances can host different instances of the same versioned document. This is considered to be a valid state, and it is intentional by the owner of that document. The owner has to make two individual operations that is submitted to two different vaults at different times, while the vaults being disconnected from each other.
+All connections must be authenticated (to be implemented) to perform operations on the events API.
 
 ## Restrictions
 
@@ -165,7 +147,7 @@ To setup a resilient network of Blockcore Vault instances, you need at minimum 3
 
 Vault #1 > Vault #2 > Vault #3 > Vault #1.
 
-Whenever an event enters any of these vaults, it will be immediately delivered to both outgoing and incoming connections. This ensures if there is some issues or drop between #3 and #1, then #1 will still receive the event from #2.
+Whenever an event enters any of these vaults, it will be immediately delivered to both outgoing and incoming connections with a signal over Web Sockets. This ensures if there is some issues or drop between #3 and #1, then #1 will still receive the event from #2.
 
 The next level of resilience, is having a total of #5 public vault instances. With 5 instances, each of them can have two outgoing and two incoming connections.
 
@@ -173,12 +155,9 @@ In both of these scenarios, there can be any number of non-public and incoming-o
 
 It is of course possible to run just a single vault instance, or a single public instance that only have clients connected.
 
-A client vault cannot be used to enable cross-network sync. If a vault connects to two different vault network rings, it will not forward messages it receives from one server and send to another server. This is to avoid various network sync issues and trust-issues.
+Upon registration of a trusted vault, the user can decide if a full sync should be performed. By default a full sync is only done on the first connection, not on secondary. If there are two distinct network of vault that should be joint together, this option is useful to ensure all data exists in both networks (and the vaults that belongs to them). Essentially making the two networks into one.
 
 If a client vault receives an event, it will forward that to all registered and connected server vaults. 
-
-
-
 
 # Vocabulary
 

@@ -19,6 +19,19 @@ export const totalEvents: Handler = async (req, res) => {
     }
 };
 
+/** Returns the total latest event */
+export const latestEvent: Handler = async (req, res) => {
+    try {
+        // TODO: Implement some sort of caching mechanism, as this will be used in an API call for all connected vaults to know if they have received
+        // all the documents.
+        const latest = await OperationRequest.findOne({}, null, { sort: { sequence: -1 } });
+        return res.json(latest);
+    } catch (err) {
+        log.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};
+
 export const getEvents: Handler = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?
