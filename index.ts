@@ -114,8 +114,9 @@ var token = PubSub.subscribe('server-created', async (msg: any, data: any) => {
 });
 
 var token2 = PubSub.subscribe('server-replaced', async (msg: any, data: any) => {
-  log.info('server-replaced: msg:', msg);
-  log.info('server-replaced: data:', data);
+  log.info('server-replaced was triggered');
+  // log.info('server-replaced: msg:', msg);
+  // log.info('server-replaced: data:', data);
   // Trigger a sync whenever the server is updated.
   await syncEvents(data);
 });
@@ -286,7 +287,7 @@ const syncEvents = async (server: IServer) => {
     const limit = config.sync.limit;
     let page = 1;
 
-    log.info('Server Last Count', server.last.count);
+    log.info(`Server Last Count: ${server.last.count}`);
 
     // If we have a previous count persisted, used that to find which page we should continue sync on.
     if (server.last.count) {
@@ -302,7 +303,25 @@ const syncEvents = async (server: IServer) => {
       let dataUrl = `${url}/event?page=${page}&limit=${limit}`;
       log.info(dataUrl);
       let events: Paged<EventResponse> = await getJSON(dataUrl);
-      log.info(events);
+      // log.info(JSON.stringify(events));
+
+      // Save the events to our database.
+      for (const entry of events.data) {
+        log.info(JSON.stringify(entry));
+        // Process the JWT, don't trust the other data.
+
+        try {
+          await processOperation({
+            sync: true,
+            ...entry
+          });
+        } catch (err) {
+          log.error('Error during event sync: ' + err.message);
+        }
+      }
+
+      // events.data.forEach(async (entry) => {
+      // });
 
       // This means we're on the last page.
       if (!events.data.length || events.data.length != limit) {
