@@ -1,0 +1,26 @@
+version: '3'
+services:
+  vault:
+    container_name: blockcore-vault
+    restart: unless-stopped
+     image: blockcore/blockcore-vault
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 80:3001
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: blockcore-vault-db
+    image: mongo:4.4.6
+    command: "--wiredTigerCacheSizeGB 4.5"
+    mem_limit: 4500m
+    stop_grace_period: 5m
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+volumes:
+  mongodb:

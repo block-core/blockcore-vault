@@ -15,7 +15,7 @@ npm install
 To start the server, run:
 
 ```bash
-npm start
+npm run dev
 ```
 
 The server should now be running on port 3000.
@@ -38,6 +38,19 @@ export NODE_ENV=production
 Available options is `production`, `development`, `test`.
 
 The different configuration is available under `./config/env/*.ts`
+
+## Docker
+
+The Dockerfile will take pre-built output and copy that into the image. The `docker-compose.yml` will build the dev image and run local instance of both 
+the vault and the mongodb database.
+
+`deploy/docker-compose.yml` is the file to use if you want to deploy to production of ready-built docker image that is public available on Docker Hub.
+
+```sh
+$ npm run build
+$ docker-compose build
+$ docker-compose up
+```
 
 ## Making Requests
 

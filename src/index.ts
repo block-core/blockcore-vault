@@ -6,7 +6,7 @@ import { routes } from "./routes";
 import { OperationRequest } from "./data/models/operation-request";
 const compression = require('compression');
 // const env = process.env.NODE_ENV || 'development';
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 const config = require('./config');
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
@@ -27,7 +27,7 @@ app.use(
   })
 );
 
-log.info(config);
+log.info(JSON.stringify(config));
 
 // expose package.json to APIs
 app.use(function (req, res, next) {

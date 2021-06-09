@@ -43,6 +43,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "nodemon index.ts"
+    "start": "node ./build",
+    "dev": "nodemon src/index.ts"
   }
 }
