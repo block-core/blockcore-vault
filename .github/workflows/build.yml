@@ -48,7 +48,6 @@ jobs:
     #     tar cvzf ${{env.RELEASE_NAME}} *
 
     - name: Package (Mac)
-      if: matrix.os == 'macos-latest'
       run: zip -r ${{env.RELEASE_NAME}} package.json ./build/
 
     #- run: mkdir -p path/to/artifact
