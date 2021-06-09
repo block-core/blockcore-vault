@@ -29,13 +29,12 @@ jobs:
     - name: Variables
       run: |
         echo VERSION=$(npm run version --silent) >> $GITHUB_ENV
-        echo RELEASE_NAME=${{ env.PROJECT_NAME }}-${{ env.VERSION }}.zip >> $GITHUB_ENV
       shell: bash
 
-    # - name: Package Name
-    #   run: |
-    #     echo RELEASE_NAME=${{ env.PROJECT_NAME }}-${{ env.VERSION }}.zip >> $GITHUB_ENV
-    #   shell: bash
+    - name: Package Name
+      run: |
+        echo RELEASE_NAME=${{ env.PROJECT_NAME }}-${{ env.VERSION }}.zip >> $GITHUB_ENV
+      shell: bash
 
     - name: Build
       run: |
