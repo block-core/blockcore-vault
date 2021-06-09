@@ -31,7 +31,9 @@ jobs:
       shell: bash
 
     - name: Build
-      run: npm run build
+      run: |
+        npm install
+        npm run build
 
     - name: Package Name
       run: |
