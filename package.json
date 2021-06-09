@@ -44,6 +44,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./build",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "version": "node -p \"require('./package.json').version\""
   }
 }
