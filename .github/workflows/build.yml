@@ -47,7 +47,7 @@ jobs:
     #     cd ./build/
     #     tar cvzf ${{env.RELEASE_NAME}} *
 
-    - name: Package (Mac)
+    - name: Package
       run: zip -r ${{env.RELEASE_NAME}} package.json ./build/
 
     #- run: mkdir -p path/to/artifact
@@ -59,7 +59,7 @@ jobs:
         path: "${{env.RELEASE_NAME}}"
 
     - name: Release
-      uses: sondreb/action-release@master
+      uses: sondreb/action-release@main
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         files: "${{env.RELEASE_NAME}}"
