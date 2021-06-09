@@ -57,13 +57,13 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: blockcore-vault
-        path: "${{env.RELEASE_PATH}}"
+        path: "${{env.RELEASE_NAME}}"
 
     - name: Release
       uses: sondreb/action-release@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        files: "${{env.RELEASE_PATH}}"
+        files: "${{env.RELEASE_NAME}}"
         draft: true
         prerelease: false
         name: "Blockcore Vault (Release ${{env.VERSION}})"
