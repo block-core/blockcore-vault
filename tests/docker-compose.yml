@@ -1,0 +1,53 @@
+version: '3'
+services:
+  vault:
+    container_name: blockcore-vault-test1
+    restart: unless-stopped
+    image: sondreb/blockcore-vault
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URL=mongodb://blockcore-vault-db-test1:27017/BlockcoreVault
+    ports:
+      - 80:3001
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: blockcore-vault-db-test1
+    image: mongo:4.4.6
+    command: "--wiredTigerCacheSizeGB 4.5"
+    mem_limit: 4500m
+    stop_grace_period: 5m
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+
+  vault2:
+    container_name: blockcore-vault-test2
+    restart: unless-stopped
+    image: sondreb/blockcore-vault
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URL=mongodb://blockcore-vault-db-test2:27017/BlockcoreVault
+    ports:
+      - 8080:3001
+    depends_on:
+      - mongo2
+
+  mongo2:
+    container_name: blockcore-vault-db-test2
+    image: mongo:4.4.6
+    command: "--wiredTigerCacheSizeGB 4.5"
+    mem_limit: 4500m
+    stop_grace_period: 5m
+    restart: unless-stopped
+    ports:
+      - 27018:27017
+    volumes:
+      - mongodb2:/data/db
+
+volumes:
+  mongodb:
+  mongodb2:
