@@ -33,11 +33,16 @@ jobs:
     - name: Display structure of downloaded files
       run: ls -R
 
+    # This will extract the .zip on root and re-create same structure as normal dev build,
+    # so the same Dockerfile can be used for local debug/build and for the pipeline.
     - name: Extract asset
-      run: 7z x ./artifacts/*.zip -o~/app
+      run: 7z x -aoa ./artifacts/*.zip
 
     - name: Display structure of downloaded files
       run: ls -R
+
+    - name: Build the Docker container image
+      run: docker build -f "Dockerfile" -t sondreb/blockcore-vault:latest -t sondreb/blockcore-vault:${{ github.event.release.tag_name }} "."
 
     # - name: Unpackage
     #   run: |
