@@ -34,7 +34,7 @@ jobs:
       run: ls -R
 
     - name: Extract asset
-      run: 7z x ./artifacts/*.zip -o ./app
+      run: 7z x ./artifacts/*.zip -o./app
 
     - name: Display structure of downloaded files
       run: ls -R
