@@ -7,7 +7,6 @@ on:
       - main
 
 jobs:
-  
   build:
     name: Build and Push
     runs-on: ubuntu-latest
@@ -17,7 +16,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@master
       name: Checkout
 
     # Should we force a version or attempt to rely on pre-installed on build agent / production environment?
