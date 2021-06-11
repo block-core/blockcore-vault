@@ -23,15 +23,12 @@ jobs:
         echo "assets - ${{ github.event.assets }}"
         echo "assets[0] - ${{ github.event.assets[0] }}"
 
-    - name: Release Download
+    - name: Download release
       uses: sondreb/action-release-download@master
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         url: ${{ github.event.release.assets_url }}
         folder: "./artifacts/"
-
-    - name: Display structure of downloaded files
-      run: ls -R
 
     # This will extract the .zip on root and re-create same structure as normal dev build,
     # so the same Dockerfile can be used for local debug/build and for the pipeline.
@@ -44,25 +41,7 @@ jobs:
     - name: Build the Docker container image
       run: docker build -f "Dockerfile" -t sondreb/blockcore-vault:latest -t sondreb/blockcore-vault:${{ github.event.release.tag_name }} "."
 
-    # - name: Unpackage
-    #   run: |
-    #     tar -xvz -C .
-    #   shell: bash
-
-      # - uses: cschleiden/replace-tokens@v1
-      #   with:
-      #     files: '["Dockerfile"]'
-      #   env:
-      #     VERSION: ${{ github.event.release.tag_name }}
-      #     CHAIN: ${{ matrix.chain }}
-      #     NAME: ${{ matrix.name }}
-      #     PORTS: ${{ matrix.ports }}
-      #     ASSEMBLY: ${{ matrix.assembly }}
-
-      # - name: Build the Docker container image
-      #   run: docker build -f "Dockerfile" -t blockcore/node-${{ matrix.name }}:latest -t blockcore/node-${{ matrix.name }}:${{ github.event.release.tag_name }} --label "unstable=true" "."
-
-      # - name: Login and Push to Docker Registry
-      #   run: |
-      #     docker login -u "sondreb" -p "${{secrets.DockerHubSecret}}"
-      #     docker push --all-tags blockcore/node-${{ matrix.name }}
+    - name: Login and Push to Docker Registry
+      run: |
+        docker login -u "sondreb" -p "${{secrets.DockerHubSecret}}"
+        docker push --all-tags blockcore/node-${{ matrix.name }}
