@@ -1,0 +1,115 @@
+<div class="grid-container">
+  <!-- <h1 class="mat-h1">Dashboard</h1> -->
+  <mat-grid-list cols="2" rowHeight="350px">
+    <mat-grid-tile [colspan]="2" [rowspan]="1">
+      <mat-card class="dashboard-card">
+
+        <mat-card-header>
+          <mat-icon mat-card-avatar>network_check</mat-icon>
+          <mat-card-title>Traffic and Data Usage</mat-card-title>
+          <mat-card-subtitle></mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content class="dashboard-card-content">
+          <div>
+            45MB disk usage<br>
+            389MB network usage (daily)<br>
+            2 Gateway connections<br>
+            5 Hub connections<br>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
+      <mat-card class="dashboard-card">
+
+        <mat-card-header>
+          <mat-icon mat-card-avatar matBadge="4" matBadgeColor="warn">announcement</mat-icon>
+          <mat-card-title>Requests</mat-card-title>
+          <mat-card-subtitle>Incoming requests for approval</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content class="dashboard-card-content">
+          <div>
+
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]="1" [rowspan]="2">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Enabled Features and Apps
+            <!-- <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item>Expand</button>
+              <button mat-menu-item>Remove</button>
+            </mat-menu> -->
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content scrollable">
+          <div>
+
+            <!-- <mat-action-list>
+              <div mat-subheader>Features</div>
+              <button mat-list-item *ngFor="let folder of features">
+                <mat-icon mat-list-icon>{{folder.icon}}</mat-icon>
+                <div mat-line>{{folder.name}}</div>
+                <div mat-line class="dimmed">{{folder.description}}</div>
+              </button>
+
+              <div mat-subheader>Apps</div>
+
+              <button mat-list-item *ngFor="let note of apps">
+                <mat-icon mat-list-icon>{{note.icon}}</mat-icon>
+                <div mat-line>{{note.name}}</div>
+                <div mat-line class="dimmed">{{note.description}}</div>
+              </button>
+
+            </mat-action-list> -->
+
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Hub Details
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div>
+            <mat-list>
+              <mat-list-item>
+                <mat-icon mat-list-icon>account_circle</mat-icon>
+                <div mat-line>id:PTlsaksjkluihJHjk123hf</div>
+                <div mat-line class="dimmed">Identity</div>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>public</mat-icon>
+                <div mat-line>80.80.80.80</div>
+                <div mat-line class="dimmed">Public IP Address</div>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>vpn_lock</mat-icon>
+                <div mat-line>10.0.0.1</div>
+                <div mat-line class="dimmed">Private IP Address</div>
+              </mat-list-item>
+            </mat-list>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

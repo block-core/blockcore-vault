@@ -1,0 +1,74 @@
+<h2 class="explorer-h2">{{setup.Chain?.Name}}</h2>
+<h1 class="explorer-h1">Block Explorer</h1>
+
+<app-search></app-search>
+
+<br>
+<br>
+
+<div class="box">
+   <h3>Latest blocks</h3>
+
+   <app-progress class="centered" *ngIf="!blocks"></app-progress>
+
+   <div *ngIf="errorBlocks">
+      <span class="muted">Error from indexer:</span> <span class="negative">{{errorBlocks}}</span><br>
+   </div>
+
+   <div class="grid grid-odd-line" *ngIf="blocks">
+      <div class="grid-header">
+         <span>Height</span>
+         <span>Age</span>
+         <span class="right hide-small">Transactions</span>
+         <span class="right show-small">TXs</span>
+         <span class="right">Size (kB)</span>
+      </div>
+      <div *ngFor="let item of blocks">
+         <span><a [routerLink]="['block', item.blockIndex]">{{item.blockIndex}}</a></span>
+         <span class="hide-small">{{item.blockTime | ago}}</span>
+         <span class="show-small">{{item.blockTime | timestamp | date:'hh:mm'}}</span>
+         <span class="right">{{item.transactionCount}}</span>
+         <span class="right">{{item.blockSize | size}}</span>
+      </div>
+   </div>
+
+   <br>
+   <a [routerLink]="['blocks']">View all</a>
+</div>
+
+<div class="box">
+   <h3>Network Statistics</h3>
+
+   <app-progress class="centered" *ngIf="!info"></app-progress>
+
+   <div *ngIf="node?.error">
+      <span class="muted">Error from node: </span> <span class="negative">{{node.error}}</span><br>
+   </div>
+
+   <div *ngIf="errorInfo">
+      <span class="muted">Error from indexer: </span> <span class="negative">{{errorInfo}}</span><br>
+   </div>
+
+   <div *ngIf="!node?.error && info">
+
+      <div class="grid-label-value">
+         <div>
+            <span>Transactions in pool</span>
+            <span>{{node.transactionsInPool}}</span>
+         </div>
+         <div>
+            <span>Average Block Size</span>
+            <span>{{node.avgBlockSizeKb | size}}</span>
+         </div>
+         <div>
+            <span>Difficulty</span>
+            <span>{{blockchain.difficulty}}</span>
+         </div>
+         <div>
+            <span>Sync Progress</span>
+            <span>{{node.progress}}</span>
+         </div>
+      </div>
+   </div>
+
+</div>

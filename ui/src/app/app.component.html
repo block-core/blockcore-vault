@@ -1,0 +1,121 @@
+
+<!-- Uncomment to show splashloading dialog -->
+
+<!-- <div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
+  <div class="welcome-content">
+
+    <div class="welcome-text">
+      <h3 class="mat-display-2 welcome-font-black" *ngIf="welcomeLoaded" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>Welcome to Blockcore Data Vault</h3>
+      <h4 class="mat-display-4 welcome-font-light" *ngIf="welcomeLoadedSecond" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>
+        {{welcomeName}}</h4>
+    </div>
+    <img class="welcome-logo" src="assets/blockcore-light-small.png" *ngIf="welcomeLogo" [@fadeInDownOnEnter] [@fadeOutUpOnLeave]>
+    <div class="welcome-backdrop"></div>
+  </div>
+</div> -->
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
+
+    <mat-toolbar class="logo-icon" [matMenuTriggerFor]="animals">
+      <img src="assets/blockcore-light-small.png">
+      <div>Data Vault</div>
+    </mat-toolbar>
+
+    <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
+      <button mat-menu-item [matMenuTriggerFor]="accounts">Account</button>
+      <button mat-menu-item [matMenuTriggerFor]="servers">Server</button>
+    </mat-menu>
+
+    <mat-menu #accounts="matMenu">
+      <button mat-menu-item>John</button>
+      <button mat-menu-item>John Doe</button>
+    </mat-menu>
+
+    <mat-menu #servers="matMenu">
+      <button mat-menu-item>vault.blockcore.net</button>
+      <button mat-menu-item>vault.liberstad.com</button>
+    </mat-menu>
+
+    <mat-nav-list class="menu-options">
+      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>dashboard</mat-icon>
+        <div mat-line>Dashboard</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon mat-list-icon>shield</mat-icon>
+        <div mat-line>Vaults</div>
+      </a>
+<!-- 
+       <a mat-list-item [routerLink]="['/messages']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon mat-list-icon>message</mat-icon>
+        <div mat-line>Identities</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/identities']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon mat-list-icon>people_alt</mat-icon>
+        <div mat-line>Identities</div>
+      </a> -->
+
+      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
+        <div mat-line>Settings</div>
+      </a>
+<!-- 
+      <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon>apps</mat-icon>
+    <div mat-line>Apps</div>
+  </a>
+  <a mat-list-item [routerLink]="['/search']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon>search</mat-icon>
+    <div mat-line>Search</div>
+  </a>
+  <a mat-list-item [routerLink]="['/hubs']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
+    <div mat-line>Hubs</div>
+  </a>
+  <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon>forum</mat-icon>
+    <div mat-line>Forums</div>
+  </a>
+  <a mat-list-item [routerLink]="['/gateway']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon>folder</mat-icon>
+    <div mat-line>Data</div>
+  </a>
+  <a mat-list-item [routerLink]="['/identity']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon>account_circle</mat-icon>
+    <div mat-line>Identity</div>
+  </a>  -->
+  <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
+    <mat-icon mat-list-icon>settings</mat-icon>
+    <div mat-line>Setup</div>
+  </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+        *ngIf="isHandset$ | async">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span></span>
+
+      <span class="example-spacer">{{appState.title}}</span>
+
+      <!-- <button mat-icon-button matTooltip="Show conversation details" [style.margin]="'0 -5px'">
+        <mat-icon>info</mat-icon>
+      </button> -->
+
+      <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button [matTooltip]="action.tooltip">
+        <mat-icon>{{action.icon}}</mat-icon>
+      </button>
+
+      <!-- <mat-icon class="example-icon">favorite</mat-icon> -->
+      <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
+
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

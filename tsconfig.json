@@ -2,9 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "rootDir": "./src",
+    "rootDir": "./api",
     "outDir": "./build",
     "esModuleInterop": true,
     "strict": true
-  }
+  },
+  "exclude": [
+    "ui/**/*"
+  ]
 }

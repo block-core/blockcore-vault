@@ -1,0 +1,156 @@
+<mat-tab-group>
+   <mat-tab>
+      <ng-template mat-tab-label>
+         <mat-icon class="example-tab-icon">device_hub</mat-icon>&nbsp;
+         Hubs
+      </ng-template>
+
+      <!-- <button mat-mini-fab class="add-node">
+         <mat-icon>add</mat-icon>
+      </button> -->
+      <br>
+      <!-- &nbsp;&nbsp;<button mat-flat-button color="primary">Add Hub</button> -->
+
+      <mat-list>
+         <mat-list-item>
+            <mat-icon mat-list-icon>account_circle</mat-icon>
+            <div mat-line>id:PTlsaksjkluihJHjk123hf</div>
+            <div mat-line class="dimmed">Identity</div>
+
+            <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                  <mat-icon>more_vert</mat-icon>
+               </button>
+               <mat-menu #menu="matMenu">
+                  <button mat-menu-item>
+                     <mat-icon>delete</mat-icon>
+                     <span>Remove hub</span>
+                  </button>
+               </mat-menu>
+            </p>
+
+         </mat-list-item>
+         <mat-list-item>
+            <mat-icon mat-list-icon>public</mat-icon>
+            <div mat-line>80.80.80.80</div>
+            <div mat-line class="dimmed">Public IP Address</div>
+
+            <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+               <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+               <button mat-menu-item>
+                  <mat-icon>delete</mat-icon>
+                  <span>Remove hub</span>
+               </button>
+            </mat-menu>
+         </p>
+
+         </mat-list-item>
+         <mat-list-item>
+            <mat-icon mat-list-icon>vpn_lock</mat-icon>
+            <div mat-line>10.0.0.1</div>
+            <div mat-line class="dimmed">Private IP Address</div>
+
+            <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+               <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+               <button mat-menu-item>
+                  <mat-icon>delete</mat-icon>
+                  <span>Remove hub</span>
+               </button>
+            </mat-menu>
+         </p>
+
+         </mat-list-item>
+      </mat-list>
+
+
+      <div class="app-area">
+         <div class="app-area-left">
+         </div>
+         <div class="app-area-middle" *ngIf="messages">
+            <h3>Events</h3>
+            <div class="message" *ngFor="let item of messages">{{item | json}}</div>
+         </div>
+         <div class="app-area-right">
+            <h2>Hubs</h2>
+
+            <div class="message" *ngFor="let peer of peerService.peers">
+
+               <div class="peer-item" [ngClass]="{'peer-item-connected-lan': peer.data.connectionType === 'LAN'}">
+                  <strong>{{peer.data.name}}</strong> ({{peer.data.externalEndpoint}})
+                  <br>{{peer.data.command}}|{{peer.data.connectionType}}|{{peer.data.internalEndpoint}}<br>
+                  <div class="peer-item-address" *ngFor="let address of peer.data.internalAddresses">{{address}}</div>
+
+                  <button *ngIf="peer.data.connectionType === 'Unknown'"
+                     (click)="connect(peer.data.id)">Connect</button><button
+                     *ngIf="peer.data.connectionType !== 'Unknown'"
+                     (click)="disconnect(peer.data.id)">Disconnect</button>
+               </div>
+
+            </div>
+
+         </div>
+      </div>
+
+   </mat-tab>
+
+   <mat-tab>
+      <ng-template mat-tab-label>
+         <mat-icon class="example-tab-icon">announcement</mat-icon>&nbsp;
+         <span matBadge="2" matBadgeOverlap="false">Requests</span>
+      </ng-template>
+
+      <div class="requests-container">
+
+         <mat-card class="request-card">
+            <mat-card-header>
+               <div mat-card-avatar class="request-header-image"></div>
+               <mat-card-title>Haxxors Paradise</mat-card-title>
+               <mat-card-subtitle>id:PsPsadkjfdsT13Aab</mat-card-subtitle>
+            </mat-card-header>
+            <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+               alt="Photo of a Shiba Inu">
+            <mat-card-content>
+               <p>IP address: 10.0.0.3</p>
+               <p>Sent: 2020-05-26 12:00</p>
+               <p>
+                  Message:<br>
+                  I want to be your friend! PLZ!!!!
+               </p>
+            </mat-card-content>
+            <mat-card-actions>
+               <button mat-flat-button color="primary">Accept</button>&nbsp;
+               <button mat-flat-button color="accent">Reject</button>&nbsp;
+               <button mat-stroked-button>Block</button>
+            </mat-card-actions>
+         </mat-card>
+
+
+         <mat-card class="request-card">
+            <mat-card-header>
+               <div mat-card-avatar class="request-header-image"></div>
+               <mat-card-title>Shiba Inu</mat-card-title>
+               <mat-card-subtitle>id:PasdfdsT123311b</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+               <p>IP address: 10.0.0.4</p>
+               <p>Sent: 2020-05-26 12:00</p>
+               <p>
+                  Message:<br>
+                  Add me if you want, or don't. See if I care. I'm just a dog.
+               </p>
+            </mat-card-content>
+            <mat-card-actions>
+               <button mat-flat-button color="primary">Accept</button>&nbsp;
+               <button mat-flat-button color="accent">Reject</button>&nbsp;
+               <button mat-stroked-button>Block</button>
+            </mat-card-actions>
+         </mat-card>
+
+
+      </div>
+
+   </mat-tab>
+</mat-tab-group>

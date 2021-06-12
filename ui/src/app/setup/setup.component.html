@@ -1,0 +1,77 @@
+<div class="setup-container">
+
+  <div [class.mat-elevation-z8]="true" class="setup-section">
+
+    <p>
+      This page allows you to generate a valid and signed Vault Configuration that can be used to configure an
+      individual Blockcore Data Vault.
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Id</mat-label>
+        <input matInput [(ngModel)]="id" autocomplete="off" placeholder="Public Key of your Data Vault identity">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Data Vault Identity Private Key</mat-label>
+        <input matInput [(ngModel)]="key" autocomplete="off" placeholder="Data Vault Identity Private Key">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name of your Data Vault">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput rows="8" autocomplete="off" [(ngModel)]="description"
+          placeholder="Description of your Data Vault"></textarea>
+      </mat-form-field>
+    </p>
+
+    <p>
+      <button mat-flat-button color="primary" (click)="saveEdit()">Generate</button>&nbsp;
+      <button mat-stroked-button (click)="cancelEdit()">Clear</button>
+    </p>
+
+    <p>
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Generated and Signed .well-known Configuration</mat-label>
+        <textarea matInput rows="12" [(ngModel)]="wellknownconfiguration"></textarea>
+      </mat-form-field>
+    </p>
+
+    <script>
+      $(document).ready(function() {
+        $('input').attr('autocomplete', 'off');
+      });
+    </script>
+
+    <!-- <h1>Choose a Hub</h1>
+
+    <mat-form-field>
+      <mat-label>Select an hub</mat-label>
+      <mat-select [(value)]="selectedHubId">
+        <mat-option *ngFor="let hub of hubs" [value]="hub.id">{{hub.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-card class="request-card" *ngIf="hub"  [@flipInYOnEnter] [@flipOutYOnLeave]>
+      <mat-card-header>
+        <div mat-card-avatar class="request-header-image"></div>
+        <mat-card-title>{{hub.name}}</mat-card-title>
+        <mat-card-subtitle>id:{{hub.id}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Host: {{hub.host}}</p>
+        <p>Updated: {{hub.updated}}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-stroked-button>Show Full Profile</button>
+      </mat-card-actions>
+    </mat-card> -->
+
+  </div>
+
+</div>

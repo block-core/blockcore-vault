@@ -1,0 +1,71 @@
+<!-- <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+    <button mat-icon-button disabled></button>
+    <mat-icon class="type-icon" [attr.aria-label]="node.type + 'icon'">
+      {{ node.type }}
+    </mat-icon>
+    {{node.name}}
+  </mat-tree-node>
+
+  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+    <button mat-icon-button matTreeNodeToggle
+            [attr.aria-label]="'toggle ' + node.name">
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
+    </button>
+    <mat-icon class="type-icon" [attr.aria-label]="node.type + 'icon'">
+      {{ node.type }}
+    </mat-icon>
+    {{node.name}}
+  </mat-tree-node>
+</mat-tree> -->
+
+<div class="requests-container">
+
+  <mat-card class="request-card">
+    <mat-card-header>
+      <div mat-card-avatar class="request-header-image"></div>
+      <mat-card-title>Haxxors Paradise</mat-card-title>
+      <mat-card-subtitle>id:PsPsadkjfdsT13Aab</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+    <mat-card-content>
+      <p>IP address: 10.0.0.3</p>
+      <p>Sent: 2020-05-26 12:00</p>
+      <p>
+        Message:<br>
+        I want to be your friend! PLZ!!!!
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-flat-button color="primary">Accept</button>
+      <button mat-flat-button color="accent">Reject</button>
+      <button mat-stroked-button>Block</button>
+    </mat-card-actions>
+  </mat-card>
+
+
+  <mat-card class="request-card">
+    <mat-card-header>
+      <div mat-card-avatar class="request-header-image"></div>
+      <mat-card-title>Shiba Inu</mat-card-title>
+      <mat-card-subtitle>id:PasdfdsT123311b</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>IP address: 10.0.0.4</p>
+      <p>Sent: 2020-05-26 12:00</p>
+      <p>
+        Message:<br>
+        Add me if you want, or don't. See if I care. I'm just a dog.
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-flat-button color="primary">Accept</button>
+      <button mat-flat-button color="accent">Reject</button>
+      <button mat-stroked-button>Block</button>
+    </mat-card-actions>
+  </mat-card>
+
+
+</div>

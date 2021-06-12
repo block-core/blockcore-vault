@@ -1,0 +1,32 @@
+<app-search></app-search>
+
+<br>
+<br>
+
+<div class="box">
+   <h3>Latest blocks ({{total}})</h3>
+
+   <app-progress class="centered" *ngIf="!blocks">Loading latest blocks...</app-progress>
+
+   <div *ngIf="blocks">
+      <div class="grid-header">
+         <span>Height</span>
+         <span>Age</span>
+         <span class="right hide-small">Transactions</span>
+         <span class="right show-small">TXs</span>
+         <span class="right">Size (kB)</span>
+      </div>
+
+      <div class="scrollable" appDetectScroll (onScroll)="onScroll($event)" [bottomOffset]="400" [topOffset]="400">
+         <div class="grid grid-odd-line" *ngFor="let item of blocks">
+            <span><a [routerLink]="['../block', item.blockIndex]">{{item.blockIndex}}</a></span>
+            <span>{{item.blockTime * 1000 | date:'dd/MM/yyyy hh:mm'}}</span>
+            <span class="right">{{item.transactionCount}}</span>
+            <span class="right">{{(item.blockSize / 1024).toFixed(2)}}</span>
+         </div>
+         <br>
+         <app-progress class="centered" *ngIf="loading">Loading more blocks...</app-progress>
+      </div>
+   </div>
+
+</div>

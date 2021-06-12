@@ -1,0 +1,101 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">
+
+    <div class="sidepanel-top" *ngIf="item">
+
+      <span *ngIf="!item._id">Create</span>
+      <span *ngIf="item._id">Edit</span>
+
+      <button (click)="drawer.toggle()" mat-icon-button color="primary">
+        <mat-icon>close</mat-icon>
+      </button>
+
+    </div>
+
+    <mat-card class="profile-card" *ngIf="item">
+      <mat-card-header>
+
+        <!-- <div mat-card-avatar></div> -->
+        <!-- <mat-icon mat-card-avatar mat-list-icon class="request-header-image">{{icon(message.category)}}
+        </mat-icon> -->
+
+        <mat-card-title>{{item.name}}</mat-card-title>
+        <mat-card-subtitle>ID: {{item.id}}</mat-card-subtitle>
+      </mat-card-header>
+      <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+           alt="Photo of a Shiba Inu"> -->
+      <mat-card-content>
+
+        <!-- <mat-form-field appearance="fill">
+          <mat-label>Category</mat-label>
+          <mat-select [(ngModel)]="message.category">
+            <mat-option value="general"></mat-option>
+            <mat-option value="communication"></mat-option>
+            <mat-option value="invoice"></mat-option>
+            <mat-option value="energy"></mat-option>
+            <mat-option value="consumption"></mat-option>
+          </mat-select>
+        </mat-form-field> -->
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Url</mat-label>
+          <input matInput [(ngModel)]="item.url" placeholder="Url to Data Vault" (blur)="onUrlEntered()">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Id</mat-label>
+          <input matInput readonly="true" [(ngModel)]="item.id" placeholder="Category">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Name</mat-label>
+          <input matInput readonly="true" [(ngModel)]="item.name" placeholder="Key">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput readonly="true" rows="8" [(ngModel)]="item.description" placeholder="Description"></textarea>
+        </mat-form-field>
+
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button [disabled]="!item.id" color="primary" (click)="saveEdit()">Save</button>
+        <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-accordion class="example-headers-align" multi>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Actions
+          </mat-panel-title>
+          <mat-panel-description>
+            Danger Zone
+            <mat-icon>build_circle</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <button mat-flat-button (click)="deleteItem(item)" color="warn">Delete</button>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+
+  </mat-sidenav>
+
+  <div class="message-log">
+
+    <mat-selection-list [multiple]="false">
+      <mat-list-option *ngFor="let item of dataSource" (click)="selectItem(item)" [value]="item">
+
+        <mat-icon mat-list-icon>folder</mat-icon>
+        <div mat-line> {{item.id}} </div>
+        <div mat-line>{{item.name}}</div>
+
+      </mat-list-option>
+    </mat-selection-list>
+
+  </div>
+
+</mat-sidenav-container>

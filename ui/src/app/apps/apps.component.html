@@ -1,0 +1,246 @@
+<div class="grid-container">
+
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">apps</mat-icon>
+        Installed
+      </ng-template>
+
+      <!-- <h1 class="mat-h1">Dashboard</h1> -->
+      <mat-grid-list cols="2" rowHeight="350px">
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>casino</mat-icon>
+              <mat-card-title>Casino</mat-card-title>
+              <mat-card-subtitle>Basic casino running on your Hub</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>pin_drop</mat-icon>
+                  Pin App
+                </button>
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">casino</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>map</mat-icon>
+              <mat-card-title>Grid Map</mat-card-title>
+              <mat-card-subtitle>Property Registry for Grid Maps</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">map</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="2" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>pets</mat-icon>
+              <mat-card-title>Crypto Pets</mat-card-title>
+              <mat-card-subtitle>Cute cryptographic pets</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">pets</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>poll</mat-icon>
+              <mat-card-title>Polls</mat-card-title>
+              <mat-card-subtitle>Host polls and results</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">poll</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>nights_stay</mat-icon>
+              <mat-card-title>Stay The Night</mat-card-title>
+              <mat-card-subtitle>Hosts listing of available bed and breakfast</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">nights_stay</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>emoji_transportation</mat-icon>
+              <mat-card-title>Pirate Taxi</mat-card-title>
+              <mat-card-subtitle>Hosts listing of pirate taxi</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">emoji_transportation</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar>storefront</mat-icon>
+              <mat-card-title>Point-of-Sale</mat-card-title>
+              <mat-card-subtitle>You're not so average and basic PoS solution</mat-card-subtitle>
+
+              <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" xPosition="before">
+
+                <button mat-menu-item>
+                  <mat-icon>remove_circle</mat-icon>
+                  Uninstall
+                </button>
+              </mat-menu>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div><mat-icon class="apps-icon-large">storefront</mat-icon></div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+
+      </mat-grid-list>
+
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="example-tab-icon">widgets</mat-icon>
+        Available
+      </ng-template>
+
+      <!-- <h1 class="mat-h1">Dashboard</h1> -->
+      <mat-grid-list cols="2" rowHeight="350px">
+
+        <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
+          <mat-card class="dashboard-card">
+            <mat-card-header>
+              <mat-card-title>
+                {{card.title}}
+                <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" xPosition="before">
+                  <button mat-menu-item>Install</button>
+                </mat-menu>
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="dashboard-card-content">
+              <div></div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-button>INSTALL</button>
+            </mat-card-actions>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+
+      <mat-grid-tile [colspan]="2" [rowspan]="1">
+        <mat-card class="dashboard-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>emoji_events</mat-icon>
+            <mat-card-title>Achievements</mat-card-title>
+            <mat-card-subtitle>Beautiful display for cryptographically signed achievements</mat-card-subtitle>
+
+            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+
+              <button mat-menu-item>
+                <mat-icon>remove_circle</mat-icon>
+                Uninstall
+              </button>
+            </mat-menu>
+          </mat-card-header>
+          <mat-card-content class="dashboard-card-content">
+            <div><mat-icon class="apps-icon-large">emoji_events</mat-icon></div>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

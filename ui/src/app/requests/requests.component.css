@@ -1,0 +1,20 @@
+/* .type-icon {
+  color: #757575;
+  margin-right: 5px;
+} */
+
+
+
+.request-card {
+  max-width: 400px;
+  margin-bottom: 2em;
+}
+
+.request-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+.requests-container {
+  padding: 4em;
+}
