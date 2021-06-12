@@ -1,6 +1,6 @@
 {
   "name": "blockcore-vault",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "author": {
     "name": "Blockcore",
@@ -49,7 +49,7 @@
     "ui:install": "cd ui && npm install",
     "ui:build": "cd ui && npm run build",
     "ui:start": "cd ui && npm run start",
-    "ui:copy": "copyfiles -a -f ui/dist/*.* build/ui/",
+    "ui:copy": "copyfiles -a -u 2 ui/dist/**/*.* build/ui/",
     "all": "npm run build && npm run ui:build && npm run ui:copy && npm run start",
     "version": "node -p \"require('./package.json').version\""
   }

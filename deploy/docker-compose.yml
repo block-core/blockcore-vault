@@ -3,7 +3,7 @@ services:
   vault:
     container_name: blockcore-vault
     restart: unless-stopped
-    image: sondreb/blockcore-vault
+    image: sondreb/blockcore-vault:0.0.3
     environment:
       - NODE_ENV=production
     ports:
