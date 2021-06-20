@@ -10,7 +10,14 @@ export class HomeComponent {
   @HostBinding('class.content-centered') hostClass = true;
 
   constructor(public setup: SetupService, private router: Router) {
-    router.navigateByUrl('/dashboard');
+
+    if (setup.setupComplete) {
+      router.navigateByUrl('/dashboard');
+    } else {
+      router.navigateByUrl('/setup/account');
+    }
+
+    
     // if (!setup.setupComplete) {
     //   router.navigate(['/setup']);
     // } else {

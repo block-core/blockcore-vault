@@ -39,12 +39,29 @@ export class SetupService {
       this.currentChainSubjectBehavior.next(val);
    }
 
+   did: string;
+
+   #wallet: any = '';
+
+   get wallet(): any {
+      return this.#wallet;
+   }
+
+   set wallet(value: any) {
+      this.#wallet = value;
+      localStorage.setItem('DataVault:Wallet', JSON.stringify(value));
+   }
+
    constructor(
       private http: HttpClient,
       private api: ApiService,
       private router: Router
    ) {
+      const existingKey = localStorage.getItem('DataVault:Wallet');
 
+      if (existingKey != null) {
+         this.#wallet = JSON.parse(existingKey);
+      }
    }
 
    async getChains() {

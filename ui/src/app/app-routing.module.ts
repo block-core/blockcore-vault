@@ -62,6 +62,7 @@ import { StateComponent } from './state/state.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SettingsComponent } from './settings/settings.component';
 import { VaultsComponent } from './vaults/vaults.component';
+import { AccountComponent } from './setup/account/account.component';
 
 
 const routes: Routes = [
@@ -77,6 +78,11 @@ const routes: Routes = [
   },
   {
     path: 'setup', component: SetupComponent, resolve: {
+      chain: LoadingResolverService
+    }
+  },
+  {
+    path: 'setup/account', component: AccountComponent, resolve: {
       chain: LoadingResolverService
     }
   },

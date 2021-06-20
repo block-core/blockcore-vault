@@ -7,6 +7,12 @@ import { EventEmitter, Injectable } from '@angular/core';
 })
 export class ApplicationState {
 
+   account: any;
+
+   get hasAccount(): boolean {
+      return this.account != null;
+   }
+
    title: string;
 
    actions: any;

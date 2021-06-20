@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Blockcore.DataVault": {
+    "blockcore-vault": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -18,8 +18,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "webpack.config.js"
+            },
             "progress": false,
             "outputPath": "dist",
             "index": "src/index.html",
@@ -69,20 +72,20 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "Blockcore.DataVault:build"
+            "browserTarget": "blockcore-vault:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "Blockcore.DataVault:build:production"
+              "browserTarget": "blockcore-vault:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Blockcore.DataVault:build"
+            "browserTarget": "blockcore-vault:build"
           }
         },
         "test": {
@@ -120,16 +123,16 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "Blockcore.DataVault:serve"
+            "devServerTarget": "blockcore-vault:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "Blockcore.DataVault:serve:production"
+              "devServerTarget": "blockcore-vault:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "Blockcore.DataVault"
+  "defaultProject": "blockcore-vault"
 }

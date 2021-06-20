@@ -63,6 +63,9 @@ import { StateComponent } from './state/state.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SettingsComponent } from './settings/settings.component';
 import { VaultsComponent } from './vaults/vaults.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AccountComponent } from './setup/account/account.component';
 
 
 
@@ -105,7 +108,8 @@ import { VaultsComponent } from './vaults/vaults.component';
     SignupComponent,
     ValuesComponent,
     StateComponent,
-    VaultsComponent
+    VaultsComponent,
+    AccountComponent
   ],
   imports: [
     BrowserModule,
@@ -136,7 +140,9 @@ import { VaultsComponent } from './vaults/vaults.component';
     MatTabsModule,
     MatTooltipModule,
     MatExpansionModule,
-    MatTableModule
+    MatTableModule,
+    MatStepperModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     ScrollDirective,

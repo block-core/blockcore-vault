@@ -1,4 +1,3 @@
-
 <!-- Uncomment to show splashloading dialog -->
 
 <!-- <div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
@@ -15,7 +14,7 @@
 </div> -->
 
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+  <mat-sidenav #drawer class="sidenav print-hidden" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
 
     <mat-toolbar class="logo-icon" [matMenuTriggerFor]="animals">
@@ -39,16 +38,16 @@
     </mat-menu>
 
     <mat-nav-list class="menu-options">
-      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link">
+      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
         <mat-icon mat-list-icon>dashboard</mat-icon>
         <div mat-line>Dashboard</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link">
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
         <mat-icon mat-list-icon mat-list-icon>shield</mat-icon>
         <div mat-line>Vaults</div>
       </a>
-<!-- 
+      <!-- 
        <a mat-list-item [routerLink]="['/messages']" routerLinkActive="active-link">
         <mat-icon mat-list-icon mat-list-icon>message</mat-icon>
         <div mat-line>Identities</div>
@@ -59,11 +58,11 @@
         <div mat-line>Identities</div>
       </a> -->
 
-      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link">
+      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
         <div mat-line>Settings</div>
       </a>
-<!-- 
+      <!-- 
       <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
     <mat-icon mat-list-icon>apps</mat-icon>
     <div mat-line>Apps</div>
@@ -88,14 +87,16 @@
     <mat-icon mat-list-icon>account_circle</mat-icon>
     <div mat-line>Identity</div>
   </a>  -->
-  <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon>settings</mat-icon>
-    <div mat-line>Setup</div>
-  </a>
+
+      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>settings</mat-icon>
+        <div mat-line>Setup</div>
+      </a>
+
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
+    <mat-toolbar color="primary" class="print-hidden">
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
         *ngIf="isHandset$ | async">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
@@ -108,7 +109,8 @@
         <mat-icon>info</mat-icon>
       </button> -->
 
-      <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button [matTooltip]="action.tooltip">
+      <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button
+        [matTooltip]="action.tooltip">
         <mat-icon>{{action.icon}}</mat-icon>
       </button>
 

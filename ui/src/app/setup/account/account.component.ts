@@ -1,24 +1,27 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
-import { SetupService } from '../services/setup.service';
+import { SetupService } from '../../services/setup.service';
 import { Router } from '@angular/router';
-import { ApplicationState } from '../services/applicationstate.service';
+import { ApplicationState } from '../../services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, fadeInUpOnEnterAnimation, bounceOutDownOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation } from 'angular-animations';
 
-import { BlockcoreIdentity, Identity, BlockcoreResolver } from '../../libraries/blockcore-did/blockcore-identity';
+import { BlockcoreIdentity, Identity, BlockcoreResolver } from '../../../libraries/blockcore-did/blockcore-identity';
 import { verifyJWT } from 'did-jwt';
 import * as didJWT from 'did-jwt';
 import { Resolver } from 'did-resolver';
 import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
-import BlockcoreDID from '../../libraries/blockcore-did/blockcore-did';
+import BlockcoreDID from '../../../libraries/blockcore-did/blockcore-did';
 import * as bip39 from 'bip39';
+import * as bip32 from 'bip32';
+import * as bip38 from '../../../libraries/bip38';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { PasswordValidationDirective } from '../shared/password-validation.directive';
+import { PasswordValidationDirective } from '../../shared/password-validation.directive';
+import { payments } from 'bitcoinjs-lib';
 
 @Component({
-  selector: 'app-setup',
-  templateUrl: './setup.component.html',
-  styleUrls: ['./setup.component.css'],
+  selector: 'app-setup-account',
+  templateUrl: './account.component.html',
+  styleUrls: ['./account.component.css'],
   animations: [
     fadeInOnEnterAnimation({ anchor: 'enter' }),
     fadeOutOnLeaveAnimation({ anchor: 'leave', duration: 250 }),
@@ -28,7 +31,7 @@ import { PasswordValidationDirective } from '../shared/password-validation.direc
     // bounceOutDownOnLeaveAnimation({ anchor: 'leave', duration: 500, delay: 200, translate: '40px' })
   ]
 })
-export class SetupComponent implements OnInit {
+export class AccountComponent implements OnInit {
   @HostBinding('class.content-centered') hostClass = true;
 
   recoveryPhrase = '';
@@ -36,7 +39,6 @@ export class SetupComponent implements OnInit {
   loading = false;
   selectedHubIdInternal = 'local';
 
-  url: string;
   id: string = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
   key: string = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
   name: string;
@@ -68,9 +70,9 @@ export class SetupComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private appState: ApplicationState) {
-    appState.title = 'Setup';
+    appState.title = 'Setup / Account';
 
-    this.id = setup.did;
+    this.onGenerate();
 
     // When we are not in multichain mode, redirect to chain-home.
     // if (!setup.multiChain) {
@@ -83,7 +85,6 @@ export class SetupComponent implements OnInit {
     this.key = '';
     this.name = '';
     this.description = '';
-    this.url = '';
   }
 
   public onPrint() {
@@ -201,10 +202,114 @@ export class SetupComponent implements OnInit {
   saving: boolean;
   currentDate: string;
 
+  getProfileNetwork() {
+    return {
+      messagePrefix: '\x18Identity Signed Message:\n',
+      bech32: 'id',
+      bip32: {
+        public: 0x0488b21e,
+        private: 0x0488ade4
+      },
+      pubKeyHash: 55,
+      scriptHash: 117,
+      wif: 0x08
+    };
+  }
+
   public createAccount() {
     this.saving = true;
     // this.log.info('Create account:', this.accountName);
     // this.createWallet(new WalletCreation(this.accountName, this.mnemonic, this.password1, this.seedExtension));
+
+    var network = this.getProfileNetwork();
+
+    // C#: HdOperations.GetExtendedKey(recoveryPhrase, string.Empty);
+    bip39.mnemonicToSeed(this.mnemonic, this.seedExtension).then(masterSeed => {
+      const self = this;
+      const masterNode = bip32.fromSeed(masterSeed, network);
+
+      // eslint-disable-next-line
+      const accountNode = masterNode.derivePath("m/44'/1926'/0'"); // TODO: Get the coin type from network definition.
+      const xpub = accountNode.neutered().toBase58();
+
+      // bip38.encryptAsync(masterNode.privateKey, true, wallet.password, (out) => {
+      // }, null, this.appState.networkParams);
+
+      // eslint-disable-next-line prefer-const
+      let encryptedKeySeed = bip38.encrypt(masterNode.privateKey, true, this.password1, null, null, network);
+
+      var wallet = {
+        name: this.accountName,
+        isExtPubKeyWallet: false,
+        extPubKey: xpub,
+        encryptedSeed: encryptedKeySeed,
+        chainCode: masterNode.chainCode,
+        network: 'identity',
+        creationTime: Date.now() / 1000,
+        coinType: 302,
+        lastBlockSyncedHeight: 0,
+        lastBlockSyncedHash: ''
+      };
+
+      this.setup.wallet = wallet;
+
+      const start = new Date().getTime();
+      console.log(wallet);
+
+      // bip38.decryptAsync(wallet.encryptedSeed, walletLoad.password, (decryptedKey) => {
+      // }, null, this.appState.networkParams);
+
+      const decryptedKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
+
+      console.log('decrypted!');
+      console.log(decryptedKey);
+
+      const stop = new Date().getTime();
+
+      const diff = stop - start;
+      console.log(diff + 'ms taken to decrypt.');
+
+
+
+      const xpubkey = wallet.extPubKey;
+      const root = bip32.fromBase58(xpubkey);
+
+      // Get the first identity, which is the only one we use for vault instances.
+      const address = this.getAddress(root.derivePath('0/0'), network);
+
+      this.setup.did = address;
+
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
+      // for (let i = 0; i < 2; i++) {
+      //     // TODO: Find the last used indexed from querying indexer (persisted to IndexedDB locally)
+      //     var path = root.derivePath('0/' + i);
+      //     const address = this.getAddress(path, network);
+      //     unusedAddresses.push(address);
+      //     console.log('0/' + i);
+      // }
+
+      console.log(address);
+
+      this.router.navigateByUrl('/setup');
+    });
+  }
+
+  private getAddress(node, network) {
+
+    const { address } = payments.p2pkh({
+      pubkey: node.publicKey,
+      network: this.getProfileNetwork(),
+   });
+
+   return address;
+
+    // const p2pkh = city.payments.p2pkh({ pubkey: node.publicKey, network });
+    // return p2pkh.address;
+}
+
+  public onGenerate() {
+    this.getNewMnemonicLocal();
+    this.currentDate = new Date().toDateString();
   }
 
   ngOnInit(): void {
