@@ -214,7 +214,15 @@ export class AccountComponent implements OnInit {
   getPurpose() {
     // var tools = new BlockcoreIdentityTools();
     // return tools.getPurpose();
-    return "m/302'";
+    return "302'";
+  }
+
+  getIdentityType() {
+    return "616'";
+  }
+
+  getPath() {
+    return `m/${this.getPurpose()}/${this.getIdentityType()}`;
   }
 
   async createAccount() {
@@ -231,7 +239,15 @@ export class AccountComponent implements OnInit {
     const masterNode = bip32.fromSeed(masterSeed, network);
 
     // eslint-disable-next-line
-    const accountNode = masterNode.derivePath(this.getPurpose() + "/0'/0'"); // TODO: Get the coin type from network definition, should we have chain-specific identities?
+    const accountNode = masterNode.derivePath(this.getPath()); // m/302'/616'
+
+    const identity00 = accountNode.derivePath("0'");
+    const identity11 = accountNode.derivePath("1'");
+
+    const address00 = this.getAddress(identity00, network);
+    const address11 = this.getAddress(identity11, network);
+
+    // Extended public key for this account (which can hold multiple identities).
     const xpub = accountNode.neutered().toBase58();
 
     // bip38.encryptAsync(masterNode.privateKey, true, wallet.password, (out) => {
@@ -248,7 +264,7 @@ export class AccountComponent implements OnInit {
       chainCode: masterNode.chainCode,
       network: 'identity',
       creationTime: Date.now() / 1000,
-      coinType: 302,
+      coinType: 616,
       lastBlockSyncedHeight: 0,
       lastBlockSyncedHash: ''
     };
@@ -261,10 +277,14 @@ export class AccountComponent implements OnInit {
     // bip38.decryptAsync(wallet.encryptedSeed, walletLoad.password, (decryptedKey) => {
     // }, null, this.appState.networkParams);
 
-    const decryptedKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
-
+    const decryptedMasterNodeKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
+    const decryptedMasterNode = bip32.fromPrivateKey(decryptedMasterNodeKey.privateKey, wallet.chainCode, network);
+    const accountNodePrivate = decryptedMasterNode.derivePath(this.getPath()); // m/302'/616'
+    
     console.log('decrypted!');
-    console.log(decryptedKey);
+    console.log(decryptedMasterNodeKey);
+    console.log(decryptedMasterNode);
+    console.log(accountNodePrivate);
 
     const stop = new Date().getTime();
 
@@ -273,10 +293,19 @@ export class AccountComponent implements OnInit {
 
     const xpubkey = wallet.extPubKey;
     const root = bip32.fromBase58(xpubkey, network);
-    const accountNodeRestored = root.derivePath(this.getPurpose() + "/0'/0'");
+    const accountNodeRestored = bip32.fromBase58(xpubkey, network);
+
+    console.log(accountNodeRestored);
+
+    const identity0 = accountNodePrivate.derivePath("0'");
+    const identity1 = accountNodePrivate.derivePath("1'");
+    // const accountNodeRestored = root.derivePath(this.getPurpose() + "/0'/0'");
 
     // Get the first identity, which is the only one we use for vault instances.
-    const address = this.getAddress(accountNodeRestored, network);
+    const address0 = this.getAddress(identity0, network);
+    const address1 = this.getAddress(identity1, network);
+
+    debugger;
 
     const tools = new BlockcoreIdentityTools();
 
@@ -284,12 +313,12 @@ export class AccountComponent implements OnInit {
     // accountNode.publicKey;
 
     const didJwk = keyUtils.privateKeyJwkFromPrivateKeyHex(
-      accountNode.privateKey.toString('hex')
+      identity0.privateKey.toString('hex')
     );
 
-    const didPublicKeyBase58 = bs58.encode(accountNode.publicKey);
+    const didPublicKeyBase58 = bs58.encode(identity0.publicKey);
 
-    let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: accountNode.privateKey.toString('hex') });
+    let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: identity0.privateKey.toString('hex') });
     // let keyPairWebKey = await didKeyPair.toJsonWebKeyPair(true);
 
     console.log(didJwk);
@@ -306,7 +335,7 @@ export class AccountComponent implements OnInit {
 
     console.log(identity);
 
-    this.setup.did = address;
+    this.setup.did = address0;
 
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     // for (let i = 0; i < 2; i++) {
@@ -317,7 +346,9 @@ export class AccountComponent implements OnInit {
     //     console.log('0/' + i);
     // }
 
-    console.log(address);
+    console.log(address0);
+
+    debugger;
 
     this.router.navigateByUrl('/setup');
   }
