@@ -17,6 +17,8 @@ export class ApplicationState {
 
    actions: any;
 
+   identity: any;
+
    // apiKey: string;
 
    #apiKey: string = '';

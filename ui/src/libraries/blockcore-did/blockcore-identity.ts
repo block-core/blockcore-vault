@@ -6,7 +6,6 @@
 // import utf8 from 'utf8';
 // import didJWT from 'did-jwt';
 import * as didJWT from 'did-jwt';
-
 import fetch from 'cross-fetch'
 import { DIDDocument, ParsedDID, Resolver } from 'did-resolver';
 // const didJWT = require('did-jwt');

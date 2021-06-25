@@ -172,6 +172,25 @@ Upon registration of a trusted vault, the user can decide if a full sync should 
 
 If a client vault receives an event, it will forward that to all registered and connected server vaults. 
 
+# Key Management
+
+The keys for identities is based upon standard HD-wallet practices with the specific purpose of 302.
+
+Normal HD wallet pattern:
+
+```m / purpose' / coin_type' / account' / change / address_index```
+
+The purpose and coin_type used for Blockcore Vault is:
+
+
+```m / purpose' / identity_type' / identity' / operation / key_index```
+
+Example:
+
+```
+m/302'/616'/0'/0/0
+```
+
 # Vocabulary
 
 - `Vault` - An instance of the Blockcore Vault software.

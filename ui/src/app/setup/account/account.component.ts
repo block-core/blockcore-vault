@@ -3,8 +3,6 @@ import { SetupService } from '../../services/setup.service';
 import { Router } from '@angular/router';
 import { ApplicationState } from '../../services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, fadeInUpOnEnterAnimation, bounceOutDownOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation } from 'angular-animations';
-
-import { BlockcoreIdentity, Identity, BlockcoreResolver } from '../../../libraries/blockcore-did/blockcore-identity';
 import { verifyJWT } from 'did-jwt';
 import * as didJWT from 'did-jwt';
 import { Resolver } from 'did-resolver';
@@ -14,9 +12,16 @@ import BlockcoreDID from '../../../libraries/blockcore-did/blockcore-did';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import * as bip38 from '../../../libraries/bip38';
+import * as bs58 from 'bs58';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../../shared/password-validation.directive';
 import { payments } from 'bitcoinjs-lib';
+
+import { BlockcoreResolver } from '../../../libraries/blockcore-did/blockcore-identity';
+import { BlockcoreIdentity, Identity, BlockcoreIdentityTools } from '@blockcore/identity';
+import { IdentityComponent } from 'src/app/identity/identity.component';
+// import { BlockcoreIdentityIssuer } from 'blockcore-identity';
+import { keyUtils, Secp256k1KeyPair } from '@transmute/did-key-secp256k1';
 
 @Component({
   selector: 'app-setup-account',
@@ -97,73 +102,72 @@ export class AccountComponent implements OnInit {
   }
 
   async saveEdit() {
+    // // private key User:
+    // const privateKeyWif = '7A1HsYie1A7hnzTh7wYwrWmUw1o2Ca4YXdwpkrEgnyDHNLqXPvZ';
+    // const privateKeyHex = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
+    // const privateKeyBase64 = 'qCqhWKSAG6vKk2HQZATgd7fZ1f35Z038xrWB+h8yo28=';
+    // const address = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
 
-    // private key User:
-    const privateKeyWif = '7A1HsYie1A7hnzTh7wYwrWmUw1o2Ca4YXdwpkrEgnyDHNLqXPvZ';
-    const privateKeyHex = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
-    const privateKeyBase64 = 'qCqhWKSAG6vKk2HQZATgd7fZ1f35Z038xrWB+h8yo28=';
-    const address = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
+    // // private key Blockcore
+    // const privateKeyBlockcoreHex = '039C4896D85A3121039AB57637B9D18FB8686E23AA3EBD26C9731A5F04D5298119';
+    // const addressBlockcore = 'PU5DqJxAif5Jr1H3od4ynrnXxLuMejaHuU';
 
-    // private key Blockcore
-    const privateKeyBlockcoreHex = '039C4896D85A3121039AB57637B9D18FB8686E23AA3EBD26C9731A5F04D5298119';
-    const addressBlockcore = 'PU5DqJxAif5Jr1H3od4ynrnXxLuMejaHuU';
+    // const identity = new BlockcoreIdentity(address, privateKeyHex);
 
-    const identity = new BlockcoreIdentity(address, privateKeyHex);
+    // const jwt = await identity.jwt();
+    // console.log('JWT: ' + jwt);
 
-    const jwt = await identity.jwt();
-    console.log('JWT: ' + jwt);
+    // console.log('Blockcore Identity (CLI): Create');
+    // console.log('Your DID is: ' + identity.id); // 'did:is:PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
+    // console.log('Your DID document is: ' + JSON.stringify(identity.document()));
+    // console.log('.well-known configuration: ' + JSON.stringify(identity.wellKnownConfiguration('did.is')));
 
-    console.log('Blockcore Identity (CLI): Create');
-    console.log('Your DID is: ' + identity.id); // 'did:is:PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
-    console.log('Your DID document is: ' + JSON.stringify(identity.document()));
-    console.log('.well-known configuration: ' + JSON.stringify(identity.wellKnownConfiguration('did.is')));
+    // // this.wellknownconfiguration = JSON.stringify(identity.wellKnownConfiguration('did.is'));
+    // this.wellknownconfiguration = JSON.stringify(identity.document2(this.name, this.description));
 
-    // this.wellknownconfiguration = JSON.stringify(identity.wellKnownConfiguration('did.is'));
-    this.wellknownconfiguration = JSON.stringify(identity.document2(this.name, this.description));
+    // // console.log('JWT: ' + identity.jwt());
 
-    // console.log('JWT: ' + identity.jwt());
+    // let decoded = didJWT.decodeJWT(jwt)
+    // console.log(decoded);
 
-    let decoded = didJWT.decodeJWT(jwt)
-    console.log(decoded);
+    // // TODO: Fix the getResolver implementation.
+    // // const blockcoreResolver = new BlockcoreResolver().getResolver();
+    // // const resolver = new Resolver(blockcoreResolver);
 
-    // TODO: Fix the getResolver implementation.
-    // const blockcoreResolver = new BlockcoreResolver().getResolver();
-    // const resolver = new Resolver(blockcoreResolver);
+    // // const doc = await resolver.resolve(identity.id);
+    // // console.log('DID Document: ' + doc);
 
-    // const doc = await resolver.resolve(identity.id);
-    // console.log('DID Document: ' + doc);
+    // const vcPayload: JwtCredentialPayload = {
+    //   sub: identity.id,
+    //   nbf: Math.floor(Date.now() / 1000),
+    //   vc: {
+    //     '@context': ['https://www.w3.org/2018/credentials/v1'],
+    //     type: ['VerifiableCredential', 'UniversityDegreeCredential'],
+    //     credentialSubject: {
+    //       degree: {
+    //         type: 'BachelorDegree',
+    //         name: 'Bachelor of Science and Arts'
+    //       }
+    //     }
+    //   }
+    // }
 
-    const vcPayload: JwtCredentialPayload = {
-      sub: identity.id,
-      nbf: Math.floor(Date.now() / 1000),
-      vc: {
-        '@context': ['https://www.w3.org/2018/credentials/v1'],
-        type: ['VerifiableCredential', 'UniversityDegreeCredential'],
-        credentialSubject: {
-          degree: {
-            type: 'BachelorDegree',
-            name: 'Bachelor of Science and Arts'
-          }
-        }
-      }
-    }
+    // // const issuer: Issuer = new issuer EthrDID({
+    // //    address: '0xf1232f840f3ad7d23fcdaa84d6c66dac24efb198',
+    // //    privateKey: 'd8b595680851765f38ea5405129244ba3cbad84467d190859f4c8b20c1ff6c75'
+    // //  })
 
-    // const issuer: Issuer = new issuer EthrDID({
-    //    address: '0xf1232f840f3ad7d23fcdaa84d6c66dac24efb198',
-    //    privateKey: 'd8b595680851765f38ea5405129244ba3cbad84467d190859f4c8b20c1ff6c75'
-    //  })
+    // const issuer: Issuer = new BlockcoreDID({
+    //   address: addressBlockcore,
+    //   privateKey: privateKeyBlockcoreHex
+    // })
 
-    const issuer: Issuer = new BlockcoreDID({
-      address: addressBlockcore,
-      privateKey: privateKeyBlockcoreHex
-    })
+    // // const issuer = new Issuer().  didJWT.SimpleSigner(privateKeyHex);
 
-    // const issuer = new Issuer().  didJWT.SimpleSigner(privateKeyHex);
+    // const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
 
-    const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
-
-    console.log('VC JWT:');
-    console.log(vcJwt);
+    // console.log('VC JWT:');
+    // console.log(vcJwt);
 
 
   }
@@ -203,20 +207,17 @@ export class AccountComponent implements OnInit {
   currentDate: string;
 
   getProfileNetwork() {
-    return {
-      messagePrefix: '\x18Identity Signed Message:\n',
-      bech32: 'id',
-      bip32: {
-        public: 0x0488b21e,
-        private: 0x0488ade4
-      },
-      pubKeyHash: 55,
-      scriptHash: 117,
-      wif: 0x08
-    };
+    var tools = new BlockcoreIdentityTools();
+    return tools.getProfileNetwork();
   }
 
-  public createAccount() {
+  getPurpose() {
+    // var tools = new BlockcoreIdentityTools();
+    // return tools.getPurpose();
+    return "m/302'";
+  }
+
+  async createAccount() {
     this.saving = true;
     // this.log.info('Create account:', this.accountName);
     // this.createWallet(new WalletCreation(this.accountName, this.mnemonic, this.password1, this.seedExtension));
@@ -224,74 +225,101 @@ export class AccountComponent implements OnInit {
     var network = this.getProfileNetwork();
 
     // C#: HdOperations.GetExtendedKey(recoveryPhrase, string.Empty);
-    bip39.mnemonicToSeed(this.mnemonic, this.seedExtension).then(masterSeed => {
-      const self = this;
-      const masterNode = bip32.fromSeed(masterSeed, network);
+    var masterSeed = await bip39.mnemonicToSeed(this.mnemonic, this.seedExtension);
 
-      // eslint-disable-next-line
-      const accountNode = masterNode.derivePath("m/44'/1926'/0'"); // TODO: Get the coin type from network definition.
-      const xpub = accountNode.neutered().toBase58();
+    const self = this;
+    const masterNode = bip32.fromSeed(masterSeed, network);
 
-      // bip38.encryptAsync(masterNode.privateKey, true, wallet.password, (out) => {
-      // }, null, this.appState.networkParams);
+    // eslint-disable-next-line
+    const accountNode = masterNode.derivePath(this.getPurpose() + "/0'/0'"); // TODO: Get the coin type from network definition, should we have chain-specific identities?
+    const xpub = accountNode.neutered().toBase58();
 
-      // eslint-disable-next-line prefer-const
-      let encryptedKeySeed = bip38.encrypt(masterNode.privateKey, true, this.password1, null, null, network);
+    // bip38.encryptAsync(masterNode.privateKey, true, wallet.password, (out) => {
+    // }, null, this.appState.networkParams);
 
-      var wallet = {
-        name: this.accountName,
-        isExtPubKeyWallet: false,
-        extPubKey: xpub,
-        encryptedSeed: encryptedKeySeed,
-        chainCode: masterNode.chainCode,
-        network: 'identity',
-        creationTime: Date.now() / 1000,
-        coinType: 302,
-        lastBlockSyncedHeight: 0,
-        lastBlockSyncedHash: ''
-      };
+    // eslint-disable-next-line prefer-const
+    let encryptedKeySeed = bip38.encrypt(masterNode.privateKey, true, this.password1, null, null, network);
 
-      this.setup.wallet = wallet;
+    var wallet = {
+      name: this.accountName,
+      isExtPubKeyWallet: false,
+      extPubKey: xpub,
+      encryptedSeed: encryptedKeySeed,
+      chainCode: masterNode.chainCode,
+      network: 'identity',
+      creationTime: Date.now() / 1000,
+      coinType: 302,
+      lastBlockSyncedHeight: 0,
+      lastBlockSyncedHash: ''
+    };
 
-      const start = new Date().getTime();
-      console.log(wallet);
+    this.setup.wallet = wallet;
 
-      // bip38.decryptAsync(wallet.encryptedSeed, walletLoad.password, (decryptedKey) => {
-      // }, null, this.appState.networkParams);
+    const start = new Date().getTime();
+    console.log(wallet);
 
-      const decryptedKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
+    // bip38.decryptAsync(wallet.encryptedSeed, walletLoad.password, (decryptedKey) => {
+    // }, null, this.appState.networkParams);
 
-      console.log('decrypted!');
-      console.log(decryptedKey);
+    const decryptedKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
 
-      const stop = new Date().getTime();
+    console.log('decrypted!');
+    console.log(decryptedKey);
 
-      const diff = stop - start;
-      console.log(diff + 'ms taken to decrypt.');
+    const stop = new Date().getTime();
 
+    const diff = stop - start;
+    console.log(diff + 'ms taken to decrypt.');
 
+    const xpubkey = wallet.extPubKey;
+    const root = bip32.fromBase58(xpubkey, network);
+    const accountNodeRestored = root.derivePath(this.getPurpose() + "/0'/0'");
 
-      const xpubkey = wallet.extPubKey;
-      const root = bip32.fromBase58(xpubkey);
+    // Get the first identity, which is the only one we use for vault instances.
+    const address = this.getAddress(accountNodeRestored, network);
 
-      // Get the first identity, which is the only one we use for vault instances.
-      const address = this.getAddress(root.derivePath('0/0'), network);
+    const tools = new BlockcoreIdentityTools();
 
-      this.setup.did = address;
+    // accountNode.privateKey;
+    // accountNode.publicKey;
 
-      // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      // for (let i = 0; i < 2; i++) {
-      //     // TODO: Find the last used indexed from querying indexer (persisted to IndexedDB locally)
-      //     var path = root.derivePath('0/' + i);
-      //     const address = this.getAddress(path, network);
-      //     unusedAddresses.push(address);
-      //     console.log('0/' + i);
-      // }
+    const didJwk = keyUtils.privateKeyJwkFromPrivateKeyHex(
+      accountNode.privateKey.toString('hex')
+    );
 
-      console.log(address);
+    const didPublicKeyBase58 = bs58.encode(accountNode.publicKey);
 
-      this.router.navigateByUrl('/setup');
-    });
+    let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: accountNode.privateKey.toString('hex') });
+    // let keyPairWebKey = await didKeyPair.toJsonWebKeyPair(true);
+
+    console.log(didJwk);
+    console.log(keyPairDid);
+
+    // let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: didKeyPair.privateKeyBuffer?.toString('hex') });
+    // let keyPairWebKey = await didJwk.toJsonWebKeyPair(true);
+
+    // var tools = new BlockcoreIdentityTools();
+    // return tools.generateKeyPair()
+    var identity = new BlockcoreIdentity(keyPairDid.toKeyPair(false));
+
+    this.appState.identity = identity;
+
+    console.log(identity);
+
+    this.setup.did = address;
+
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    // for (let i = 0; i < 2; i++) {
+    //     // TODO: Find the last used indexed from querying indexer (persisted to IndexedDB locally)
+    //     var path = root.derivePath('0/' + i);
+    //     const address = this.getAddress(path, network);
+    //     unusedAddresses.push(address);
+    //     console.log('0/' + i);
+    // }
+
+    console.log(address);
+
+    this.router.navigateByUrl('/setup');
   }
 
   private getAddress(node, network) {
@@ -299,13 +327,13 @@ export class AccountComponent implements OnInit {
     const { address } = payments.p2pkh({
       pubkey: node.publicKey,
       network: this.getProfileNetwork(),
-   });
+    });
 
-   return address;
+    return address;
 
     // const p2pkh = city.payments.p2pkh({ pubkey: node.publicKey, network });
     // return p2pkh.address;
-}
+  }
 
   public onGenerate() {
     this.getNewMnemonicLocal();

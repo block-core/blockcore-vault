@@ -8,9 +8,13 @@
         </p>
 
         <p>
+            {{appState.identity | json}}
+        </p>
+
+        <p>
             <mat-form-field appearance="outline" class="input-full-width">
                 <mat-label>Id</mat-label>
-                <input matInput [(ngModel)]="id" autocomplete="off"
+                <input matInput [(ngModel)]="id" readonly autocomplete="off"
                     placeholder="Public Key of your Data Vault identity">
             </mat-form-field>
 
