@@ -87,7 +87,8 @@ export class DashboardComponent {
     }
   ];
 
-  constructor(private breakpointObserver: BreakpointObserver, private appState: ApplicationState) {
+  constructor(private breakpointObserver: BreakpointObserver,
+    public appState: ApplicationState) {
     appState.title = 'Dashboard';
   }
 }

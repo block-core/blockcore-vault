@@ -1,5 +1,5 @@
 import { getEvents, latestEvent, totalEvents } from "./controllers/event";
-import { home } from "./controllers/home";
+// import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, updateLocalServer, updateServer } from "./controllers/server";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
@@ -8,12 +8,6 @@ import { requestLogger } from "./middleware/requestLogger";
 import { Route } from "./types";
 
 export const routes: Route[] = [
-  {
-    method: "get",
-    path: "/",
-    middleware: [],
-    handler: home,
-  },
   {
     method: "get",
     path: "/.well-known/vault-configuration.json",

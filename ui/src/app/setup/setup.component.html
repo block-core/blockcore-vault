@@ -28,16 +28,19 @@
                 <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name of your Data Vault">
             </mat-form-field>
 
+            <mat-checkbox [(ngModel)]="enabled">Enabled</mat-checkbox>
+            <br>
+
             <!-- <mat-form-field appearance="outline" class="input-full-width">
                 <mat-label>Description</mat-label>
                 <textarea matInput rows="8" autocomplete="off" [(ngModel)]="description"
                     placeholder="Description of your Data Vault"></textarea>
             </mat-form-field> -->
 
-            <mat-form-field appearance="outline" class="input-full-width">
+            <!-- <mat-form-field appearance="outline" class="input-full-width">
                 <mat-label>Data Vault Identity Private Key</mat-label>
                 <input matInput [(ngModel)]="key" autocomplete="off" placeholder="Data Vault Identity Private Key">
-            </mat-form-field>
+            </mat-form-field> -->
 
         </p>
 
@@ -49,8 +52,19 @@
         <p>
             <mat-form-field appearance="outline" class="input-full-width">
                 <mat-label>Generated and Signed .well-known Configuration</mat-label>
-                <textarea matInput rows="12" [(ngModel)]="wellknownconfiguration"></textarea>
+                <textarea matInput rows="12" [(ngModel)]="configurationJson"></textarea>
             </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="outline" class="input-full-width">
+                <mat-label>Vault Setup Configuration</mat-label>
+                <textarea matInput rows="12" [(ngModel)]="setupDocumentJson"></textarea>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <button mat-flat-button color="primary" (click)="save()">Save</button>
         </p>
 
         <script>

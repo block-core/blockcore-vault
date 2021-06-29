@@ -19,6 +19,11 @@ export class ApplicationState {
 
    identity: any;
 
+   /** The key pair when unlocked. */
+   key: any;
+
+   setup: any;
+
    // apiKey: string;
 
    #apiKey: string = '';

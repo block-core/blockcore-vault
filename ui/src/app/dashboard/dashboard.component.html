@@ -92,21 +92,25 @@
             <mat-list>
               <mat-list-item>
                 <mat-icon mat-list-icon>account_circle</mat-icon>
-                <div mat-line>id:PTlsaksjkluihJHjk123hf</div>
+                <div mat-line>{{appState.identity.id}}</div>
                 <div mat-line class="dimmed">Identity</div>
               </mat-list-item>
               <mat-list-item>
-                <mat-icon mat-list-icon>public</mat-icon>
-                <div mat-line>80.80.80.80</div>
-                <div mat-line class="dimmed">Public IP Address</div>
+                <mat-icon mat-list-icon>account_circle</mat-icon>
+                <div mat-line>{{appState.setup.name}}</div>
+                <div mat-line class="dimmed">Name</div>
               </mat-list-item>
               <mat-list-item>
+                <mat-icon mat-list-icon>public</mat-icon>
+                <div mat-line>{{appState.setup.url}}</div>
+                <div mat-line class="dimmed">Linked Domain</div>
+              </mat-list-item>
+              <!-- <mat-list-item>
                 <mat-icon mat-list-icon>vpn_lock</mat-icon>
                 <div mat-line>10.0.0.1</div>
                 <div mat-line class="dimmed">Private IP Address</div>
-              </mat-list-item>
+              </mat-list-item> -->
             </mat-list>
-
           </div>
         </mat-card-content>
       </mat-card>

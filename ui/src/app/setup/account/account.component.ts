@@ -8,7 +8,6 @@ import * as didJWT from 'did-jwt';
 import { Resolver } from 'did-resolver';
 import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
-import BlockcoreDID from '../../../libraries/blockcore-did/blockcore-did';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import * as bip38 from '../../../libraries/bip38';
@@ -16,8 +15,6 @@ import * as bs58 from 'bs58';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../../shared/password-validation.directive';
 import { payments } from 'bitcoinjs-lib';
-
-import { BlockcoreResolver } from '../../../libraries/blockcore-did/blockcore-identity';
 import { BlockcoreIdentity, Identity, BlockcoreIdentityTools } from '@blockcore/identity';
 import { IdentityComponent } from 'src/app/identity/identity.component';
 // import { BlockcoreIdentityIssuer } from 'blockcore-identity';
@@ -305,8 +302,6 @@ export class AccountComponent implements OnInit {
     const address0 = this.getAddress(identity0, network);
     const address1 = this.getAddress(identity1, network);
 
-    debugger;
-
     const tools = new BlockcoreIdentityTools();
 
     // accountNode.privateKey;
@@ -332,6 +327,7 @@ export class AccountComponent implements OnInit {
     var identity = new BlockcoreIdentity(keyPairDid.toKeyPair(false));
 
     this.appState.identity = identity;
+    this.appState.key = keyPairDid;
 
     console.log(identity);
 
@@ -347,8 +343,6 @@ export class AccountComponent implements OnInit {
     // }
 
     console.log(address0);
-
-    debugger;
 
     this.router.navigateByUrl('/setup');
   }
