@@ -18,8 +18,9 @@
 </div>
 
 <mat-sidenav-container class="sidenav-container" *ngIf="appState.authenticated">
-  <mat-sidenav #drawer class="sidenav print-hidden" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
-    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
+  <mat-sidenav #drawer class="sidenav print-hidden" fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'" [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false">
 
     <mat-toolbar class="logo-icon" [matMenuTriggerFor]="animals">
       <img src="assets/blockcore-light-small.png">
@@ -70,39 +71,45 @@
 
       <mat-divider></mat-divider>
 
+
+      <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>apps</mat-icon>
+        <div mat-line>Apps</div>
+      </a>
+      <a mat-list-item [routerLink]="['/search']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>search</mat-icon>
+        <div mat-line>Search</div>
+      </a>
+      <a mat-list-item [routerLink]="['/hubs']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
+        <div mat-line>Hubs</div>
+      </a>
+      <!-- <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link">
+      <mat-icon mat-list-icon>forum</mat-icon>
+      <div mat-line>Forums</div>
+      </a>
+      <a mat-list-item [routerLink]="['/gateway']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>folder</mat-icon>
+        <div mat-line>Data</div>
+      </a>
+      <a mat-list-item [routerLink]="['/identity']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>account_circle</mat-icon>
+        <div mat-line>Identity</div>
+      </a>  -->
+
+      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon>perm_identity</mat-icon>
+        <div mat-line>Identity</div>
+      </a>
+
       <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
         <div mat-line>Settings</div>
       </a>
-      <!-- 
-      <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon>apps</mat-icon>
-    <div mat-line>Apps</div>
-  </a>
-  <a mat-list-item [routerLink]="['/search']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon>search</mat-icon>
-    <div mat-line>Search</div>
-  </a>
-  <a mat-list-item [routerLink]="['/hubs']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
-    <div mat-line>Hubs</div>
-  </a>
-  <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon>forum</mat-icon>
-    <div mat-line>Forums</div>
-  </a>
-  <a mat-list-item [routerLink]="['/gateway']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon>folder</mat-icon>
-    <div mat-line>Data</div>
-  </a>
-  <a mat-list-item [routerLink]="['/identity']" routerLinkActive="active-link">
-    <mat-icon mat-list-icon>account_circle</mat-icon>
-    <div mat-line>Identity</div>
-  </a>  -->
 
-      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
-        <mat-icon mat-list-icon>settings</mat-icon>
-        <div mat-line>Setup</div>
+      <a mat-list-item (click)="logout()" routerLinkActive="active-link" *ngIf="appState.authenticated">
+        <mat-icon mat-list-icon mat-list-icon>logout</mat-icon>
+        <div mat-line>Exit</div>
       </a>
 
     </mat-nav-list>

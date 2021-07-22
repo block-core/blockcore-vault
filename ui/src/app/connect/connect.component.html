@@ -8,7 +8,7 @@
   <div class="content">
     <!-- <h1>Connect to a Data Vault for Management</h1> -->
 
-    <mat-card class="profile-card">
+    <mat-card class="profile-card" [class.mat-elevation-z10]="true">
       <mat-card-header>
 
         <!-- <div mat-card-avatar></div> -->
@@ -35,15 +35,18 @@
 
         <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>DID or URL</mat-label>
-          <input matInput [(ngModel)]="vault" placeholder="Url or DID to Vault">
+          <input matInput [(ngModel)]="appState.vaultUrl" placeholder="Url or DID to Vault">
         </mat-form-field>
 
         <!-- <button mat-flat-button color="primary">Query</button> -->
 
         <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>Management Key (API)</mat-label>
-          <input matInput [(ngModel)]="key" placeholder="Key">
+          <input matInput [(ngModel)]="appState.apiKey" placeholder="Key">
         </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="appState.rememberLogin">Remember</mat-checkbox>
+        <br>
 
         <!-- <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>Id</mat-label>

@@ -105,6 +105,21 @@ export class AppComponent implements OnInit {
 
   }
 
+  logout() {
+    this.appState.authenticated = false;
+
+    // If user decided not to store API key, we'll reset the UI input on exit.
+    if (!this.appState.rememberLogin) {
+      this.appState.apiKey = '';
+      this.appState.vaultUrl = '';
+    }
+
+    this.appState.setup = null;
+    this.appState.vault = null;
+
+    this.router.navigateByUrl('/connect');
+  }
+
   parseToken(token: any[]) {
     const identity = token[0];
     const name = identity.user_claims.find((c: { typ: string; }) => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname').val;

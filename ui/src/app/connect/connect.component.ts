@@ -13,36 +13,31 @@ import { stringify } from '@angular/compiler/src/util';
 export class ConnectComponent {
   @HostBinding('class.content-centered') hostClass = true;
 
-  vault: string = 'http://localhost:3000';
-  key: string;
-
   constructor(
     private api: ApiService,
     private http: HttpClient,
-    private appState: ApplicationState,
+    public appState: ApplicationState,
     private router: Router,
     @Inject('BASE_URL') private baseUrl: string) {
 
+      // this.appState.vaultUrl = 'http://localhost:3000';
   }
 
   clear() {
-    this.vault = '';
-    this.key = '';
+    this.appState.vaultUrl = '';
+    this.appState.apiKey = '';
   }
 
   async connect() {
-    var lastCharacter = this.vault.charAt(this.vault.length - 1);
+    var lastCharacter = this.appState.vaultUrl.charAt(this.appState.vaultUrl.length - 1);
 
     if (lastCharacter != '/') {
-      this.vault = this.vault + '/';
+      this.appState.vaultUrl = this.appState.vaultUrl + '/';
     }
 
-    console.log('Connecting to ' + this.vault);
+    console.log('Connecting to ' + this.appState.vaultUrl);
 
-    this.appState.apiKey = this.key;
-    this.appState.vaultUrl = this.vault;
-
-    if (this.vault.indexOf('http') < -1) {
+    if (this.appState.vaultUrl.indexOf('http') < -1) {
       console.log('Perform DID query...');
       console.log('Currently unsupported!! Use direct URL.');
     }
@@ -50,7 +45,7 @@ export class ConnectComponent {
       console.log('Perform .well-known query...');
 
       var headers = new HttpHeaders();
-      headers = headers.append('Vault-Api-Key', this.key);
+      headers = headers.append('Vault-Api-Key', this.appState.apiKey);
 
       console.log('HEADERS:');
       console.log(headers);
