@@ -2,12 +2,21 @@
 
 Node Express app written in TypeScript.
 
+
 ## Setup
 
 To set up the application, first clone the repo. Then, install the dependencies by running npm:
 
 ```bash
 npm install
+```
+
+## Run All
+
+To quickly build both the UI and the Server and run it (without auto-reload):
+
+```bash
+npm run all
 ```
 
 ## Starting the Server
@@ -19,6 +28,7 @@ npm run dev
 ```
 
 The server should now be running on port 3000.
+
 
 ## Development, Testing & Production
 
@@ -39,6 +49,7 @@ Available options is `production`, `development`, `test`.
 
 The different configuration is available under `./config/env/*.ts`
 
+
 ## Docker
 
 The Dockerfile will take pre-built output and copy that into the image. The `docker-compose.yml` will build the dev image and run local instance of both 
@@ -51,6 +62,7 @@ $ npm run build
 $ docker-compose build
 $ docker-compose up
 ```
+
 
 ## Making Requests
 
@@ -69,6 +81,7 @@ The GET endpoint can be viewed simply by navigating to `http://localhost:3000`. 
 
 ## Controllers
 
+
 ### Vault ("Confidential Storage") API
 
 Allows CRUD operations over `DataVaultConfiguration`, allows a vault to have multiple parties that are allowed to post data to it.
@@ -86,6 +99,7 @@ Replication configuration is part of the vault creation operation.
 
 Vault type should be part of the vault creation operation. Vault types could be encrypted, unencrypted, immutable, mutable, etc.
 
+
 ### Identity ("DID") API
 
 Allows operations for decentralized identity (DID), including registering new DIDs, updating DID Documents and resolving DID Documents.
@@ -96,19 +110,23 @@ https://did.is/PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd
 
 The ID of this identity: `did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd`
 
+
 ### Server ("Management") API
 
 Allows a storage provider (administrator) to register and manage trusted Blockcore Vault instances to syncronize data with.
 
+
 ### .well-known API
 
 Allows for public discovery using known URLs to find DID, DID Configuration and Vault Configuration.
+
 
 ### Statistics ("Stats") API
 
 Used to retrieve various metrics recorded by the Blockcore Vault instance. This can be used to analyze the usage performed by various vault contributors.
 
 Data from this API is used to enforce throtteling rules that an administrator applies to individual vaults.
+
 
 # Using Blockcore Vault
 
@@ -125,6 +143,7 @@ When you connect with other Vault instances, you will always sync the full repos
 
 Other data will be synced based upon the configuration you setup on your Blockcore Vault UI.
 
+
 ## Register a trusted Vault
 
 TODO: When you want to add trust between two Blockcore Vault, you will from the Vault UI perform queries against the URL you provide.
@@ -140,6 +159,7 @@ TODO: When you want to add trust between two Blockcore Vault, you will from the 
 
 CURRENT: Currently the implementation of this is simplified and without any authentication or approval process.
 
+
 ## Data Sync
 
 When an vault adds another vault, that becomes a client-server relationship. There is not a "two-way" relationship, where the server opens connection or performs data sync operations.
@@ -151,6 +171,7 @@ Next step is to start download events from the server. If there is no previous s
 The server does not keep track of sync status of the connected clients. When the client is finished with sync, it will register itself into the "new data room" on Web Socket to be signaled to query for new data.
 
 All connections must be authenticated (to be implemented) to perform operations on the events API.
+
 
 ## Restrictions
 
@@ -172,6 +193,7 @@ Upon registration of a trusted vault, the user can decide if a full sync should 
 
 If a client vault receives an event, it will forward that to all registered and connected server vaults. 
 
+
 # Key Management
 
 The keys for identities is based upon standard HD-wallet practices with the specific purpose of 302.
@@ -190,6 +212,16 @@ Example:
 ```
 m/302'/616'/0'/0/0
 ```
+
+
+# UI
+
+Adding a new Vault can be done in two ways:
+
+- Entering the URL to the Vault, which uses .well-known URL to discover DID. DID Resolve is then performed.
+
+- Entering the DID to the Vault, which will perform DID Resolve and find the `EncryptedDataVault` (TBD) service registered in the DID Document. This should contain the endpoint for the Vault, which is then used to query the .well-known URL to grab additional metadata.
+
 
 # Vocabulary
 

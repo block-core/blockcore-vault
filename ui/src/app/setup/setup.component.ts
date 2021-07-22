@@ -12,7 +12,7 @@ import * as bip39 from 'bip39';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../shared/password-validation.directive';
 import { BlockcoreIdentity } from '@blockcore/identity';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-setup',
@@ -108,8 +108,14 @@ export class SetupComponent implements OnInit {
 
   save() {
     console.log('baseUrl: ' + this.baseUrl);
+    console.log('Vault URL: ' + this.appState.vaultUrl);
 
-    this.http.put<any>(this.baseUrl + 'management/setup', this.setupDocument).subscribe(result => {
+    var headers = new HttpHeaders();
+    headers = headers.append('Vault-Api-Key', this.appState.apiKey);
+
+    this.http.put<any>(this.appState.vaultUrl + 'management/setup', this.setupDocument, {
+      headers: headers
+    }).subscribe(result => {
       console.log('RESULT FROM UPDATE', result);
 
       if (result.success === true) {

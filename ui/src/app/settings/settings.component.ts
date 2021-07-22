@@ -28,6 +28,8 @@ export class SettingsComponent implements OnDestroy {
   templates = [];
   isEditing = false;
 
+  allowIncomingRequests = true;
+
   selectMessage(message: any) {
     console.log('SELECT:', message);
 

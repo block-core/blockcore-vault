@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { ApplicationState } from '../services/applicationstate.service';
+import { ApiService } from '../services/api.service';
 
 export interface Section {
   name: string;
@@ -14,7 +15,7 @@ export interface Section {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   /** Based on the screen size, switch from standard to one column per row */
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({ matches }) => {
@@ -88,7 +89,17 @@ export class DashboardComponent {
   ];
 
   constructor(private breakpointObserver: BreakpointObserver,
-    public appState: ApplicationState) {
+    public appState: ApplicationState,
+    private apiService: ApiService) {
     appState.title = 'Dashboard';
+  }
+
+  public stats: any;
+
+  ngOnInit() {
+    this.apiService.getStatistics().subscribe(result => {
+      this.stats = result;
+      console.log(this.stats);
+    }, error => console.error(error));
   }
 }

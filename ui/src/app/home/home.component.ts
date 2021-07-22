@@ -1,6 +1,7 @@
 import { Component, HostBinding } from '@angular/core';
 import { SetupService } from '../services/setup.service';
 import { Router } from '@angular/router';
+import { ApplicationState } from '../services/applicationstate.service';
 
 @Component({
   selector: 'app-home',
@@ -9,15 +10,23 @@ import { Router } from '@angular/router';
 export class HomeComponent {
   @HostBinding('class.content-centered') hostClass = true;
 
-  constructor(public setup: SetupService, private router: Router) {
+  constructor(
+    private appState: ApplicationState,
+    public setup: SetupService,
+    private router: Router) {
 
-    if (setup.setupComplete) {
-      router.navigateByUrl('/dashboard');
-    } else {
-      router.navigateByUrl('/setup/account');
+    // If there is no vault selected, we'll show the vault selection (connect) page.
+    if (!appState.vault) {
+      router.navigateByUrl('/connect');
+    }
+    else {
+      if (setup.setupComplete) {
+        router.navigateByUrl('/dashboard');
+      } else {
+        router.navigateByUrl('/setup/account');
+      }
     }
 
-    
     // if (!setup.setupComplete) {
     //   router.navigate(['/setup']);
     // } else {

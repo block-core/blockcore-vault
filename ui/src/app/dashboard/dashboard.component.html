@@ -11,11 +11,15 @@
         </mat-card-header>
 
         <mat-card-content class="dashboard-card-content">
-          <div>
-            45MB disk usage<br>
-            389MB network usage (daily)<br>
-            2 Gateway connections<br>
-            5 Hub connections<br>
+          <div *ngIf="stats">
+            ?MB disk usage<br>
+            ?MB network usage (daily)<br>
+            {{stats.identities}} Identities<br>
+            {{stats.operations}} Operations (Events)<br>
+            {{stats.servers - 1}} Data Vaults<br>
+            <br>
+            {{stats | json}}
+
           </div>
         </mat-card-content>
       </mat-card>

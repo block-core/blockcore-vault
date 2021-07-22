@@ -15,10 +15,20 @@ import { log } from './services/logger';
 import PubSub from 'pubsub-js';
 import { EventResponse, Paged, SyncState } from './types';
 import { processOperation } from "./controllers/identity";
+import { Setting } from "./data/models/setting";
 const https = require('https');
 const app = express();
 const DEV = true;
+const cors = require('cors');
 
+import { state } from './services/vault-state';
+
+const {
+  v1: uuidv1,
+  v4: uuidv4,
+} = require('uuid');
+
+app.use(cors());
 app.use(express.json());
 
 app.use(
@@ -231,6 +241,29 @@ async function seed() {
     // friends: [smith.id],
     // boss: smith.id
   })
+
+  // TODO: Initialize default settings only once.
+  await Setting.deleteMany({})
+
+  const apiKey = uuidv4();
+
+  const setting = await Setting.create({
+    id: 'did:is:test2',
+    allowIncomingRequests: true,
+    apiKey: apiKey
+    // friends: [smith.id],
+    // boss: smith.id
+  })
+
+  // Update the in-memory state with the apikey.
+  state.apiKey = apiKey;
+  state.settings = setting;
+
+  log.info('Your Management API Key is:');
+  log.info(apiKey);
+
+  log.info('state:');
+  log.info(JSON.stringify(state));
 }
 
 const syncpeers = [];

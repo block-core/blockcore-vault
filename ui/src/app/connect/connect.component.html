@@ -1,18 +1,14 @@
-<mat-sidenav-container class="container">
-  <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">
+<mat-toolbar class="logo-icon">
+  <img src="assets/blockcore-light-small.png">
+  <div>Data Vault</div>
+</mat-toolbar>
 
-    <div class="sidepanel-top" *ngIf="item">
+<div class="center">
 
-      <span *ngIf="!item._id">Create</span>
-      <span *ngIf="item._id">Edit</span>
+  <div class="content">
+    <!-- <h1>Connect to a Data Vault for Management</h1> -->
 
-      <button (click)="drawer.toggle()" mat-icon-button color="primary">
-        <mat-icon>close</mat-icon>
-      </button>
-
-    </div>
-
-    <mat-card class="profile-card" *ngIf="item">
+    <mat-card class="profile-card">
       <mat-card-header>
 
         <!-- <div mat-card-avatar></div> -->
@@ -20,7 +16,7 @@
         </mat-icon> -->
 
         <mat-card-title>Connect to Vault</mat-card-title>
-        <mat-card-subtitle>Connect to other vaults to sync data</mat-card-subtitle>
+        <mat-card-subtitle>Connect to a Data Vault for Management</mat-card-subtitle>
       </mat-card-header>
       <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
            alt="Photo of a Shiba Inu"> -->
@@ -39,10 +35,15 @@
 
         <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>DID or URL</mat-label>
-          <input matInput [(ngModel)]="item.url" placeholder="Url or DID to Vault" (blur)="onUrlEntered()">
+          <input matInput [(ngModel)]="vault" placeholder="Url or DID to Vault">
         </mat-form-field>
 
-        <button mat-flat-button color="primary" [disabled]="!item.url" (click)="saveEdit()">Query</button>
+        <!-- <button mat-flat-button color="primary">Query</button> -->
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Management Key (API)</mat-label>
+          <input matInput [(ngModel)]="key" placeholder="Key">
+        </mat-form-field>
 
         <!-- <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>Id</mat-label>
@@ -61,44 +62,18 @@
 
       </mat-card-content>
       <mat-card-actions>
-        <button mat-flat-button [disabled]="!item.id" color="primary" (click)="saveEdit()">Save</button>
-        <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+        <button mat-flat-button color="primary" (click)="connect()">Connect</button>
+        <button mat-stroked-button (click)="clear()">Clear</button>
       </mat-card-actions>
     </mat-card>
 
-    <!-- <mat-accordion class="example-headers-align" multi>
+    <br>
+    <p>
+      Want to learn more about Blockcore Data Vault? Check the documentation below.
+    </p>
 
-      
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Actions
-          </mat-panel-title>
-          <mat-panel-description>
-            Danger Zone
-            <mat-icon>build_circle</mat-icon>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <button mat-flat-button (click)="deleteItem(item)" color="warn">Delete</button>
-
-      </mat-expansion-panel>
-    </mat-accordion> -->
-
-  </mat-sidenav>
-
-  <div class="message-log">
-
-    <mat-selection-list [multiple]="false">
-      <mat-list-option *ngFor="let item of dataSource" (click)="selectItem(item)" [value]="item">
-
-        <mat-icon mat-list-icon>folder</mat-icon>
-        <div mat-line> {{item.id}} </div>
-        <div mat-line>{{item.name}}</div>
-
-      </mat-list-option>
-    </mat-selection-list>
-
+    <a href="https://www.blockcore.net" class="link">www.blockcore.net</a>
   </div>
 
-</mat-sidenav-container>
+
+</div>

@@ -51,28 +51,44 @@ export class ApiService {
       return headers;
    }
 
-   get<T>(url) {
+   getUrl<T>(url) {
       return this.http.get<T>(url, {
          headers: this.createAuthorizationHeader()
       });
    }
 
-   post<T>(url, data) {
+   postUrl<T>(url, data) {
       return this.http.post<T>(url, data, {
          headers: this.createAuthorizationHeader()
       });
    }
 
-   put<T>(url, data) {
+   putUrl<T>(url, data) {
       return this.http.put<T>(url, data, {
          headers: this.createAuthorizationHeader()
       });
    }
 
-   delete<T>(url) {
+   deleteUrl<T>(url) {
       return this.http.delete<T>(url, {
          headers: this.createAuthorizationHeader()
       });
+   }
+
+   get<T>(path) {
+      return this.getUrl<T>(this.appState.vaultUrl + path);
+   }
+
+   post<T>(path, data) {
+      return this.post<T>(this.appState.vaultUrl + path, data);
+   }
+
+   put<T>(path, data) {
+      return this.putUrl(this.appState.vaultUrl + path, data);
+   }
+
+   delete<T>(path) {
+      return this.deleteUrl(this.appState.vaultUrl + path);
    }
 
    async download(url, options = {}) {
@@ -93,7 +109,7 @@ export class ApiService {
    }
 
    async downloadRelative(path, options = {}) {
-      return this.download(this.baseUrl + path, options);
+      return this.download(this.appState.vaultUrl + path, options);
    }
 
    async request(url, options = {}) {
@@ -103,49 +119,53 @@ export class ApiService {
    }
 
    async requestRelative(path, options = {}) {
-      console.log('DOWNLOADING:', this.baseUrl + path);
-      const response = await fetch(this.baseUrl + path, options);
+      console.log('DOWNLOADING:', this.appState.vaultUrl + path);
+      const response = await fetch(this.appState.vaultUrl + path, options);
       return response;
    }
 
-   async loadSetup(chain: string) {
-      const setup = await this.download('https://chains.blockcore.net/chains/' + chain.toUpperCase() + '.json');
-      this.baseUrl = setup.Explorer.Indexer.ApiUrl;
+   // async loadSetup(chain: string) {
+   //    const setup = await this.download('https://chains.blockcore.net/chains/' + chain.toUpperCase() + '.json');
+   //    this.baseUrl = setup.Explorer.Indexer.ApiUrl;
 
-      // Remove the trailing / as we expect all URLs we build up expect it.
-      if (this.baseUrl.endsWith('/')) {
-         this.baseUrl = this.baseUrl.substring(0, this.baseUrl.length - 1);
-      }
+   //    // Remove the trailing / as we expect all URLs we build up expect it.
+   //    if (this.baseUrl.endsWith('/')) {
+   //       this.baseUrl = this.baseUrl.substring(0, this.baseUrl.length - 1);
+   //    }
 
-      // if (environment.useLocalIndexer) {
-      //    this.baseUrl = 'http://localhost:9910/api';
-      // }
+   //    // if (environment.useLocalIndexer) {
+   //    //    this.baseUrl = 'http://localhost:9910/api';
+   //    // }
 
-      return setup;
-   }
+   //    return setup;
+   // }
 
-   async loadSetups() {
-      return this.download('https://chains.blockcore.net/CHAINS.json');
+   // async loadSetups() {
+   //    return this.download('https://chains.blockcore.net/CHAINS.json');
+   // }
+
+   getStatistics() {
+      return this.get('management/statistics');
    }
 
    async getInfo() {
-      return this.downloadRelative('/stats/info');
+      return this.downloadRelative('stats/info');
    }
 
    async getLastBlock(transactions: boolean = true) {
-      return this.downloadRelative('/query/block/latest');
+      return this.downloadRelative('query/block/latest');
    }
 
    async getBlocks(offset: number, limit: number) {
-      return this.downloadRelative('/query/block?offset=' + offset + '&limit=' + limit);
+      return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
    async getBlocksRequest(offset: number, limit: number) {
-      return this.downloadRelative('/query/block?offset=' + offset + '&limit=' + limit);
+      return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
    async getBlockByHeight(index: number) {
-      return this.downloadRelative('/query/block/index/' + index);
+      return this.downloadRelative('query/block/index/' + index);
    }
 
    async getBlockByHash(hash: string) {

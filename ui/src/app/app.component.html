@@ -13,7 +13,11 @@
   </div>
 </div> -->
 
-<mat-sidenav-container class="sidenav-container">
+<div *ngIf="!appState.authenticated">
+  <router-outlet></router-outlet>
+</div>
+
+<mat-sidenav-container class="sidenav-container" *ngIf="appState.authenticated">
   <mat-sidenav #drawer class="sidenav print-hidden" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
 
@@ -23,8 +27,9 @@
     </mat-toolbar>
 
     <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
-      <button mat-menu-item [matMenuTriggerFor]="accounts">Account</button>
-      <button mat-menu-item [matMenuTriggerFor]="servers">Server</button>
+      <button mat-menu-item [routerLink]="['/vaults/add']">Add Vault...</button>
+      <!-- <button mat-menu-item [matMenuTriggerFor]="accounts">Account</button> -->
+      <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button>
     </mat-menu>
 
     <mat-menu #accounts="matMenu">
@@ -47,6 +52,11 @@
         <mat-icon mat-list-icon mat-list-icon>shield</mat-icon>
         <div mat-line>Vaults</div>
       </a>
+
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon mat-list-icon>shield</mat-icon>
+        <div mat-line>Vaults</div>
+      </a>
       <!-- 
        <a mat-list-item [routerLink]="['/messages']" routerLinkActive="active-link">
         <mat-icon mat-list-icon mat-list-icon>message</mat-icon>
@@ -57,6 +67,8 @@
         <mat-icon mat-list-icon mat-list-icon>people_alt</mat-icon>
         <div mat-line>Identities</div>
       </a> -->
+
+      <mat-divider></mat-divider>
 
       <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>

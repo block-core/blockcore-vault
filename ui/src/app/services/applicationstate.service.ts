@@ -23,17 +23,23 @@ export class ApplicationState {
    key: any;
 
    setup: any;
+   
+   vault: any;
+
+   authenticated: boolean;
+
+   vaultUrl: string;
 
    // apiKey: string;
 
-   #apiKey: string = '';
+   private _apiKey: string = '';
 
    get apiKey(): string {
-      return this.#apiKey;
+      return this._apiKey;
    }
 
    set apiKey(value: string) {
-      this.#apiKey = value;
+      this._apiKey = value;
       localStorage.setItem('DataVault:ApiKey', value);
    }
 
@@ -41,7 +47,7 @@ export class ApplicationState {
       const existingKey = localStorage.getItem('DataVault:ApiKey');
 
       if (existingKey != null) {
-         this.#apiKey = existingKey;
+         this._apiKey = existingKey;
       }
    }
 }

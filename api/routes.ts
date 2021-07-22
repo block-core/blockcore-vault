@@ -2,8 +2,10 @@ import { getEvents, latestEvent, totalEvents } from "./controllers/event";
 // import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, updateLocalServer, updateServer } from "./controllers/server";
+import { getStatistics } from "./controllers/stats";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
 import { wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
+import { authentication } from "./middleware/authentication";
 import { requestLogger } from "./middleware/requestLogger";
 import { Route } from "./types";
 
@@ -80,47 +82,46 @@ export const routes: Route[] = [
   {
     method: "get",
     path: "/management/server",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: getServers,
   },
   {
     method: "get",
     path: "/management/server/:id",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: getServer,
   },
   {
     method: "post",
     path: "/management/server",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: createServer,
   },
   {
     method: "put",
     path: "/management/server/:id",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: updateServer,
   },
   {
     method: "delete",
     path: "/management/server/:id",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: deleteServer,
   },
 
   {
     method: "get",
     path: "/management/setup",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: getLocalServer,
   },
   {
     method: "put",
     path: "/management/setup",
-    middleware: [requestLogger],
+    middleware: [requestLogger, authentication],
     handler: updateLocalServer,
   },
-
 
   {
     method: "post",
@@ -128,7 +129,12 @@ export const routes: Route[] = [
     middleware: [requestLogger],
     handler: handleOperation,
   },
-
+  {
+    method: "get",
+    path: "/management/statistics",
+    middleware: [requestLogger, authentication],
+    handler: getStatistics,
+  },
 
   // {
   //   method: "get",

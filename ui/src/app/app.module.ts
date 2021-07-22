@@ -19,7 +19,6 @@ import { ScrollDirective } from './shared/scroll.directive';
 import { AgoPipe } from './shared/ago.pipe';
 import { TimestampPipe } from './shared/timestamp.pipe';
 import { SizePipe } from './shared/size.pipe';
-import { TickerComponent } from './ticker/ticker.component';
 import { LoadingResolverService } from './shared/loading.resolver';
 import { TransactionComponent } from './explorer/transaction/transaction.component';
 import { AmountPipe } from './shared/amount';
@@ -66,6 +65,9 @@ import { VaultsComponent } from './vaults/vaults.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AccountComponent } from './setup/account/account.component';
+import { VaultAddComponent } from './vaults/add/add.component';
+import { ConnectComponent } from './connect/connect.component';
+import { AuthGuardService } from './services/auth-guard.service';
 
 
 
@@ -87,7 +89,6 @@ import { AccountComponent } from './setup/account/account.component';
     TimestampPipe,
     SizePipe,
     AmountPipe,
-    TickerComponent,
     TransactionComponent,
     SearchComponent,
     ErrorComponent,
@@ -109,7 +110,9 @@ import { AccountComponent } from './setup/account/account.component';
     ValuesComponent,
     StateComponent,
     VaultsComponent,
-    AccountComponent
+    VaultAddComponent,
+    AccountComponent,
+    ConnectComponent
   ],
   imports: [
     BrowserModule,
@@ -147,7 +150,7 @@ import { AccountComponent } from './setup/account/account.component';
   exports: [
     ScrollDirective,
   ],
-  providers: [],
+  providers: [AuthGuardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

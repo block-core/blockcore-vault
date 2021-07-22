@@ -4,6 +4,10 @@
     <input matInput [(ngModel)]="appState.apiKey" placeholder="Vault API Key">
   </mat-form-field>
 
+  <br>
+  <mat-checkbox [(ngModel)]="allowIncomingRequests">Allow Incoming Requests</mat-checkbox>
+  <br>
+
 </div>
 <!-- <mat-sidenav-container class="container">
   <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">

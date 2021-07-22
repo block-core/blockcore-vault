@@ -1,16 +1,16 @@
 import { Component, ViewChild, Inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import { ApplicationState } from '../services/applicationstate.service';
-import { HubService } from '../services/hub.service';
+import { ApplicationState } from '../../services/applicationstate.service';
+import { HubService } from '../../services/hub.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../services/api.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
-  selector: 'app-vaults',
-  templateUrl: './vaults.component.html',
-  styleUrls: ['./vaults.component.css'],
+  selector: 'app-vault-add',
+  templateUrl: './add.component.html',
+  styleUrls: ['./add.component.css'],
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({ height: '0px', minHeight: '0' })),
@@ -19,7 +19,7 @@ import { ApiService } from '../services/api.service';
     ]),
   ],
 })
-export class VaultsComponent implements OnDestroy {
+export class VaultAddComponent implements OnDestroy {
   displayedColumns = ['category', 'title'];
   dataSource = [];
   columnsToDisplay = ['category', 'title'];
@@ -40,11 +40,11 @@ export class VaultsComponent implements OnDestroy {
 
     console.log(this.baseUrl);
 
-    this.baseUrl = 'http://localhost:3000/';
+    this.baseUrl = 'http://localhost:5000/';
 
     console.log(this.baseUrl);
 
-    appState.title = 'Vaults';
+    appState.title = 'Vaults / Add';
     appState.actions = [{ icon: 'add_circle', tooltip: 'Add new vault', click: () => { this.addNew(); } }];
 
     this.loadItems();
@@ -79,7 +79,8 @@ export class VaultsComponent implements OnDestroy {
   }
 
   onUrlEntered() {
-    if (this.item.url?.indexOf('/') == -1) { // DID
+
+    if (this.item.url.indexOf('/') == -1) { // DID
       // this.item.url += '/';
     }
     else { // URL
