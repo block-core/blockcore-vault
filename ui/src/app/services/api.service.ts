@@ -36,7 +36,7 @@ export class ApiService {
       private http: HttpClient,
       private appState: ApplicationState
    ) {
-
+      console.log('CREATING INSTANCE OF API SERVICE!!');
    }
 
    createAuthorizationHeader(headers?: HttpHeaders): HttpHeaders {

@@ -82,9 +82,6 @@ export class AppComponent implements OnInit {
       this.welcomeVisible = false;
     }, 5000);
 
-    // Initial loading.
-    this.setup.getChains();
-
     this.activatedRoute.paramMap.subscribe(async params => {
 
       console.log('PARAMS:', params);

@@ -45,7 +45,7 @@ export class VaultsComponent implements OnDestroy {
     console.log(this.baseUrl);
 
     appState.title = 'Vaults';
-    appState.actions = [{ icon: 'add_circle', tooltip: 'Add new vault', click: () => { this.addNew(); } }];
+    appState.actions = [{ icon: 'add_circle', tooltip: 'Connect to Vault', click: () => { this.addNew(); } }];
 
     this.loadItems();
   }

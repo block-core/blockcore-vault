@@ -4,6 +4,7 @@ import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
 import { Router } from '@angular/router';
 import { stringify } from '@angular/compiler/src/util';
+import { VaultService } from '../services/vault.service';
 
 @Component({
   selector: 'app-connect',
@@ -16,28 +17,73 @@ export class ConnectComponent {
   constructor(
     private api: ApiService,
     private http: HttpClient,
+    public vaultService: VaultService,
     public appState: ApplicationState,
     private router: Router,
     @Inject('BASE_URL') private baseUrl: string) {
 
-      // this.appState.vaultUrl = 'http://localhost:3000';
+    // this.appState.vaultUrl = 'http://localhost:3000';
+
+    this.clear();
   }
 
   clear() {
-    this.appState.vaultUrl = '';
-    this.appState.apiKey = '';
+    // this.appState.vaultUrl = '';
+    // this.appState.apiKey = '';
+
+    this.vault = {
+      remember: true
+    };
+  }
+
+  get hasVaultSelected(): boolean {
+    return this._vault.id;
+  }
+
+  private _vault: any;
+
+  get vault(): any {
+    return this._vault;
+  }
+
+  set vault(value: any) {
+    if (!value) {
+      value = {
+        remember: true
+      };
+    }
+
+    this._vault = value;
+    console.log(value);
+
+    if (value) {
+      this.appState.vaultUrl = value.url;
+      this.appState.apiKey = value.key;
+      this.appState.rememberLogin = value.remember;
+    }
+    else {
+      this.appState.vaultUrl = '';
+      this.appState.apiKey = '';
+    }
+  }
+
+  //vaults = [{ id: 'localhost', name: 'localhost', url: 'http://localhost:3000', remember: true, key: '5768ae34-5749-4a02-b67a-734b0cccfa9a' }, { id: 'did:is:PTlsaksjkluihJHjk123hf', name: 'did:is:PTlsaksjkluihJHjk123hf', url: 'https://vault1.blockcore.net', remember: false }];
+
+  remove(vault) {
+    this.vaultService.removeVault(vault);
+    this.clear();
   }
 
   async connect() {
-    var lastCharacter = this.appState.vaultUrl.charAt(this.appState.vaultUrl.length - 1);
+    var lastCharacter = this.vault.url.charAt(this.vault.url.length - 1);
 
     if (lastCharacter != '/') {
-      this.appState.vaultUrl = this.appState.vaultUrl + '/';
+      this.vault.url = this.vault.url + '/';
     }
 
-    console.log('Connecting to ' + this.appState.vaultUrl);
+    console.log('Connecting to ' + this.vault.url);
 
-    if (this.appState.vaultUrl.indexOf('http') < -1) {
+    if (this.vault.url.indexOf('http') < -1) {
       console.log('Perform DID query...');
       console.log('Currently unsupported!! Use direct URL.');
     }
@@ -45,21 +91,37 @@ export class ConnectComponent {
       console.log('Perform .well-known query...');
 
       var headers = new HttpHeaders();
-      headers = headers.append('Vault-Api-Key', this.appState.apiKey);
+      headers = headers.append('Vault-Api-Key', this.vault.key);
 
       console.log('HEADERS:');
       console.log(headers);
 
-      this.http.get<any>(this.appState.vaultUrl + '.well-known/did-configuration.json', {
+      this.http.get<any>(this.vault.url + '.well-known/did-configuration.json', {
         headers: headers
       }).subscribe(result => {
         console.log('RESULT: ', result);
 
-        this.http.get<any>(this.appState.vaultUrl + 'management/setup', {
+        this.http.get<any>(this.vault.url + 'management/setup', {
           headers: headers
         }).subscribe(result => {
           console.log('RESULT: ', result);
 
+          if (!this.hasVaultSelected) {
+            // Query and authentication went well, register the vault.
+
+            // We don't know the name yet, so we'll use the URL.
+            this.vault.name = this.vault.url;
+
+            // Generate a random local unique ID for this vault.
+            this.vault.id = Math.floor((Math.random() * 100000) + 1);;
+
+            this.vaultService.addVault(this.vault);
+          }
+
+          // The user might have updated the Api Key, make sure we persist the vaults.
+          this.vaultService.persist();
+
+          // Make the current vault available in the app state.
           this.appState.vault = result;
           this.appState.setup = result;
           this.appState.authenticated = true;

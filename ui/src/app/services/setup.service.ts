@@ -4,6 +4,22 @@ import { ApiService } from './api.service';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { Router, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { Component, HostBinding, OnInit } from '@angular/core';
+import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, fadeInUpOnEnterAnimation, bounceOutDownOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation } from 'angular-animations';
+import { verifyJWT } from 'did-jwt';
+import * as didJWT from 'did-jwt';
+import { Resolver } from 'did-resolver';
+import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
+import { Issuer } from 'did-jwt-vc';
+import * as bip39 from 'bip39';
+import * as bip32 from 'bip32';
+import * as bs58 from 'bs58';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { payments } from 'bitcoinjs-lib';
+import { BlockcoreIdentity, Identity, BlockcoreIdentityTools } from '@blockcore/identity';
+import { IdentityComponent } from 'src/app/identity/identity.component';
+// import { BlockcoreIdentityIssuer } from 'blockcore-identity';
+import { keyUtils, Secp256k1KeyPair } from '@transmute/did-key-secp256k1';
 
 @Injectable({
    providedIn: 'root'
@@ -21,6 +37,10 @@ export class SetupService {
    initialized = false;
 
    setupComplete = false;
+
+   // get setupComplete(): boolean {
+   //    return this.wallet != null;
+   // }
 
    // Both SubjectBehavior and Behavior, depending on consumer.
    // The "currentChainSubject$" will return current value as soon as subscribed.
@@ -41,14 +61,14 @@ export class SetupService {
 
    did: string;
 
-   #wallet: any = '';
+   private _wallet: any = '';
 
    get wallet(): any {
-      return this.#wallet;
+      return this._wallet;
    }
 
    set wallet(value: any) {
-      this.#wallet = value;
+      this._wallet = value;
       localStorage.setItem('DataVault:Wallet', JSON.stringify(value));
    }
 
@@ -60,54 +80,84 @@ export class SetupService {
       const existingKey = localStorage.getItem('DataVault:Wallet');
 
       if (existingKey != null) {
-         this.#wallet = JSON.parse(existingKey);
-      }
-   }
+         this._wallet = JSON.parse(existingKey);
 
-   async getChains() {
-      // const data = await this.api.loadSetups();
-      // this.chains = data;
-      // console.log('CHAINS:', this.chains);
-   }
+         // Parse the wallet and create identity objects.
+         const wallet = this.wallet;
 
-   // Important that this is async and we wait for continued processing,
-   // as we must have the chain setup as early as possible.
-   async setChain(chain: string) {
-      // if (chain !== 'BLOCKCORE' && this.current === chain) {
-      //    console.log('CURRENT CHAIN IS SAME!');
+         // var network = this.getProfileNetwork();
 
-      //    // Update the chain subject, which should trigger consumers to do some processing.
-      //    this.current = chain;
+         // const decryptedMasterNodeKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
+         // const decryptedMasterNode = bip32.fromPrivateKey(decryptedMasterNodeKey.privateKey, wallet.chainCode, network);
+         // const accountNodePrivate = decryptedMasterNode.derivePath(this.getPath()); // m/302'/616'
 
-      //    return;
-      // }
+         // console.log('decrypted!');
+         // console.log(decryptedMasterNodeKey);
+         // console.log(decryptedMasterNode);
+         // console.log(accountNodePrivate);
 
-      // // Make sure we have downloaded the setup before we trigger change.
-      // const data = await this.api.loadSetup(chain);
+         // const stop = new Date().getTime();
 
-      // this.data = data;
-      // this.Chain = this.data.Chain;
-      // this.Network = this.data.Network;
-      // this.Indexer = this.data.Indexer;
-      // this.Explorer = this.data.Explorer;
+         // const diff = stop - start;
+         // console.log(diff + 'ms taken to decrypt.');
 
-      // // Update the chain subject, which should trigger consumers to do some processing.
-      // this.current = chain;
-      // console.log(this.Chain);
+         // const xpubkey = wallet.extPubKey;
+         // const root = bip32.fromBase58(xpubkey, network);
+         // const accountNodeRestored = bip32.fromBase58(xpubkey, network);
 
-      // if (this.Chain?.Color) {
-      //    document.documentElement.style.setProperty('--accent', this.Chain?.Color);
-      // }
+         // console.log(accountNodeRestored);
 
-      return null;
-   }
+         // const accountNodePrivate = accountNodeRestored; // .derivePath(this.getPath()); // m/302'/616'
 
-   featureEnabled(feature) {
-      // If feature is something and it is explicit set to false, hide.
-      if (feature === false) {
-         return false;
-      } else {
-         return true;
+         // const identity0 = accountNodePrivate.derivePath("0");
+         // const identity1 = accountNodePrivate.derivePath("1");
+         // // const accountNodeRestored = root.derivePath(this.getPurpose() + "/0'/0'");
+
+         // // Get the first identity, which is the only one we use for vault instances.
+         // const address0 = this.getAddress(identity0, network);
+         // const address1 = this.getAddress(identity1, network);
+
+         // const tools = new BlockcoreIdentityTools();
+
+         // accountNode.privateKey;
+         // accountNode.publicKey;
+
+         // const didJwk = keyUtils.privateKeyJwkFromPrivateKeyHex(
+         //    identity0.privateKey.toString('hex')
+         // );
+
+         // const didPublicKeyBase58 = bs58.encode(identity0.publicKey);
+
+         // let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: identity0.privateKey.toString('hex') });
+         // // let keyPairWebKey = await didKeyPair.toJsonWebKeyPair(true);
+
+         // console.log(didJwk);
+         // console.log(keyPairDid);
+
+         // // let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: didKeyPair.privateKeyBuffer?.toString('hex') });
+         // // let keyPairWebKey = await didJwk.toJsonWebKeyPair(true);
+
+         // // var tools = new BlockcoreIdentityTools();
+         // // return tools.generateKeyPair()
+         // var identity = new BlockcoreIdentity(keyPairDid.toKeyPair(false));
+
+         // this.appState.identity = identity;
+         // this.appState.key = keyPairDid;
+
+         // console.log(identity);
+
+         // this.did = address0;
+
+         // eslint-disable-next-line @typescript-eslint/prefer-for-of
+         // for (let i = 0; i < 2; i++) {
+         //     // TODO: Find the last used indexed from querying indexer (persisted to IndexedDB locally)
+         //     var path = root.derivePath('0/' + i);
+         //     const address = this.getAddress(path, network);
+         //     unusedAddresses.push(address);
+         //     console.log('0/' + i);
+         // }
+
+         // console.log(address0);
       }
    }
 }

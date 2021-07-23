@@ -14,23 +14,23 @@
 
 <nav class="menu">
   <ul *ngIf="setup.current != 'BLOCKCORE'">
-    <li class="nav-item" *ngIf="setup.featureEnabled(setup.Explorer?.Features?.Ticker)">
+    <li class="nav-item">
       <a class="nav-link" [routerLinkActive]="['link-active']" [routerLinkActiveOptions]="{ exact: true }"
         [routerLink]="[setup.current]">Dashboard</a>.
     </li>
     <li class="nav-item">
       <a class="nav-link" [routerLinkActive]="['link-active']" [routerLink]="[setup.current, 'hubs']">Hubs</a>.
     </li>
-    <li class="nav-item" *ngIf="setup.featureEnabled(setup.Explorer?.Features?.Explorer)">
+    <li class="nav-item" >
       <a class="nav-link" [routerLinkActive]="['link-active']" [routerLink]="[setup.current, 'explorer']">Explorer</a>.
     </li>
-    <li class="nav-item" *ngIf="setup.featureEnabled(setup.Explorer?.Features?.Network)">
+    <li class="nav-item" >
       <a class="nav-link" [routerLinkActive]="['link-active']" [routerLink]="[setup.current, 'network']">Network</a>.
     </li>
-    <li class="nav-item" *ngIf="setup.featureEnabled(setup.Explorer?.Features?.API)">
+    <li class="nav-item">
       <a class="nav-link" [routerLinkActive]="['link-active']" [routerLink]="[setup.current, 'api']">API</a>.
     </li>
-    <li class="nav-item" *ngIf="setup.featureEnabled(setup.Explorer?.Features?.About)">
+    <li class="nav-item">
       <a class="nav-link" [routerLinkActive]="['link-active']" [routerLink]="[setup.current, 'about']">About</a>.
     </li>
   </ul>
