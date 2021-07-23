@@ -38,9 +38,18 @@
         <mat-checkbox [(ngModel)]="vault.remember">Remember API key</mat-checkbox>
         <br>
 
+        <div class="error-list">
+          <mat-chip-list *ngIf="error">
+
+            <mat-chip *ngIf="error" color="warn" selected (removed)="removeError(this)">{{error}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+
       </mat-card-content>
       <mat-card-actions>
-        <button mat-flat-button color="primary" (click)="connect()">Connect</button>
+        <button mat-flat-button color="primary" [disabled]="!vault.url" (click)="connect()">Connect</button>
         <button mat-stroked-button (click)="clear()">Clear</button>
         <button mat-stroked-button color="warn" *ngIf="hasVaultSelected" (click)="remove(this.vault)">Remove</button>
       </mat-card-actions>

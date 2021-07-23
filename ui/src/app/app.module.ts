@@ -68,7 +68,7 @@ import { AccountComponent } from './setup/account/account.component';
 import { VaultAddComponent } from './vaults/add/add.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService } from './services/auth-guard.service';
-
+import { MatChipsModule } from '@angular/material/chips';
 
 
 @NgModule({
@@ -145,7 +145,8 @@ import { AuthGuardService } from './services/auth-guard.service';
     MatExpansionModule,
     MatTableModule,
     MatStepperModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatChipsModule
   ],
   exports: [
     ScrollDirective,

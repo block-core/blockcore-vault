@@ -1,5 +1,5 @@
 import { Component, Inject, HostBinding } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
 import { Router } from '@angular/router';
@@ -34,6 +34,36 @@ export class ConnectComponent {
     this.vault = {
       remember: true
     };
+  }
+
+  error: string;
+
+  removeError(chip: any): void {
+    this.error = '';
+  }
+
+  handleError(error: any) {
+    console.error(error);
+
+    if (error instanceof HttpErrorResponse) {
+      if (error.error instanceof ErrorEvent) {
+        this.error = `Error: ${error.message}`;
+      } else {
+        switch (error.status) {
+          case 401:      //login
+            this.error = `Error: ${error.statusText} (${error.status})`;
+            break;
+          case 403:     //forbidden
+            this.error = `Error: ${error.statusText} (${error.status})`;
+            break;
+          default:
+            this.error = `Error: ${error.statusText} (${error.status})`;
+            break;
+        }
+      }
+    } else {
+      this.error = `Error: Uknown error happened.`;
+    }
   }
 
   get hasVaultSelected(): boolean {
@@ -75,6 +105,11 @@ export class ConnectComponent {
   }
 
   async connect() {
+    if (!this.vault.url) {
+      this.error = 'The DID or URL is missing.';
+      return;
+    }
+
     var lastCharacter = this.vault.url.charAt(this.vault.url.length - 1);
 
     if (lastCharacter != '/') {
@@ -91,7 +126,10 @@ export class ConnectComponent {
       console.log('Perform .well-known query...');
 
       var headers = new HttpHeaders();
-      headers = headers.append('Vault-Api-Key', this.vault.key);
+
+      if (this.vault.key) {
+        headers = headers.append('Vault-Api-Key', this.vault.key);
+      }
 
       console.log('HEADERS:');
       console.log(headers);
@@ -128,9 +166,13 @@ export class ConnectComponent {
 
           this.router.navigateByUrl('/');
 
-        }, error => console.error(error));
+        }, error => {
+          this.handleError(error);
+        });
 
-      }, error => console.error(error));
+      }, error => {
+        this.handleError(error);
+      });
 
     }
   }
