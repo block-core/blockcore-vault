@@ -124,6 +124,21 @@ export class AppComponent implements OnInit {
     this.welcomeName = name;
   }
 
+  connectTo(vault: any) {
+    this.appState.key = '';
+    this.appState.vaultUrl = '';
+
+    if (!vault) {
+      // this.appState.key = '';
+      // this.appState.vaultUrl = '';
+      this.router.navigate(['/connect']);
+    } else {
+      // this.appState.apiKey = vault.apiKey;
+      // this.appState.vaultUrl = vault.vaultUrl;
+      this.router.navigate(['/connect', vault.id]);
+    }
+  }
+
   // getName() {
   //   this.http.get<any>(this.baseUrl + '.auth/me').subscribe(result => {
   //     this.parseToken(result);

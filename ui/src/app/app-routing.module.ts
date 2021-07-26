@@ -172,6 +172,11 @@ const routes: Routes = [
       chain: LoadingResolverService
     }
   },
+  {
+    path: 'connect/:id', component: ConnectComponent, resolve: {
+      chain: LoadingResolverService
+    }
+  },
   // {
   //   path: ':chain', component: TickerComponent, resolve: {
   //     chain: LoadingResolverService

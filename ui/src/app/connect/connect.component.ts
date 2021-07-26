@@ -2,7 +2,7 @@ import { Component, Inject, HostBinding } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { stringify } from '@angular/compiler/src/util';
 import { VaultService } from '../services/vault.service';
 
@@ -20,7 +20,10 @@ export class ConnectComponent {
     public vaultService: VaultService,
     public appState: ApplicationState,
     private router: Router,
+    private route: ActivatedRoute,
     @Inject('BASE_URL') private baseUrl: string) {
+
+
 
     // this.appState.vaultUrl = 'http://localhost:3000';
 
@@ -40,6 +43,20 @@ export class ConnectComponent {
 
   removeError(chip: any): void {
     this.error = '';
+  }
+
+  ngOnInit(): void {
+
+    this.appState.vault = null;
+    this.appState.authenticated = false;
+
+    const id = this.route.snapshot.paramMap.get('id');
+    var vault = this.vaultService.vaults.find(v => v.id == id);
+
+    if (vault) {
+      this.vault = vault;
+    }
+
   }
 
   handleError(error: any) {

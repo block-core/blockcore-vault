@@ -28,7 +28,7 @@
     </mat-toolbar>
 
     <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
-      <button mat-menu-item [routerLink]="['/vaults/add']">Add Vault...</button>
+      <button mat-menu-item (click)="connectTo(null)">Connect to new...</button>
       <!-- <button mat-menu-item [matMenuTriggerFor]="accounts">Account</button> -->
       <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button>
     </mat-menu>
@@ -39,8 +39,7 @@
     </mat-menu>
 
     <mat-menu #servers="matMenu">
-      <button mat-menu-item>vault.blockcore.net</button>
-      <button mat-menu-item>vault.liberstad.com</button>
+      <button mat-menu-item (click)="connectTo(vault)" *ngFor="let vault of vaultService.vaults" [value]="vault">{{vault.name}}</button>
     </mat-menu>
 
     <mat-nav-list class="menu-options">
