@@ -9,6 +9,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { ApplicationState } from './services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation, fadeInUpAnimation, fadeOutDownAnimation, fadeInUpOnEnterAnimation, fadeOutDownOnLeaveAnimation, zoomOutOnLeaveAnimation, fadeOutLeftOnLeaveAnimation, fadeOutLeftBigOnLeaveAnimation, bounceOutLeftOnLeaveAnimation, fadeInDownOnEnterAnimation, fadeOutUpOnLeaveAnimation } from 'angular-animations';
 import { HttpClient } from '@angular/common/http';
+import { VaultService } from './services/vault.service';
 
 @Component({
   selector: 'app-root',
@@ -48,6 +49,7 @@ export class AppComponent implements OnInit {
     private http: HttpClient,
     @Inject('BASE_URL') private baseUrl: string,
     public appState: ApplicationState,
+    public vaultService: VaultService,
     private api: ApiService,
     private setup: SetupService,
     private router: Router,
@@ -111,7 +113,6 @@ export class AppComponent implements OnInit {
       this.appState.vaultUrl = '';
     }
 
-    this.appState.setup = null;
     this.appState.vault = null;
 
     this.router.navigateByUrl('/connect');

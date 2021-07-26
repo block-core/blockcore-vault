@@ -110,6 +110,8 @@ export class ConnectComponent {
       return;
     }
 
+    this.vaultService.vault = this.vault;
+
     var lastCharacter = this.vault.url.charAt(this.vault.url.length - 1);
 
     if (lastCharacter != '/') {
@@ -161,7 +163,6 @@ export class ConnectComponent {
 
           // Make the current vault available in the app state.
           this.appState.vault = result;
-          this.appState.setup = result;
           this.appState.authenticated = true;
 
           this.router.navigateByUrl('/');

@@ -11,8 +11,10 @@ import { Issuer } from 'did-jwt-vc';
 import * as bip39 from 'bip39';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../shared/password-validation.directive';
-import { BlockcoreIdentity } from '@blockcore/identity';
+import { BlockcoreIdentity, BlockcoreIdentityTools } from '@blockcore/identity';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AccountService } from '../services/account.service';
+import { VaultService } from '../services/vault.service';
 
 @Component({
   selector: 'app-setup',
@@ -47,6 +49,7 @@ export class SetupComponent implements OnInit {
 
   setupDocument: any;
   setupDocumentJson: any;
+  password: string;
 
   mnemonic: string;
   seedExtension = '';
@@ -76,12 +79,24 @@ export class SetupComponent implements OnInit {
     public setup: SetupService,
     private fb: FormBuilder,
     private router: Router,
+    private accountService: AccountService,
+    private vaultService: VaultService,
     public appState: ApplicationState) {
     appState.title = 'Setup';
 
     this.id = setup.did;
 
     console.log(this.appState);
+
+
+    if (this.appState.vault) {
+      const vault = this.appState.vault;
+
+      this.id = vault.id;
+      this.url = vault.url;
+      this.name = vault.name;
+      this.enabled = vault.enabled;
+    }
 
     // When we are not in multichain mode, redirect to chain-home.
     // if (!setup.multiChain) {
@@ -120,25 +135,64 @@ export class SetupComponent implements OnInit {
 
       if (result.success === true) {
 
-        this.appState.setup = this.setupDocument;
-        this.appState.account = true;
+        this.appState.vault = this.setupDocument;
         this.router.navigateByUrl('/dashboard');
       }
     }, error => console.error(error));
   }
 
+  error: string;
+
+  removeError(): void {
+    this.error = '';
+  }
+
   async saveEdit() {
-    // private key User:
-    const privateKeyWif = '7A1HsYie1A7hnzTh7wYwrWmUw1o2Ca4YXdwpkrEgnyDHNLqXPvZ';
-    const privateKeyHex = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
-    const privateKeyBase64 = 'qCqhWKSAG6vKk2HQZATgd7fZ1f35Z038xrWB+h8yo28=';
-    const address = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
 
-    // private key Blockcore
-    const privateKeyBlockcoreHex = '039C4896D85A3121039AB57637B9D18FB8686E23AA3EBD26C9731A5F04D5298119';
-    const addressBlockcore = 'PU5DqJxAif5Jr1H3od4ynrnXxLuMejaHuU';
+    this.removeError();
 
-    const identity = this.appState.identity;  //new BlockcoreIdentity(address, privateKeyHex);
+    // // private key User:
+    // const privateKeyWif = '7A1HsYie1A7hnzTh7wYwrWmUw1o2Ca4YXdwpkrEgnyDHNLqXPvZ';
+    // const privateKeyHex = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
+    // const privateKeyBase64 = 'qCqhWKSAG6vKk2HQZATgd7fZ1f35Z038xrWB+h8yo28=';
+    // const address = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
+
+    // // private key Blockcore
+    // const privateKeyBlockcoreHex = '039C4896D85A3121039AB57637B9D18FB8686E23AA3EBD26C9731A5F04D5298119';
+    // const addressBlockcore = 'PU5DqJxAif5Jr1H3od4ynrnXxLuMejaHuU';
+
+    var wallet = this.accountService.wallet;
+
+    if (this.password == null || this.password == '') {
+      this.error = 'Password is required.';
+      return;
+    }
+
+    // var account = this.accountService.restoreAccount(`DataVault:${this.vaultService.vault.id}:Identity:0`);
+
+    var accountNode = this.accountService.unlockAccount(wallet.encryptedSeed, this.password, new Buffer(wallet.chainCode));
+
+    const identity0 = accountNode.derivePath("0'");
+    const address0 = this.accountService.getAddress(identity0);
+    var keyPair = await this.accountService.getKeyPairFromNode(identity0);
+    var identity = this.accountService.getIdentity(keyPair);
+
+    // const decryptedMasterNodeKey = bip38.decrypt(wallet.encryptedSeed, this.password, null, null, this.accountService.getProfileNetwork());
+    // const decryptedMasterNode = bip32.fromPrivateKey(decryptedMasterNodeKey.privateKey, wallet.chainCode, network);
+    // const accountNodePrivate = decryptedMasterNode.derivePath(this.getPath()); // m/302'/616'
+
+    // var wallet = this.accountService.wallet.encryptedSeed
+
+
+    // var tools = new BlockcoreIdentityTools();
+
+    // const id1 = new BlockcoreIdentity();
+
+    // this.accountService.unlockAccount(account.)
+
+    // const identity = new BlockcoreIdentity();
+
+    // const identity = this.appState.identity;  //new BlockcoreIdentity(address, privateKeyHex);
 
     // const jwt = await identity.jwt();
     // console.log('JWT: ' + jwt);
@@ -181,13 +235,13 @@ export class SetupComponent implements OnInit {
     this.document = identity.document();
 
     // Create an issuer from the identity, this is used to issue VCs.
-    const issuer = identity.issuer({ privateKey: this.appState.key.privateKeyBuffer?.toString('hex') });
+    const issuer = identity.issuer({ privateKey: keyPair.privateKeyBuffer?.toString('hex') });
     this.configuration = await identity.configuration(this.url, issuer);
     this.configurationJson = JSON.stringify(this.configuration);
 
     const setupPayload = {
       "@context": "https://schemas.blockcore.net/.well-known/vault-configuration/v1",
-      "id": this.appState.identity.id,
+      "id": identity.id,
       "url": "http://localhost:3001",
       "name": this.name,
       "enabled": this.enabled,

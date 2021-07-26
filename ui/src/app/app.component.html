@@ -44,20 +44,16 @@
     </mat-menu>
 
     <mat-nav-list class="menu-options">
-      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
+      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
         <mat-icon mat-list-icon>dashboard</mat-icon>
         <div mat-line>Dashboard</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
         <mat-icon mat-list-icon mat-list-icon>shield</mat-icon>
         <div mat-line>Vaults</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link">
-        <mat-icon mat-list-icon mat-list-icon>shield</mat-icon>
-        <div mat-line>Vaults</div>
-      </a>
       <!-- 
        <a mat-list-item [routerLink]="['/messages']" routerLinkActive="active-link">
         <mat-icon mat-list-icon mat-list-icon>message</mat-icon>
@@ -102,7 +98,7 @@
         <div mat-line>Identity</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.hasAccount">
+      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
         <div mat-line>Settings</div>
       </a>

@@ -48,3 +48,7 @@
 button {
    margin-right: 6px;
 }
+
+.error-list {
+   padding: 1em 0;
+}

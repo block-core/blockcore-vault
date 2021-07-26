@@ -7,11 +7,11 @@ import { EventEmitter, Injectable } from '@angular/core';
 })
 export class ApplicationState {
 
-   account: any;
+   // account: any;
 
-   get hasAccount(): boolean {
-      return this.account != null;
-   }
+   // get hasAccount(): boolean {
+   //    return this.account != null;
+   // }
 
    title: string;
 
@@ -21,8 +21,6 @@ export class ApplicationState {
 
    /** The key pair when unlocked. */
    key: any;
-
-   setup: any;
 
    vault: any;
 

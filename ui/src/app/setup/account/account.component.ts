@@ -20,6 +20,7 @@ import { IdentityComponent } from 'src/app/identity/identity.component';
 // import { BlockcoreIdentityIssuer } from 'blockcore-identity';
 import { keyUtils, Secp256k1KeyPair } from '@transmute/did-key-secp256k1';
 import { AccountService } from 'src/app/services/account.service';
+import { VaultService } from 'src/app/services/vault.service';
 
 @Component({
   selector: 'app-setup-account',
@@ -72,9 +73,15 @@ export class AccountComponent implements OnInit {
     public setup: SetupService,
     private fb: FormBuilder,
     private router: Router,
+    private vaultService: VaultService,
     private account: AccountService,
     private appState: ApplicationState) {
     appState.title = 'Setup / Account';
+
+    if (vaultService.hasWallet()) {
+      this.router.navigateByUrl('/setup');
+      return;
+    }
 
     this.onGenerate();
 
@@ -208,7 +215,7 @@ export class AccountComponent implements OnInit {
     // this.log.info('Create account:', this.accountName);
     // this.createWallet(new WalletCreation(this.accountName, this.mnemonic, this.password1, this.seedExtension));
 
-    this.account.restoreFromMnemonic(this.accountName, this.password1, this.mnemonic, this.seedExtension);
+    await this.account.restoreFromMnemonic(this.accountName, this.password1, this.mnemonic, this.seedExtension);
 
     this.router.navigateByUrl('/setup');
 
@@ -344,7 +351,7 @@ export class AccountComponent implements OnInit {
 
     // console.log(address0);
 
-    
+
   }
 
   public onGenerate() {

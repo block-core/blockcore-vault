@@ -19,6 +19,7 @@ import { payments } from 'bitcoinjs-lib';
 import { BlockcoreIdentity, Identity, BlockcoreIdentityTools } from '@blockcore/identity';
 import { IdentityComponent } from 'src/app/identity/identity.component';
 import { keyUtils, Secp256k1KeyPair } from '@transmute/did-key-secp256k1';
+import { VaultService } from './vault.service';
 
 @Injectable({
     providedIn: 'root'
@@ -30,9 +31,16 @@ export class AccountService {
 
     constructor(
         private http: HttpClient,
+        private vaultService: VaultService,
         private appState: ApplicationState
     ) {
         console.log('CREATING INSTANCE OF ACCOUNT SERVICE!!');
+
+        var tmp = localStorage.getItem(`${this.getStorageKey()}:Wallet`);
+
+        if (tmp) {
+            this._wallet = JSON.parse(tmp);
+        }
     }
 
     getProfileNetwork() {
@@ -61,7 +69,7 @@ export class AccountService {
         // this.verification = this.mnemonic.split(' ')[2];
     }
 
-    getAddress(node, network) {
+    getAddress(node) {
         const { address } = payments.p2pkh({
             pubkey: node.publicKey,
             network: this.getProfileNetwork(),
@@ -106,6 +114,21 @@ export class AccountService {
         return identity;
     }
 
+    private _wallet: any = '';
+
+    get wallet(): any {
+        return this._wallet;
+    }
+
+    set wallet(value: any) {
+        this._wallet = value;
+        localStorage.setItem(`${this.getStorageKey()}:Wallet`, JSON.stringify(value));
+    }
+
+    private getStorageKey() {
+        return `DataVault:${this.vaultService.vault.id}`;
+    }
+
     /** Restores account and identities and persist to local storage. */
     async restoreFromMnemonic(name: string, password: string, mnemonic: string, seedExtension: string) {
         var network = this.getProfileNetwork();
@@ -114,7 +137,7 @@ export class AccountService {
 
         const identity0 = accountNode.derivePath("0'");
 
-        const address0 = this.getAddress(identity0, network);
+        const address0 = this.getAddress(identity0);
 
         const encryptedKeySeed = bip38.encrypt(masterNode.privateKey, true, password, null, null, network);
 
@@ -123,13 +146,14 @@ export class AccountService {
 
         const xpubidentity0 = identity0.neutered().toBase58();
 
-        localStorage.setItem('DataVault:Identity:0', xpubidentity0);
+        localStorage.setItem(`${this.getStorageKey()}:Identity:0`, xpubidentity0);
 
         var wallet = {
             name,
             isExtPubKeyWallet: false,
             extPubKey: xpub,
             identity0: xpubidentity0,
+            did: `did:is:${address0}`,
             encryptedSeed: encryptedKeySeed,
             chainCode: masterNode.chainCode,
             network: 'identity',
@@ -139,8 +163,7 @@ export class AccountService {
             lastBlockSyncedHash: ''
         };
 
-        // TODO: Remove this.
-        this.setup.wallet = wallet;
+        this.wallet = wallet;
 
         // Get a key pair (public/private)
         var keyPair = await this.getKeyPairFromNode(identity0);
@@ -149,10 +172,9 @@ export class AccountService {
         var identity = this.getIdentity(keyPair);
 
         this.appState.identity = identity;
-        
-        // this.appState.key = keyPairDid;
 
-        this.setup.did = address0;
+        // this.appState.key = keyPairDid;
+        // this.setup.did = address0;
     }
 
     /** Creates the account and returns masterNode and accountNode. seed > master > account */

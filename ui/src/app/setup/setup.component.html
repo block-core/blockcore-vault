@@ -44,6 +44,20 @@
 
         </p>
 
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Password (required to update identity)</mat-label>
+            <input matInput type="password" [(ngModel)]="password" autocomplete="off" placeholder="Account password">
+        </mat-form-field>
+
+        <div class="error-list">
+            <mat-chip-list *ngIf="error">
+  
+              <mat-chip *ngIf="error" color="warn" selected (removed)="removeError()">{{error}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+          </div>
+
         <p>
             <button mat-flat-button color="primary" (click)="saveEdit()">Generate</button>&nbsp;
             <button mat-stroked-button (click)="cancelEdit()">Clear</button>

@@ -36,6 +36,8 @@ export class VaultService {
 
     vaults: any[] = [];
 
+    vault: any;
+
     addVault(vault: any) {
         this.vaults.push(vault);
         this.save();
@@ -43,6 +45,18 @@ export class VaultService {
 
     removeVault(vault: any) {
         this.vaults = this.vaults.filter(item => item !== vault);
+    }
+
+    hasWallet() {
+        if (this.vault == null) {
+            throw new Error('No vault selected.');
+        }
+
+        if (localStorage.getItem(`DataVault:${this.vault.id}:Wallet`)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     persist() {
