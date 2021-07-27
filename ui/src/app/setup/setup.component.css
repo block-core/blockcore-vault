@@ -1,12 +1,11 @@
-.setup-container {
-   padding: 2em;
-   box-sizing: border-box;
+.page {
+   padding: 3em;
 }
 
-.setup-section {
+/* .setup-section {
    padding: 2em;
    box-sizing: border-box;
-}
+} */
 
 .request-header-image {
    background-image: url("https://material.angular.io/assets/img/examples/shiba1.jpg");

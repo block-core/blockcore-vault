@@ -2,6 +2,7 @@ import { Schema, model, Document, Model } from 'mongoose';
 
 interface ISetting extends Document {
   id: string,
+  updated?: Date,
   allowIncomingRequests: boolean,
   allowVaultCreateRequests: boolean,
   allowVaultUpdateRequests: boolean,
@@ -11,6 +12,7 @@ interface ISetting extends Document {
 
 const SettingSchema: Schema = new Schema({
   id: { type: String, required: true },
+  updated: { type: Date },
   allowIncomingRequests: Boolean,
   allowVaultCreateRequests: Boolean,
   allowVaultUpdateRequests: Boolean,

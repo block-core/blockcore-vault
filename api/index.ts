@@ -15,7 +15,7 @@ import { log } from './services/logger';
 import PubSub from 'pubsub-js';
 import { EventResponse, Paged, SyncState } from './types';
 import { processOperation } from "./controllers/identity";
-import { Setting } from "./data/models/setting";
+import { ISetting, Setting } from "./data/models/setting";
 const https = require('https');
 const app = express();
 const DEV = true;
@@ -220,7 +220,6 @@ wss.on('connection', function connection(ws: { on: (arg0: string, arg1: (message
 //   console.log(data);
 // });
 
-
 async function seed() {
   // First delete all vaults 
   await Vault.deleteMany({})
@@ -242,29 +241,26 @@ async function seed() {
     // boss: smith.id
   })
 
-  // TODO: Initialize default settings only once.
-  await Setting.deleteMany({})
+  let setting: any = await Setting.findOne({ id: '1' });
 
-  const apiKey = uuidv4();
+  if (!setting) {
+    var standard = {
+      id: '1',
+      allowIncomingRequests: true,
+      allowVaultCreateRequests: true,
+      allowVaultUpdateRequests: true,
+      apiKey: uuidv4()
+    };
 
-  const setting = await Setting.create({
-    id: '1',
-    allowIncomingRequests: true,
-    allowVaultCreateRequests: true,
-    allowVaultUpdateRequests: true,
-    apiKey: apiKey
-    // friends: [smith.id],
-    // boss: smith.id
-  })
+    setting = await Setting.create(standard);
+  }
 
   // Update the in-memory state with the apikey.
-  state.apiKey = apiKey;
+  state.apiKey = setting.apiKey;
   state.settings = setting;
 
-  log.info('Your Management API Key is:');
-  log.info(apiKey);
-
-  log.info('state:');
+  log.info(`Your Management API Key is: ${state.apiKey}`);
+  log.info('Vault State Settings:');
   log.info(JSON.stringify(state));
 }
 
@@ -312,8 +308,6 @@ async function main() {
 
 const bent = require('bent');
 const getJSON = bent('json');
-
-
 
 const syncEvents = async (server: IServer) => {
   log.debug(server);

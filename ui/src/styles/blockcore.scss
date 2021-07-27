@@ -25,6 +25,7 @@ body {
   color: var(--foreground);
   font-family: "Raleway", sans-serif;
   overflow-x: hidden;
+  overflow: overlay;
 }
 
 h1 {
@@ -1006,21 +1007,21 @@ pre {
   color: var(--foreground);
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
+// ::-webkit-scrollbar {
+//   width: 10px;
+// }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
+// ::-webkit-scrollbar-track {
+//   background: #f1f1f1;
+// }
 
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
+// ::-webkit-scrollbar-thumb {
+//   background: #888;
+// }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+// ::-webkit-scrollbar-thumb:hover {
+//   background: #555;
+// }
 
 .show-small {
   display: none;
