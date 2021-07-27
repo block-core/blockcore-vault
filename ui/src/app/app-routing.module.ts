@@ -25,7 +25,6 @@ import { SearchComponent } from './search/search.component';
 import { ErrorComponent } from './error/error.component';
 import { YesPipe } from './shared/yes.pipe';
 import { AddressComponent } from './explorer/address/address.component';
-import { HubsComponent } from './hubs/hubs.component';
 import { SetupComponent } from './setup/setup.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IdentityComponent } from './identity/identity.component';
@@ -65,6 +64,7 @@ import { AccountComponent } from './setup/account/account.component';
 import { VaultAddComponent } from './vaults/add/add.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService as AuthGuard } from './services/auth-guard.service';
+import { LogoutComponent } from './logout/logout.component';
 
 const routes: Routes = [
   {
@@ -109,11 +109,6 @@ const routes: Routes = [
   },
   {
     path: 'gateway', component: GatewayComponent, resolve: {
-      chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
-  },
-  {
-    path: 'hubs', component: HubsComponent, resolve: {
       chain: LoadingResolverService
     }, canActivate: [AuthGuard] 
   },
@@ -168,6 +163,11 @@ const routes: Routes = [
     }, canActivate: [AuthGuard] 
   },
   {
+    path: 'logout', component: LogoutComponent, resolve: {
+      chain: LoadingResolverService
+    }
+  },
+  {
     path: 'connect', component: ConnectComponent, resolve: {
       chain: LoadingResolverService
     }
@@ -182,11 +182,6 @@ const routes: Routes = [
   //     chain: LoadingResolverService
   //   }
   // },
-  {
-    path: ':chain/hubs', component: HubsComponent, resolve: {
-      chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
-  },
   {
     path: ':chain/explorer', component: ExplorerComponent, resolve: {
       chain: LoadingResolverService

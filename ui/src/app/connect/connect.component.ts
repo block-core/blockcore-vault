@@ -46,7 +46,6 @@ export class ConnectComponent {
   }
 
   ngOnInit(): void {
-
     this.appState.vault = null;
     this.appState.authenticated = false;
 
@@ -56,7 +55,6 @@ export class ConnectComponent {
     if (vault) {
       this.vault = vault;
     }
-
   }
 
   handleError(error: any) {

@@ -79,7 +79,7 @@ export class AccountComponent implements OnInit {
     appState.title = 'Setup / Account';
 
     if (vaultService.hasWallet()) {
-      this.router.navigateByUrl('/setup');
+      this.router.navigateByUrl('/dashboard');
       return;
     }
 
