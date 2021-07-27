@@ -52,7 +52,7 @@
     "ui:build": "cd ui && npm run build",
     "ui:start": "cd ui && npm run start",
     "ui:copy2": "copyfiles -a -u 2 ui/dist build/ui/",
-    "ui:copy": "copyfiles -V -a -u 2 ui/dist/**/* build/ui/",
+    "ui:copy": "copyfiles -V -a -u 2 \"ui/dist/**/*\" build/ui/",
     "all": "npm run build && npm run ui:build && npm run ui:copy && npm run start",
     "version": "node -p \"require('./package.json').version\""
   }
