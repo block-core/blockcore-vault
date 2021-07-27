@@ -244,12 +244,20 @@ async function seed() {
   let setting: any = await Setting.findOne({ id: '1' });
 
   if (!setting) {
+
+    let apiKey = uuidv4();
+
+    // If the ApiKey is specified in ENV, we'll use that on startup.
+    if (process.env.API_KEY) {
+      apiKey = process.env.API_KEY;
+    }
+
     var standard = {
       id: '1',
       allowIncomingRequests: true,
       allowVaultCreateRequests: true,
       allowVaultUpdateRequests: true,
-      apiKey: uuidv4()
+      apiKey: apiKey
     };
 
     setting = await Setting.create(standard);

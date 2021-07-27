@@ -1,4 +1,4 @@
-version: '3'
+version: '2.4'
 services:
   vault:
     container_name: blockcore-vault
@@ -7,6 +7,7 @@ services:
     build: .
     environment:
       - NODE_ENV=production
+      #- API_KEY= # Use to specify the initial API KEY to be used.
     ports:
       - 80:3001
     # volumes:
