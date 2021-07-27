@@ -23,7 +23,8 @@ export class ConnectComponent {
     private route: ActivatedRoute,
     @Inject('BASE_URL') private baseUrl: string) {
 
-
+    this.appState.vault = null;
+    this.appState.authenticated = false;
 
     // this.appState.vaultUrl = 'http://localhost:3000';
 
@@ -41,13 +42,12 @@ export class ConnectComponent {
 
   error: string;
 
-  removeError(chip: any): void {
+  removeError(): void {
     this.error = '';
   }
 
   ngOnInit(): void {
-    this.appState.vault = null;
-    this.appState.authenticated = false;
+
 
     const id = this.route.snapshot.paramMap.get('id');
     var vault = this.vaultService.vaults.find(v => v.id == id);
@@ -85,7 +85,7 @@ export class ConnectComponent {
     return this._vault.id;
   }
 
-  private _vault: any;
+  private _vault: any = { remember: true };
 
   get vault(): any {
     return this._vault;
@@ -120,6 +120,8 @@ export class ConnectComponent {
   }
 
   async connect() {
+    this.removeError();
+
     if (!this.vault.url) {
       this.error = 'The DID or URL is missing.';
       return;

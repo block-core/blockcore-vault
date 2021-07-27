@@ -4,7 +4,9 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { ApplicationState } from '../services/applicationstate.service';
 import { HubService } from '../services/hub.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { ApiService } from '../services/api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -29,6 +31,59 @@ export class SettingsComponent implements OnDestroy {
   isEditing = false;
 
   allowIncomingRequests = true;
+  error: string;
+  success: string;
+
+  save() {
+    console.log('SAVE!');
+
+    this.removeError();
+    this.removeSuccess();
+
+    this.apiService.updateSettings(this.settings).subscribe(result => {
+      console.log(result);
+      // this.settings = result;
+      this.success = 'Settings was updated.';
+
+      if (this.hasModifiedApiKey) {
+        this.router.navigateByUrl('/connect');
+      }
+
+    }, error => this.handleError(error));
+
+  }
+
+  removeError(): void {
+    this.error = '';
+  }
+
+  removeSuccess(): void {
+    this.success = '';
+  }
+
+  handleError(error: any) {
+    console.error(error);
+
+    if (error instanceof HttpErrorResponse) {
+      if (error.error instanceof ErrorEvent) {
+        this.error = `Error: ${error.message}`;
+      } else {
+        switch (error.status) {
+          case 401:      //login
+            this.error = `Error: ${error.statusText} (${error.status})`;
+            break;
+          case 403:     //forbidden
+            this.error = `Error: ${error.statusText} (${error.status})`;
+            break;
+          default:
+            this.error = `Error: ${error.statusText} (${error.status})`;
+            break;
+        }
+      }
+    } else {
+      this.error = `Error: Uknown error happened.`;
+    }
+  }
 
   selectMessage(message: any) {
     console.log('SELECT:', message);
@@ -131,12 +186,26 @@ export class SettingsComponent implements OnDestroy {
     this.item = '';
   }
 
+  previousSettings: any;
+  settings: any;
+
   loadData() {
-    this.http.get<any>(this.baseUrl + 'api/storage/customers').subscribe(result => {
-      this.items = result;
-      this.dataSource = this.items;
-      console.log(this.items);
+    this.apiService.getSettings().subscribe(result => {
+      console.log(result);
+      this.settings = result;
+      this.previousSettings = JSON.stringify(result); // clone
     }, error => console.error(error));
+  }
+
+  cancel() {
+    console.log(JSON.stringify(this.settings));
+    console.log(JSON.stringify(this.previousSettings));
+
+    this.settings = JSON.parse(this.previousSettings);
+  }
+
+  get hasModifiedApiKey(): boolean {
+    return JSON.parse(this.previousSettings).apiKey != this.settings.apiKey;
   }
 
   constructor(
@@ -144,11 +213,12 @@ export class SettingsComponent implements OnDestroy {
     @Inject('BASE_URL') private baseUrl: string,
     private breakpointObserver: BreakpointObserver,
     public appState: ApplicationState,
+    private apiService: ApiService,
+    private router: Router,
     private changeRef: ChangeDetectorRef,
     private hub: HubService) {
 
     appState.title = 'Settings';
-    appState.actions = [{ icon: 'add_circle', tooltip: 'Add new message', click: () => { this.addNewMessage(); } }];
 
     this.loadData();
   }

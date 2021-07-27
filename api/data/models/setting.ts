@@ -3,6 +3,8 @@ import { Schema, model, Document, Model } from 'mongoose';
 interface ISetting extends Document {
   id: string,
   allowIncomingRequests: boolean,
+  allowVaultCreateRequests: boolean,
+  allowVaultUpdateRequests: boolean,
   apiKey: string;
   getSettings(): Promise<ISetting>
 }
@@ -10,6 +12,8 @@ interface ISetting extends Document {
 const SettingSchema: Schema = new Schema({
   id: { type: String, required: true },
   allowIncomingRequests: Boolean,
+  allowVaultCreateRequests: Boolean,
+  allowVaultUpdateRequests: Boolean,
   apiKey: { type: String, required: true }
 }, {
   versionKey: false

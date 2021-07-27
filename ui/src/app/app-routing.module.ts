@@ -65,6 +65,7 @@ import { VaultAddComponent } from './vaults/add/add.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService as AuthGuard } from './services/auth-guard.service';
 import { LogoutComponent } from './logout/logout.component';
+import { HelpComponent } from './help/help.component';
 
 const routes: Routes = [
   {
@@ -75,92 +76,92 @@ const routes: Routes = [
   {
     path: 'settings', component: SettingsComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'setup', component: SetupComponent, resolve: {
       chain: LoadingResolverService,
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'setup/account', component: AccountComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'dashboard', component: DashboardComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'vaults', component: VaultsComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'vaults/add', component: VaultAddComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'apps', component: AppsComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'gateway', component: GatewayComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'requests', component: RequestsComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'message', component: MessageComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'messages', component: MessagesComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'referral', component: ReferralComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'customers', component: CustomersComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'identities', component: CustomersComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'values', component: ValuesComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'state', component: StateComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'signup', component: SignupComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'identity', component: IdentityComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: 'logout', component: LogoutComponent, resolve: {
@@ -185,42 +186,47 @@ const routes: Routes = [
   {
     path: ':chain/explorer', component: ExplorerComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: ':chain/explorer/blocks', component: BlocksComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: ':chain/explorer/block/:block', component: BlockComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: ':chain/explorer/transaction/:transaction', component: TransactionComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: ':chain/explorer/address/:address', component: AddressComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: ':chain/network', component: NetworkComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
     path: ':chain/api', component: ApiComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
   },
   {
-    path: ':chain/about', component: AboutComponent, resolve: {
+    path: 'about', component: AboutComponent, resolve: {
       chain: LoadingResolverService
-    }, canActivate: [AuthGuard] 
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'help', component: HelpComponent, resolve: {
+      chain: LoadingResolverService
+    }, canActivate: [AuthGuard]
   }
 ];
 

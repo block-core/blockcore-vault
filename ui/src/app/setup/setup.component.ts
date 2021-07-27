@@ -126,7 +126,7 @@ export class SetupComponent implements OnInit {
     console.log('Vault URL: ' + this.appState.vaultUrl);
 
     var headers = new HttpHeaders();
-    headers = headers.append('Vault-Api-Key', this.appState.apiKey);
+    headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
     this.http.put<any>(this.appState.vaultUrl + 'management/setup', this.setupDocument, {
       headers: headers

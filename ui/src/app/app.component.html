@@ -64,7 +64,7 @@
         <div mat-line>Identities</div>
       </a> -->
 
-      <mat-divider></mat-divider>
+      
 
       <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
         <mat-icon mat-list-icon>apps</mat-icon>
@@ -88,6 +88,8 @@
         <div mat-line>Identity</div>
       </a>  -->
 
+      <mat-divider></mat-divider>
+
       <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
         <mat-icon mat-list-icon>perm_identity</mat-icon>
         <div mat-line>Identity</div>
@@ -96,6 +98,11 @@
       <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
         <div mat-line>Settings</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/help']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
+        <mat-icon mat-list-icon mat-list-icon>help_outline</mat-icon>
+        <div mat-line>Help</div>
       </a>
 
       <a mat-list-item routerLink="/logout" routerLinkActive="active-link" *ngIf="appState.authenticated">

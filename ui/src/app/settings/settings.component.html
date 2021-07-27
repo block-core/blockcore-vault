@@ -1,12 +1,40 @@
-<div class="settings-page">
+<div class="settings-page" *ngIf="settings">
   <mat-form-field appearance="outline" class="input-full-width">
     <mat-label>Vault API Key</mat-label>
-    <input matInput [(ngModel)]="appState.apiKey" placeholder="Vault API Key">
+    <input matInput [(ngModel)]="settings.apiKey" required placeholder="Vault API Key">
   </mat-form-field>
 
   <br>
-  <mat-checkbox [(ngModel)]="allowIncomingRequests">Allow Incoming Requests</mat-checkbox>
-  <br>
+  <mat-checkbox [(ngModel)]="settings.allowIncomingRequests">Allow Incoming Requests to connect</mat-checkbox>
+  <br><br>
+  <mat-checkbox [(ngModel)]="settings.allowVaultCreateRequests">Allow Vault creation</mat-checkbox>
+  <br><br>
+  <mat-checkbox [(ngModel)]="settings.allowVaultUpdateRequests">Allow Vault updates</mat-checkbox>
+  <br><br>
+
+  <div class="error-list">
+    <mat-chip-list>
+
+      <mat-chip *ngIf="error" color="warn" selected (removed)="removeError()">{{error}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+
+      <mat-chip *ngIf="success" color="accent" selected (removed)="removeSuccess()">{{success}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+
+    </mat-chip-list>
+  </div>
+
+  <div class="warning-text" *ngIf="hasModifiedApiKey">
+    You've modified the API Key. When you save, you will be logged out
+    and must update your connection with new API key.
+  </div>
+
+  <button mat-flat-button color="primary" [disabled]="!settings.apiKey" (click)="save()">Save Settings</button>&nbsp;
+  <button mat-stroked-button (click)="cancel()">Cancel</button>
+  <!-- <button mat-flat-button color="accent">Reject</button>&nbsp;
+  <button mat-stroked-button>Block</button> -->
 
 </div>
 <!-- <mat-sidenav-container class="container">

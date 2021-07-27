@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ApplicationState } from './applicationstate.service';
+import { VaultService } from './vault.service';
 
 export class HttpError extends Error {
    code: number;
@@ -34,7 +35,8 @@ export class ApiService {
 
    constructor(
       private http: HttpClient,
-      private appState: ApplicationState
+      private appState: ApplicationState,
+      private vaultService: VaultService
    ) {
       console.log('CREATING INSTANCE OF API SERVICE!!');
    }
@@ -44,7 +46,7 @@ export class ApiService {
          headers = new HttpHeaders();
       }
 
-      headers = headers.append('Vault-Api-Key', this.appState.apiKey);
+      headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
       console.log(headers);
 
@@ -146,6 +148,14 @@ export class ApiService {
 
    getStatistics() {
       return this.get('management/statistics');
+   }
+
+   getSettings() {
+      return this.get('management/setting');
+   }
+
+   updateSettings(data: any) {
+      return this.put('management/setting', data);
    }
 
    async getInfo() {

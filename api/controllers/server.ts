@@ -5,6 +5,8 @@ import { OperationRequest } from "../data/models/operation-request";
 import { storeEvent } from "../data/event-store";
 import { log } from '../services/logger';
 import PubSub from 'pubsub-js';
+import { Setting } from "../data/models/setting";
+import { state } from '../services/vault-state';
 
 export const getServers: Handler = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
@@ -39,6 +41,50 @@ export const getServer: Handler = async (req, res) => {
     try {
         const item = await Server.findOne({ id: req.params.id });
         res.json(item);
+    } catch (err) {
+        log.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};
+
+export const getSettings: Handler = async (req, res) => {
+    try {
+        const item = await Setting.findOne({ id: '1' });
+        res.json(item);
+    } catch (err) {
+        log.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};
+
+export const updateSettings: Handler = async (req, res) => {
+
+    try {
+        var id = '1';
+
+        // Set the update time right now.
+        // req.body.updated = new Date();
+
+        // Make sure we can't create multiple self entries using this API.
+        delete req.body.self;
+
+        var server = req.body;
+
+        // TODO: We should probably do input validation and mapping here? This is now 
+        // simply done quick and dirty.
+        var previous = await Setting.findOneAndUpdate({
+            id: id
+        }, server, { upsert: true });
+
+        log.info('The previous server: ' + JSON.stringify(previous));
+        log.info('The saved server: ' + JSON.stringify(server));
+
+        PubSub.publish('server-replaced', server);
+
+        // Make sure we update the API key:
+        state.apiKey = server.apiKey;
+
+        res.json({ "success": true });
     } catch (err) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });

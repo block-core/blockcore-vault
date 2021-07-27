@@ -248,8 +248,10 @@ async function seed() {
   const apiKey = uuidv4();
 
   const setting = await Setting.create({
-    id: 'did:is:test2',
+    id: '1',
     allowIncomingRequests: true,
+    allowVaultCreateRequests: true,
+    allowVaultUpdateRequests: true,
     apiKey: apiKey
     // friends: [smith.id],
     // boss: smith.id

@@ -41,7 +41,7 @@
         <div class="error-list">
           <mat-chip-list *ngIf="error">
 
-            <mat-chip *ngIf="error" color="warn" selected (removed)="removeError(this)">{{error}}
+            <mat-chip *ngIf="error" color="warn" selected (removed)="removeError()">{{error}}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
           </mat-chip-list>

@@ -1,6 +1,7 @@
 // class VaultState {
 
 import { ISetting } from "../data/models/setting";
+// import PubSub from 'pubsub-js';
 
 //   /** Reads the previous persisted state. */
 //   private initialize() {
@@ -33,6 +34,14 @@ class VaultState {
   // set apikey(value: string) {
   //   this.#apikey = value;
   //   // localStorage.setItem('DataVault:ApiKey', value);
+  // }
+
+  // constructor() {
+  //   PubSub.subscribe('server-replaced', async (msg: any, data: any) => {
+  //     console.log('YEEH!!!');
+  //     console.log(data);
+  //     this.apiKey = data.apiKey;
+  //   });
   // }
 
   apiKey: string | undefined;

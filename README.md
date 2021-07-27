@@ -244,3 +244,5 @@ Performance testing is important to figure out if this has any affect or not.
 https://nodejs.org/api/worker_threads.html
 
 https://github.com/uNetworking/uWebSockets.js/blob/master/examples/WorkerThreads.js
+
+Implement the .didState when requiring payments / attestation of submitted DID Documents: https://identity.foundation/did-registration/

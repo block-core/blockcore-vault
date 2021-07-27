@@ -1,0 +1,88 @@
+<div class="page">
+
+  <h1>Definitions</h1>
+
+  <p>
+    Blockcore Data Vault is built upon some of the newest in decentralized technology and blockchain related software,
+    making it use of new terminology that has not yet been widely adopted or settled.
+  </p>
+
+  <p>Some of the terminology within Blockcore Data Vault can change, depending on feedback from users, community and the
+    standard groups.</p>
+
+  <h2>Vocabulary</h2>
+
+  <p>
+    <strong>Data Vault: </strong> The product name for our offering that supports multiple open standards in the same
+    software. Data Vault implements various open standards to different degrees. This normally referes to a single
+    deployed instance of the Blockcore Data Vault software.
+  </p>
+
+  <p>
+    <strong>Identity Vault: </strong> A specialized Vault (see below) that holds DID Documents (see below). The
+    documents stored in the Identity Vault can be retrieved using REST APIs and using DID Resolvers.
+  </p>
+
+  <p><strong>Vault: </strong> Single instance of an vault that is hosted on a Data Vault.
+    The Vault is created by submitting an <em>data vault configuration</em> to the
+    Data Vault. The data vault configuration contains setup for replication, synchronization, conflict resolution,
+    access control and more.
+  </p>
+
+  <p><strong>Vault Operator: </strong> Any entity, including individuals, who runs an Data Vault Instance on a device or
+    infrastructure they control.
+  </p>
+
+  <p><strong>Vault User: </strong> An entity that controls the private key to control an DID and transmits messages via
+    an Vault, which may be running on a device in their possession, or on the device or infrastructure of a Vault
+    Operator.
+  </p>
+
+  <p><strong>Decentralized Identifiers (DID): </strong> Unique ID URI string and PKI metadata document format for
+    describing
+    the cryptographic keys and other fundamental PKI values linked to a unique, user-controlled, self-sovereign
+    identifier in a target system (e.g., blockchain, distributed ledger). <a
+      href="https://w3c.github.io/did-core/">https://w3c.github.io/did-core/</a>.
+  </p>
+
+  <p><strong>DID Document: </strong> A document that describes keys and other information about an DID Subject.
+  </p>
+
+  <p><strong>DID Resolver: </strong> A library / code that allows lookup of DID Documents against an "DID Registry"/"DID
+    Hub". Learn more at <a
+      href="https://github.com/decentralized-identity/universal-resolver">https://github.com/decentralized-identity/universal-resolver</a>.
+  </p>
+
+  <p><strong>Verifiable Credential (VC): </strong> Verifiable Credentials, a signed JSON-document that contains link to
+    specific DID that performed the signing.
+  </p>
+
+  <p><strong>Identity Profile (Identity Hub Profile): </strong> This is a signed VC with metadata regarding a specific
+    DID. Can describe information about an Vault instance, computer, serverm service, business or corporate entity or
+    individual. See example: <a
+      href="https://identity.foundation/identity-hub/spec/#object-format">https://identity.foundation/identity-hub/spec/#object-format</a>.
+  </p>
+
+  <p><strong>Well Known DID Configuration: </strong> A document that exists on an known URL on a running Vault and
+    returns information regarding the DID of a specific instance. <a
+      href="https://identity.foundation/specs/did-configuration/">https://identity.foundation/specs/did-configuration/</a>.
+  </p>
+
+  <p><strong>Well Known Vault Configuration: </strong> A document that exists on an known URL on a running Vault and
+    returns information regarding the Vault instance. This is Blockcore-specific and not based on an open standard.
+  </p>
+
+  <h2>Definitions not used</h2>
+
+  <p><strong>Identity Hub: </strong> "A decentralized personal and application data storage and message relay node, as
+    defined in the DIF Identity Hub specification." <a
+      href="https://identity.foundation/identity-hub/spec/">https://identity.foundation/identity-hub/spec/</a>.
+  </p>
+
+  <p><strong>Confidential Storage (formally Encrypted Data Vault): </strong> This specification is partly implemented by
+    Blockcore Data Vault. It is used to store and retrieve VCs. <a
+      href="https://identity.foundation/confidential-storage/">https://identity.foundation/confidential-storage/</a>.
+  </p>
+
+
+</div>

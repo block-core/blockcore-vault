@@ -1,7 +1,7 @@
 import { getEvents, latestEvent, totalEvents } from "./controllers/event";
 // import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
-import { createServer, deleteServer, getLocalServer, getServer, getServers, updateLocalServer, updateServer } from "./controllers/server";
+import { createServer, deleteServer, getLocalServer, getServer, getServers, getSettings, updateLocalServer, updateServer, updateSettings } from "./controllers/server";
 import { getStatistics } from "./controllers/stats";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
 import { wellKnownDid, wellKnownDidConfiguration, wellKnownVaultConfiguration } from "./controllers/well-known";
@@ -121,6 +121,18 @@ export const routes: Route[] = [
     path: "/management/setup",
     middleware: [requestLogger, authentication],
     handler: updateLocalServer,
+  },
+  {
+    method: "get",
+    path: "/management/setting",
+    middleware: [requestLogger, authentication],
+    handler: getSettings,
+  },
+  {
+    method: "put",
+    path: "/management/setting",
+    middleware: [requestLogger, authentication],
+    handler: updateSettings,
   },
 
   {
