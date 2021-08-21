@@ -20,6 +20,7 @@ const https = require('https');
 const app = express();
 const DEV = true;
 const cors = require('cors');
+const path = require('path');
 
 import { state } from './services/vault-state';
 
@@ -113,9 +114,14 @@ routes.forEach((route) => {
 
 console.log(__dirname);
 
-app.use('/', express.static(__dirname + '/ui'));
+app.use('/', express.static(path.join(__dirname, "ui")));
 
 log.info(`DIR: ` + __dirname);
+
+// For every url request we send our index.html file to the route
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "ui", "index.html"));
+});
 
 app.listen(config.port, () => {
   log.info(`Blockcore Vault 222 @ http://localhost:${config.port}`);
