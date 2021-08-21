@@ -2,6 +2,16 @@ import { Handler } from "../types";
 import { Server } from '../data/models';
 import { log } from '../services/logger';
 
+/**
+ * @swagger
+ * /.well-known/vault-configuration.json:
+ *   get:
+ *     summary: Get Vault Configuration
+ *     tags: [Discovery]
+ *     responses:
+ *       200:
+ *         description: The configuration of the Vault.
+ */
 export const wellKnownVaultConfiguration: Handler = async (req, res) => {
     try {
         const item = await Server.findOne({ self: true });
@@ -23,6 +33,16 @@ export const wellKnownVaultConfiguration: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /.well-known/did.json:
+ *   get:
+ *     summary: Get DID Subject from the .well-known DID resource URI.
+ *     tags: [Discovery]
+ *     responses:
+ *       200:
+ *         description: The DID Subject.
+ */
 export const wellKnownDid: Handler = async (req, res) => {
     try {
         const item = await Server.findOne({ self: true });
@@ -41,6 +61,16 @@ export const wellKnownDid: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /.well-known/did-configuration.json:
+ *   get:
+ *     summary: Get DID Configuration .well-known resource URI.
+ *     tags: [Discovery]
+ *     responses:
+ *       200:
+ *         description: The DID Configuration.
+ */
 export const wellKnownDidConfiguration: Handler = async (req, res) => {
     try {
         const item = await Server.findOne({ self: true });

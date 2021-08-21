@@ -155,14 +155,56 @@ const options = {
         email: "post@blockcore.net",
       },
     },
-    servers: [
-      {
-        url: "http://localhost:3000",
-        description: "Blockcore Vault API Documentation",
-      },
-    ],
+    components: {
+      securitySchemes: {
+        apiKeyAuth: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'Vault-Api-Key'
+        }
+      }
+    },
+    security: [{
+      apiKeyAuth: []
+    }],
+    // servers: [
+    //   {
+    //     url: "http://localhost:3000",
+    //     description: "Blockcore Vault API Documentation",
+    //   },
+    // ],
+    // securityDefinitions: {
+    //   api_key: {
+    //     "type": "apiKey",
+    //     "in": "header",
+    //     "name": "Vault-Api-Key"
+    //   }
+    // },
+    // securitySchemes: {
+    //   "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "Vault-Api-Key" },
+    //   bearerAuth: {
+    //     type: "http",
+    //     scheme: "bearer",
+    //     bearerFormat: "JWT"
+    //   }
+    // },
   },
-  apis: ["./build/routes*.js"],
+  apis: ["./build/controllers/*.js"],
+  // securitySchemes: {
+  //   "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "Vault-Api-Key" },
+  //   bearerAuth: {
+  //     type: "http",
+  //     scheme: "bearer",
+  //     bearerFormat: "JWT"
+  //   }
+  // },
+  // securityDefinitions: {
+  //   api_key: {
+  //     "type": "apiKey",
+  //     "in": "header",
+  //     "name": "Vault-Api-Key"
+  //   }
+  // }
 };
 
 const specs = swaggerJsDoc(options);

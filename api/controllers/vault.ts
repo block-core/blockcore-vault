@@ -84,6 +84,28 @@ export const getVaults: Handler = async (req, res) => {
     // }
 };
 
+/**
+ * @swagger
+ * /vault/{id}:
+ *   put:
+ *     summary: Updates Vault by id
+ *     tags: [Identity]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: vault id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *     responses:
+ *       200:
+ *         decsription: The Vault was updated
+ *
+ */
 export const putVault: Handler = async (req, res) => {
 
     var vaultId = req.params.id;

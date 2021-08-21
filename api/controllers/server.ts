@@ -8,6 +8,16 @@ import PubSub from 'pubsub-js';
 import { Setting } from "../data/models/setting";
 import { state } from '../services/vault-state';
 
+/**
+ * @swagger
+ * /management/server:
+ *   get:
+ *     summary: Get the registered Blockcore Vault instances.
+ *     tags: [Management]
+ *     responses:
+ *       200:
+ *         description: List of servers.
+ */
 export const getServers: Handler = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?
@@ -37,6 +47,27 @@ export const getServers: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /management/server/{id}:
+ *   get:
+ *     summary: Get a specific Blockcore Vault instance.
+ *     tags: [Management]
+  *     parameters:
+ *       - in : path
+ *         name: id
+ *         description: id of the server
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Details about a single server.
+ *       404:
+ *         description: The server does not exists.
+ *       401:
+ *         description: Unauthorized, check your API key.
+ */
 export const getServer: Handler = async (req, res) => {
     try {
         const item = await Server.findOne({ id: req.params.id });
@@ -47,6 +78,16 @@ export const getServer: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /management/setting:
+ *   get:
+ *     summary: Get the settings for the current Vault instance.
+ *     tags: [Management]
+ *     responses:
+ *       200:
+ *         description: Current active settings.
+ */
 export const getSettings: Handler = async (req, res) => {
     try {
         const item = await Setting.findOne({ id: '1' });
@@ -57,6 +98,28 @@ export const getSettings: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /management/setting:
+ *   post:
+ *     summary: Update the current Vault instance settings.
+ *     tags: [Management]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         description: The post was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       500:
+ *         description: Some server error
+ */
 export const updateSettings: Handler = async (req, res) => {
 
     try {
@@ -91,6 +154,38 @@ export const updateSettings: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /management/server:
+ *   post:
+ *     summary: Save a new server.
+ *     tags: [Management]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: post id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         decsription: The post was updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       404:
+ *         description: post was not found.
+ *       500:
+ *         description: Some errors happend.
+ *
+ */
 export const createServer: Handler = async (req, res) => {
     log.info('Create server...');
 
@@ -118,6 +213,38 @@ export const createServer: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /management/server:
+ *   put:
+ *     summary: Update a specific server.
+ *     tags: [Management]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: post id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *     responses:
+ *       200:
+ *         decsription: The post was updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       404:
+ *         description: post was not found.
+ *       500:
+ *         description: Some errors happend.
+ *
+ */
 export const updateServer: Handler = async (req, res) => {
 
     try {
@@ -193,6 +320,26 @@ export const updateServer: Handler = async (req, res) => {
 //     });
 // });
 
+/**
+ * @swagger
+ *  /management/server/{id}:
+ *    delete:
+ *      summary: Removes a server registered on this Vault instance.
+ *      tags: [Management]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          description: post id
+ *          required: true
+ *          schema:
+ *            type: string
+ *      responses:
+ *        200:
+ *          description: The server was deleted
+ *        404:
+ *          description: The server was not found
+ *
+ */
 export const deleteServer: Handler = async (req, res) => {
     try {
         var id = req.params.id;

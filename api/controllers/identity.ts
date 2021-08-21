@@ -43,6 +43,16 @@ export const getVerifiableCredentials: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /vault/{id}:
+ *   get:
+ *     summary: Update an Vault
+ *     tags: [Identity]
+ *     responses:
+ *       200:
+ *         description: 
+ */
 export const putVault: Handler = async (req, res) => {
 
     var vaultId = req.params.id;
@@ -78,6 +88,16 @@ export const putVault: Handler = async (req, res) => {
     // res.status(201).send("User created");
 };
 
+/**
+ * @swagger
+ * /vault/:
+ *   delete:
+ *     summary: Delete an Vault
+ *     tags: [Identity]
+ *     responses:
+ *       200:
+ *         description: 
+ */
 export const deleteVault: Handler = (req, res) => {
     res.send({
         '@context': 'https://www.w3.org/ns/did/v1',
@@ -85,6 +105,16 @@ export const deleteVault: Handler = (req, res) => {
     });
 };
 
+/**
+ * @swagger
+ * /vault/{id}:
+ *   get:
+ *     summary: Get an Vault
+ *     tags: [Identity]
+ *     responses:
+ *       200:
+ *         description: 
+ */
 export const getVault: Handler = async (req, res) => {
 
     var vaultId = req.params.id;
