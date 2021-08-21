@@ -15,6 +15,19 @@ body {
   overflow: overlay;
 }
 
+a {
+  color: white;
+}
+
+a:hover {
+  color: silver;
+  text-decoration: none;
+}
+
+a:visited {
+  color: white;
+}
+
 // ::-webkit-scrollbar {
 //   width: 10px;
 // }
@@ -30,7 +43,6 @@ body {
 // ::-webkit-scrollbar-thumb:hover {
 //   background: #555;
 // }
-
 
 ::-webkit-scrollbar {
   width: 12px;
@@ -48,8 +60,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.15);
 }
-
-
 
 .show-small {
   display: none;
@@ -218,13 +228,11 @@ body {
   }
 }
 
-
 .icon-color-lead {
   color: orange;
 }
 
-.icon-color-waiting
-{
+.icon-color-waiting {
   color: green;
 }
 
@@ -232,18 +240,15 @@ body {
   height: calc(100% - 64px);
 }
 
-.sidepanel-top
-{
+.sidepanel-top {
   text-align: right;
   padding: 0.4em;
 }
-
 
 .sidepanel {
   max-width: 600px;
   width: 400px;
 }
-
 
 .input-full-width {
   width: 100%;
@@ -261,19 +266,6 @@ body {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media print {
   .print-visible {
     display: inline-block;
@@ -284,12 +276,12 @@ body {
   }
 
   .mnemonic {
-      font-size: 1.6rem !important;
-      //padding-top: 20% !important;
+    font-size: 1.6rem !important;
+    //padding-top: 20% !important;
   }
 
   header {
-      display: none !important;
+    display: none !important;
   }
 
   //   html,
@@ -327,8 +319,6 @@ body {
     display: none;
   }
 }
-
-
 
 strong {
   font-weight: 500;

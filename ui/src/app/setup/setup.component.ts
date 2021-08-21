@@ -88,12 +88,9 @@ export class SetupComponent implements OnInit {
 
     console.log(this.appState);
 
-
+    // Copy the values we allow users to edit.
     if (this.appState.vault) {
       const vault = this.appState.vault;
-
-      this.id = vault.id;
-      this.url = vault.url;
       this.name = vault.name;
       this.enabled = vault.enabled;
     }
@@ -105,11 +102,10 @@ export class SetupComponent implements OnInit {
   }
 
   cancelEdit() {
-    this.id = '';
-    this.key = '';
-    this.name = '';
-    this.description = '';
-    this.url = '';
+    this.name = this.appState.vault.name;
+    this.enabled = this.appState.vault.enabled;
+
+    this.router.navigateByUrl('/dashboard');
   }
 
   public onPrint() {
@@ -122,24 +118,60 @@ export class SetupComponent implements OnInit {
   }
 
   save() {
-    console.log('baseUrl: ' + this.baseUrl);
+    // const setupPayload = {
+    //   "@context": "https://schemas.blockcore.net/.well-known/vault-configuration/v1",
+    //   "id": this.setupDocument.didDocument.id,
+    //   "url": this.setupDocument.didConfiguration.linked_dids[0].credentialSubject.origin,
+    //   "name": this.name,
+    //   "enabled": true,
+    //   "self": true,
+    //   "ws": "ws://localhost:9090",
+    //   "linked_dids": this.setupDocument.didConfiguration.linked_dids,
+    //   "didDocument": this.setupDocument.didDocument,
+    //   "vaultConfiguration": {
+    //   }
+    // };
+
+    this.appState.vault.name = this.name;
+    this.appState.vault.enabled = this.enabled;
+
     console.log('Vault URL: ' + this.appState.vaultUrl);
 
     var headers = new HttpHeaders();
     headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
-    this.http.put<any>(this.appState.vaultUrl + 'management/setup', this.setupDocument, {
+    this.http.put<any>(this.appState.vaultUrl + 'management/setup', this.appState.vault, {
       headers: headers
     }).subscribe(result => {
       console.log('RESULT FROM UPDATE', result);
 
       if (result.success === true) {
-
-        this.appState.vault = this.setupDocument;
+        // this.appState.vault = setupPayload;
+        // this.appState.authenticated = true;
         this.router.navigateByUrl('/dashboard');
       }
     }, error => console.error(error));
   }
+
+  // save() {
+  //   console.log('baseUrl: ' + this.baseUrl);
+  //   console.log('Vault URL: ' + this.appState.vaultUrl);
+
+  //   var headers = new HttpHeaders();
+  //   headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
+
+  //   this.http.put<any>(this.appState.vaultUrl + 'management/setup', this.setupDocument, {
+  //     headers: headers
+  //   }).subscribe(result => {
+  //     console.log('RESULT FROM UPDATE', result);
+
+  //     if (result.success === true) {
+
+  //       this.appState.vault = this.setupDocument;
+  //       this.router.navigateByUrl('/dashboard');
+  //     }
+  //   }, error => console.error(error));
+  // }
 
   error: string;
 

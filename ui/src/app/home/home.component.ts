@@ -15,25 +15,14 @@ export class HomeComponent {
     public setup: SetupService,
     private router: Router) {
 
-    // If there is no vault selected, we'll show the vault selection (connect) page.
-    if (!appState.vault) {
-      router.navigateByUrl('/connect');
-    }
-    else {
-      if (setup.setupComplete) {
+    if (appState.authenticated) {
+      if (appState.vault) {
         router.navigateByUrl('/dashboard');
       } else {
         router.navigateByUrl('/setup/account');
       }
+    } else {
+      router.navigateByUrl('/connect');
     }
-
-    // if (!setup.setupComplete) {
-    //   router.navigate(['/setup']);
-    // } else {
-    //   // When we are not in multichain mode, redirect to chain-home.
-    //   if (!setup.multiChain) {
-    //     router.navigate(['/' + setup.current.toLowerCase()]);
-    //   }
-    // }
   }
 }

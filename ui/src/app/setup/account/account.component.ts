@@ -21,6 +21,7 @@ import { IdentityComponent } from 'src/app/identity/identity.component';
 import { keyUtils, Secp256k1KeyPair } from '@transmute/did-key-secp256k1';
 import { AccountService } from 'src/app/services/account.service';
 import { VaultService } from 'src/app/services/vault.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-setup-account',
@@ -53,6 +54,8 @@ export class AccountComponent implements OnInit {
   verification: string;
   password1 = '';
   password2 = '';
+  setupDocumentJson: any;
+  setupDocument: any;
 
   get selectedHubId() {
     return this.selectedHubIdInternal;
@@ -70,6 +73,7 @@ export class AccountComponent implements OnInit {
   }
 
   constructor(
+    private http: HttpClient,
     public setup: SetupService,
     private fb: FormBuilder,
     private router: Router,
@@ -102,9 +106,46 @@ export class AccountComponent implements OnInit {
     window.print();
   }
 
+  updateInfo(event) {
+    this.setupDocument = JSON.parse(this.setupDocumentJson);
+  }
+
   private getNewMnemonicLocal() {
     this.mnemonic = bip39.generateMnemonic();
     this.verification = this.mnemonic.split(' ')[2];
+  }
+
+  save() {
+    const setupPayload = {
+      "@context": "https://schemas.blockcore.net/.well-known/vault-configuration/v1",
+      "id": this.setupDocument.didDocument.id,
+      "url": this.setupDocument.didConfiguration.linked_dids[0].credentialSubject.origin,
+      "name": this.name,
+      "enabled": true,
+      "self": true,
+      "ws": "ws://localhost:9090",
+      "linked_dids": this.setupDocument.didConfiguration.linked_dids,
+      "didDocument": this.setupDocument.didDocument,
+      "vaultConfiguration": {
+      }
+    };
+
+    console.log('Vault URL: ' + this.appState.vaultUrl);
+
+    var headers = new HttpHeaders();
+    headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
+
+    this.http.put<any>(this.appState.vaultUrl + 'management/setup', setupPayload, {
+      headers: headers
+    }).subscribe(result => {
+      console.log('RESULT FROM UPDATE', result);
+
+      if (result.success === true) {
+        this.appState.vault = setupPayload;
+        this.appState.authenticated = true;
+        this.router.navigateByUrl('/dashboard');
+      }
+    }, error => console.error(error));
   }
 
   async saveEdit() {

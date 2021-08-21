@@ -12,14 +12,12 @@
 
         <mat-card-content class="dashboard-card-content">
           <div *ngIf="stats">
-            ?MB disk usage<br>
-            ?MB network usage (daily)<br>
+            <!-- ?MB disk usage<br>
+            ?MB network usage (daily)<br> -->
             {{stats.identities}} Identities<br>
             {{stats.operations}} Operations (Events)<br>
             {{stats.servers - 1}} Data Vaults<br>
             <br>
-            {{stats | json}}
-
           </div>
         </mat-card-content>
       </mat-card>
@@ -27,20 +25,46 @@
 
     <mat-grid-tile [colspan]="1" [rowspan]="1">
       <mat-card class="dashboard-card">
-
         <mat-card-header>
-          <mat-icon mat-card-avatar matBadge="2" matBadgeColor="primary">announcement</mat-icon>
-          <mat-card-title>Requests</mat-card-title>
-          <mat-card-subtitle>Incoming requests for approval</mat-card-subtitle>
+          <mat-card-title>
+            Hub Details
+          </mat-card-title>
         </mat-card-header>
-
         <mat-card-content class="dashboard-card-content">
           <div>
+            <mat-list>
+              <mat-list-item>
+                <mat-icon mat-list-icon>account_circle</mat-icon>
+                <div mat-line>{{appState.vault.id}}</div>
+                <div mat-line class="dimmed">Identity</div>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>account_circle</mat-icon>
+                <div mat-line>{{appState.vault.name}}</div>
+                <div mat-line class="dimmed">Name</div>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon mat-list-icon>public</mat-icon>
+                <div mat-line>{{appState.vault.url}}</div>
+                <div mat-line class="dimmed">Linked Domain</div>
+              </mat-list-item>
 
+              <mat-list-item>
+                <!-- <mat-icon mat-list-icon>public</mat-icon> -->
+                <div mat-line><button mat-button routerLink="/setup">EDIT</button></div>
+              </mat-list-item>
 
+              <!-- <mat-list-item>
+                <mat-icon mat-list-icon>vpn_lock</mat-icon>
+                <div mat-line>10.0.0.1</div>
+                <div mat-line class="dimmed">Private IP Address</div>
+              </mat-list-item> -->
+            </mat-list>
           </div>
         </mat-card-content>
       </mat-card>
+
+
     </mat-grid-tile>
 
     <mat-grid-tile [colspan]="1" [rowspan]="2">
@@ -85,42 +109,19 @@
     </mat-grid-tile>
 
     <mat-grid-tile [colspan]="1" [rowspan]="1">
+
       <mat-card class="dashboard-card">
+
         <mat-card-header>
-          <mat-card-title>
-            Hub Details
-          </mat-card-title>
+          <mat-icon mat-card-avatar matBadge="2" matBadgeColor="primary">announcement</mat-icon>
+          <mat-card-title>Requests</mat-card-title>
+          <mat-card-subtitle>Incoming requests for approval</mat-card-subtitle>
         </mat-card-header>
+
         <mat-card-content class="dashboard-card-content">
           <div>
-            <mat-list>
-              <mat-list-item>
-                <mat-icon mat-list-icon>account_circle</mat-icon>
-                <div mat-line>{{appState.vault.id}}</div>
-                <div mat-line class="dimmed">Identity</div>
-              </mat-list-item>
-              <mat-list-item>
-                <mat-icon mat-list-icon>account_circle</mat-icon>
-                <div mat-line>{{appState.vault.name}}</div>
-                <div mat-line class="dimmed">Name</div>
-              </mat-list-item>
-              <mat-list-item>
-                <mat-icon mat-list-icon>public</mat-icon>
-                <div mat-line>{{appState.vault.url}}</div>
-                <div mat-line class="dimmed">Linked Domain</div>
-              </mat-list-item>
 
-              <mat-list-item>
-                <mat-icon mat-list-icon>public</mat-icon>
-                <div mat-line><button mat-button routerLink="/setup">EDIT</button></div>
-              </mat-list-item>
 
-              <!-- <mat-list-item>
-                <mat-icon mat-list-icon>vpn_lock</mat-icon>
-                <div mat-line>10.0.0.1</div>
-                <div mat-line class="dimmed">Private IP Address</div>
-              </mat-list-item> -->
-            </mat-list>
           </div>
         </mat-card-content>
       </mat-card>

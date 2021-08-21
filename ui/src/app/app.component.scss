@@ -1,5 +1,10 @@
 .sidenav-container {
    height: 100%;
+   overflow: overlay;
+}
+
+.mat-drawer-inner-container {
+   overflow: overlay;
 }
 
 .sidenav {
@@ -47,3 +52,4 @@
    border-left: 4px solid transparent;
    box-sizing: border-box;
 }
+

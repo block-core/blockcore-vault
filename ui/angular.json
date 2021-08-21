@@ -74,7 +74,8 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "blockcore-vault:build"
+            "browserTarget": "blockcore-vault:build",
+            "port": 4202
           },
           "configurations": {
             "production": {

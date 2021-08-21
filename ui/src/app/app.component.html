@@ -4,7 +4,7 @@
   <div class="welcome-content">
 
     <div class="welcome-text">
-      <h3 class="mat-display-2 welcome-font-black" *ngIf="welcomeLoaded" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>Welcome to Blockcore Data Vault</h3>
+      <h3 class="mat-display-2 welcome-font-black" *ngIf="welcomeLoaded" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>Welcome to Blockcore Vault</h3>
       <h4 class="mat-display-4 welcome-font-light" *ngIf="welcomeLoadedSecond" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>
         {{welcomeName}}</h4>
     </div>
@@ -24,7 +24,7 @@
 
     <mat-toolbar class="logo-icon" [matMenuTriggerFor]="animals">
       <img src="assets/blockcore-light-small.png">
-      <div>Data Vault</div>
+      <div>Blockcore Vault</div>
     </mat-toolbar>
 
     <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
@@ -43,12 +43,12 @@
     </mat-menu>
 
     <mat-nav-list class="menu-options">
-      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
+      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon>dashboard</mat-icon>
         <div mat-line>Dashboard</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
         <div mat-line>Vaults</div>
       </a>
@@ -78,17 +78,22 @@
 
       <mat-divider></mat-divider>
 
-      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link">
+      <a mat-list-item [routerLink]="['/setup/account']" routerLinkActive="active-link" *ngIf="!appState.vault">
         <mat-icon mat-list-icon>perm_identity</mat-icon>
-        <div mat-line>Identity</div>
+        <div mat-line>Initial Setup</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
+      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>perm_identity</mat-icon>
+        <div mat-line>Setup</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
         <div mat-line>Settings</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/help']" routerLinkActive="active-link" *ngIf="vaultService.hasWallet()">
+      <a mat-list-item [routerLink]="['/help']" routerLinkActive="active-link">
         <mat-icon mat-list-icon mat-list-icon>help_outline</mat-icon>
         <div mat-line>Help</div>
       </a>

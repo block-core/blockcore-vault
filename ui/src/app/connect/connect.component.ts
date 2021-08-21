@@ -47,8 +47,6 @@ export class ConnectComponent {
   }
 
   ngOnInit(): void {
-
-
     const id = this.route.snapshot.paramMap.get('id');
     var vault = this.vaultService.vaults.find(v => v.id == id);
 
@@ -156,6 +154,7 @@ export class ConnectComponent {
       this.http.get<any>(this.vault.url + '.well-known/did-configuration.json', {
         headers: headers
       }).subscribe(result => {
+
         console.log('RESULT: ', result);
 
         this.http.get<any>(this.vault.url + 'management/setup', {
@@ -178,11 +177,19 @@ export class ConnectComponent {
           // The user might have updated the Api Key, make sure we persist the vaults.
           this.vaultService.persist();
 
-          // Make the current vault available in the app state.
-          this.appState.vault = result;
-          this.appState.authenticated = true;
+          debugger;
 
-          this.router.navigateByUrl('/');
+          // If there is an error, it is most likely not configured yet.
+          if (result.error) {
+            // Make the current vault available in the app state.
+            this.appState.authenticated = true;
+            this.router.navigateByUrl('/setup/account');
+          } else {
+            // Make the current vault available in the app state.
+            this.appState.vault = result;
+            this.appState.authenticated = true;
+            this.router.navigateByUrl('/');
+          }
 
         }, error => {
           this.handleError(error);
