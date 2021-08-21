@@ -3,11 +3,11 @@ services:
   vault:
     container_name: blockcore-vault
     restart: unless-stopped
-    image: sondreb/blockcore-vault:0.0.3
+    image: sondreb/blockcore-vault:0.0.6
     environment:
       - NODE_ENV=production
     ports:
-      - 80:3001
+      - 3001:3001
     depends_on:
       - mongo
 
@@ -18,8 +18,8 @@ services:
     mem_limit: 4500m
     stop_grace_period: 5m
     restart: unless-stopped
-    ports:
-      - 27017:27017
+    # ports:
+    #   - 27017:27017
     volumes:
       - mongodb:/data/db
 volumes:

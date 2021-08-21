@@ -9,7 +9,7 @@ services:
       - NODE_ENV=production
       #- API_KEY= # Use to specify the initial API KEY to be used.
     ports:
-      - 80:3001
+      - 3001:3001
     # volumes:
     #   - ./:/code
     depends_on:
@@ -22,8 +22,8 @@ services:
     mem_limit: 4500m
     stop_grace_period: 5m
     restart: unless-stopped
-    ports:
-      - 27017:27017
+    # ports:
+    #   - 27017:27017
     volumes:
       - mongodb:/data/db
 volumes:

@@ -177,11 +177,10 @@ export class ConnectComponent {
           // The user might have updated the Api Key, make sure we persist the vaults.
           this.vaultService.persist();
 
-          debugger;
-
           // If there is an error, it is most likely not configured yet.
           if (result.error) {
-            // Make the current vault available in the app state.
+            // Make sure we keep the URL which is used by the setup account page.
+            this.appState.vaultUrl = this.vault.url;
             this.appState.authenticated = true;
             this.router.navigateByUrl('/setup/account');
           } else {
