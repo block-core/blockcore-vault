@@ -22,6 +22,26 @@ const DEV = true;
 const cors = require('cors');
 const path = require('path');
 
+import swaggerUI from 'swagger-ui-express';
+import swaggerJsDoc from 'swagger-jsdoc';
+
+// const swaggerJsdoc = require('swagger-jsdoc');
+// const swaggerUi = require('swagger-ui-express');
+// const swaggerDocument = require('./swagger.json');
+
+// const swaggerOptions = {
+//   definition: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'Hello World',
+//       version: '1.0.0',
+//     },
+//   },
+//   apis: ['./build/routes*.js'], // files containing annotations as above
+// };
+
+// const openapiSpecification = swaggerJsdoc(swaggerOptions);
+
 import { state } from './services/vault-state';
 
 const {
@@ -113,6 +133,48 @@ routes.forEach((route) => {
 });
 
 console.log(__dirname);
+
+var optionsUI = {
+  explorer: true,
+  // customCss: '.swagger-ui .topbar { display: none }'
+  // customCssUrl: '/custom.css'
+  // customJs: '/custom.js'
+};
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Blockcore Vault API",
+      version: "0.0.1",
+      description: "Vault REST API for decentralized identity (DID) and verifiable credentials (VC) storage and retrieval.",
+      termsOfService: "https://github.com/block-core/blockcore-vault",
+      contact: {
+        name: "Blockcore",
+        url: "https://www.blockcore.net",
+        email: "post@blockcore.net",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+        description: "Blockcore Vault API Documentation",
+      },
+    ],
+  },
+  apis: ["./build/routes*.js"],
+};
+
+const specs = swaggerJsDoc(options);
+
+/**
+ * @swagger
+ * /docs:
+ *   get:
+ *     description: contains a reference outside this file
+ *     x-amazon-apigateway-integration: *default-integration
+ */
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(specs, optionsUI));
 
 app.use('/', express.static(path.join(__dirname, "ui")));
 
