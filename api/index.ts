@@ -146,7 +146,7 @@ const options = {
     openapi: "3.0.0",
     info: {
       title: "Blockcore Vault API",
-      version: "0.0.1",
+      version: "0.0.8",
       description: "Vault REST API for decentralized identity (DID) and verifiable credentials (VC) storage and retrieval.",
       termsOfService: "https://github.com/block-core/blockcore-vault",
       contact: {
