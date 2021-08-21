@@ -8,6 +8,7 @@ import { log } from '../services/logger';
  *   get:
  *     summary: Get Vault Configuration
  *     tags: [Discovery]
+ *     security: []
  *     responses:
  *       200:
  *         description: The configuration of the Vault.
@@ -39,6 +40,7 @@ export const wellKnownVaultConfiguration: Handler = async (req, res) => {
  *   get:
  *     summary: Get DID Subject from the .well-known DID resource URI.
  *     tags: [Discovery]
+ *     security: []
  *     responses:
  *       200:
  *         description: The DID Subject.
@@ -67,6 +69,7 @@ export const wellKnownDid: Handler = async (req, res) => {
  *   get:
  *     summary: Get DID Configuration .well-known resource URI.
  *     tags: [Discovery]
+ *     security: []
  *     responses:
  *       200:
  *         description: The DID Configuration.
