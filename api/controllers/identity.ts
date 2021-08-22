@@ -49,6 +49,7 @@ export const getVerifiableCredentials: Handler = async (req, res) => {
  *   get:
  *     summary: Update an Vault
  *     tags: [Identity]
+ *     security: []
  *     responses:
  *       200:
  *         description: 
@@ -94,6 +95,7 @@ export const putVault: Handler = async (req, res) => {
  *   delete:
  *     summary: Delete an Vault
  *     tags: [Identity]
+ *     security: []
  *     responses:
  *       200:
  *         description: 
@@ -111,6 +113,7 @@ export const deleteVault: Handler = (req, res) => {
  *   get:
  *     summary: Get an Vault
  *     tags: [Identity]
+ *     security: []
  *     responses:
  *       200:
  *         description: 
@@ -276,6 +279,14 @@ const getIdentityBySequence = async (id: string, sequence: number) => {
     return item;
 }
 
+/**
+ * @swagger
+ * /identity/{id}:
+ *   get:
+ *     summary: Get a specific identity.
+ *     tags: [Vault]
+ *     security: []
+ */
 export const getDIDDocument: Handler = async (req, res) => {
     try {
         // Specification: https://w3c-ccg.github.io/did-resolution/
@@ -638,6 +649,14 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     // await vault.save();
 }
 
+/**
+ * @swagger
+ * /operation:
+ *   post:
+ *     summary: Endpoint for operations
+ *     tags: [Vault]
+ *     security: []
+ */
 export const handleOperation: Handler = async (req, res) => {
     log.info('Process a signed operation request...');
 
@@ -654,6 +673,14 @@ export const handleOperation: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /identity:
+ *   post:
+ *     summary: VERIFY IF THIS SHOULD BE REMOVED!
+ *     tags: [Vault]
+ *     security: []
+ */
 export const createDIDDocument: Handler = async (req, res) => {
     log.info('Create DID Document...');
 
@@ -712,6 +739,14 @@ export const createDIDDocument: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /identity/{id}:
+ *   put:
+ *     summary: VERIFY IF THIS SHOULD BE REMOVED!
+ *     tags: [Vault]
+ *     security: []
+ */
 export const updateDIDDocument: Handler = async (req, res) => {
     try {
         await storeEvent('replace', 'identity', req.body, req.body.sequence);
@@ -730,6 +765,14 @@ export const updateDIDDocument: Handler = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /identity/{id}:
+ *   delete:
+ *     summary: VERIFY IF THIS SHOULD BE REMOVED!
+ *     tags: [Vault]
+ *     security: []
+ */
 export const deleteDIDDocument: Handler = async (req, res) => {
     try {
         var id = req.params.id;

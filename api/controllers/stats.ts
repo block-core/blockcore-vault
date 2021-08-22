@@ -8,6 +8,13 @@ import PubSub from 'pubsub-js';
 import { totalEvents } from "./event";
 import { Identity } from "../data/models/identity";
 
+/**
+ * @swagger
+ * /management/statistics:
+ *   get:
+ *     summary: Get statistics for the Admin UI dashboard
+ *     tags: [Vault]
+ */
 export const getStatistics: Handler = async (req, res) => {
 
     try {

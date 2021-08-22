@@ -134,18 +134,18 @@ export const routes: Route[] = [
     middleware: [requestLogger, authentication],
     handler: updateSettings,
   },
-
-  {
-    method: "post",
-    path: "/operation",
-    middleware: [requestLogger],
-    handler: handleOperation,
-  },
   {
     method: "get",
     path: "/management/statistics",
     middleware: [requestLogger, authentication],
     handler: getStatistics,
+  },
+  
+  {
+    method: "post",
+    path: "/operation",
+    middleware: [requestLogger],
+    handler: handleOperation,
   },
 
   // {
