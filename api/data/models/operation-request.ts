@@ -54,6 +54,6 @@ const OperationRequestSchema: Schema = new Schema({
 //   unique: true,
 // });
 
-const OperationRequest: Model<IOperationRequest> = model('Event', OperationRequestSchema);
+const OperationRequest = model('Event', OperationRequestSchema);
 
 export { OperationRequest, IOperationRequest };

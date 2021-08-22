@@ -101,7 +101,7 @@ VaultSchema.method('getVaults', function (cb: any) {
 
 // VaultSchema.plugin(mongoosePaginate);
 
-const Vault: Model<IVault> = model('Vault', VaultSchema);
+const Vault = model('Vault', VaultSchema);
 
 export { Vault, IVault };
 

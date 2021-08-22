@@ -298,6 +298,8 @@ export const getDIDDocument: Handler = async (req, res) => {
 
         const item = await getLatestIdentity(req.params.id);
 
+        console.log(JSON.stringify(item));
+
         if (!item) {
             didResolution.didResolutionMetadata = { error: 'not-found' };
             return res.json(didResolution);
@@ -342,7 +344,7 @@ export const getDIDDocument: Handler = async (req, res) => {
         // metadata.proof = item.metadata.proof;
         // delete documentMetadata.proof;
 
-        didResolution.didDocument = JSON.stringify(item.document);
+        didResolution.didDocument = item.document;
         didResolution.didResolutionMetadata = metadata; // Resolution metadata, blockchain attestation should be added here.
         didResolution.didDocumentMetadata = item.metadata; // Document metadata, can only contain these values: https://w3c.github.io/did-core/#did-document-metadata
 
@@ -412,6 +414,9 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     // Decode the payload, we'll store both decoded and original value in MongoDB for purposes of Vault Sync.
     var decoded = decodeJWT(options.jwt);
 
+    console.log('processOperation::decoded:');
+    console.log(JSON.stringify(decoded));
+
     var documentJwt = decoded.payload.content;
     var documentJwtExample = "eyJpc3N1ZXIiOiJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCIsImFsZyI6IkVTMjU2SyJ9.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQiLCJ2ZXJpZmljYXRpb25NZXRob2QiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQja2V5LTEiLCJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiY29udHJvbGxlciI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkIiwicHVibGljS2V5QmFzZTU4Ijoid0FBQURrTUZRa3F4YVVQQjhqR3E0Wm9KVnNhSzlZNU04cmlNNzZ6dWdNNmQifV0sInNlcnZpY2UiOlt7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjYmxvY2tleHBsb3JlciIsInR5cGUiOiJCbG9ja0V4cGxvcmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9leHBsb3Jlci5ibG9ja2NvcmUubmV0In0seyJpZCI6ImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2RpZHJlc29sdmVyIiwidHlwZSI6IkRJRFJlc29sdmVyIiwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly9teS5kaWQuaXMifSx7ImlkIjoiZGlkOmlzOlBNVzFLczdoNGJycE44RmREVkx3aFBES0o3TGRBN21WZGQjZWR2IiwidHlwZSI6IkVuY3J5cHRlZERhdGFWYXVsdCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vdmF1bHQuYmxvY2tjb3JlLm5ldC8ifV0sImF1dGhlbnRpY2F0aW9uIjpbImRpZDppczpQTVcxS3M3aDRicnBOOEZkRFZMd2hQREtKN0xkQTdtVmRkI2tleS0xIl0sImFzc2VydGlvbk1ldGhvZCI6WyJkaWQ6aXM6UE1XMUtzN2g0YnJwTjhGZERWTHdoUERLSjdMZEE3bVZkZCNrZXktMSJdfQ.3a93hWe2NVPAgkdmnCLE6P2RCt9UK2QQrpmB5o3L_WlhuWqqmaTbskjvGYC5V96b6h8Tka0jNsOSwHSSwBG9jA";
 
@@ -432,6 +437,9 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
 
     // Decode the content, we'll get the unique document ID from there.
     var decodedContent = decodeJWT(documentJwt);
+
+    console.log('processOperation::decodedContent:');
+    console.log(JSON.stringify(decodedContent));
 
     var decodedContentExample = {
         header: {
@@ -458,6 +466,9 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     inputValidation(operation.operation, '"operation" is required on the operation.');
     inputValidation(operation.sequence != null, '"sequence" is required on the operation.'); // null/undefined not allowed, but "0" is correct.
     inputValidation(decodedContent.payload.id, '"id" is required on the payload.');
+
+    console.log('processOperation::decodedContent2:');
+    console.log(JSON.stringify(decodedContent));
 
     if (operation.operation == 'create' && operation.sequence != 0) {
         inputValidation(false, '"sequence" must be 0 for all "create" operations.');
@@ -520,10 +531,16 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
             // Verify the document token.
             verifyJWS(decoded.payload.content, verificationMethod);
 
+            console.log('processOperation::decodedContent3:');
+            console.log(JSON.stringify(decodedContent));
+
             // Verify that the issuer of both JWTs and DID Document ID is same.
             if ((new Set([decoded.header.issuer, decodedContent.header.issuer, documentId])).size !== 1) {
                 throw Error('The issuer of both operation and document must be equal to the DID Document ID');
             }
+
+            console.log('processOperation::decodedContent4:');
+            console.log(JSON.stringify(decodedContent));
 
             // Verify that the DID ID is correctly correlated with at least one of the keys provided in verificationMethod.
             // This will stop using random/custom "did:is:VALUE" for the initial creation. Upon later updates, the verificationMethod
@@ -642,8 +659,18 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     log.info('Entity Store entry:');
     log.info(entity);
 
+    console.log('processOperation::entity:');
+    console.log(JSON.stringify(entity));
+
     var identity = new Identity(entity);
+
+    console.log('processOperation::identity:beforesave');
+    console.log(JSON.stringify(identity));
+
     await identity.save();
+
+    console.log('processOperation::identity:aftersave');
+    console.log(JSON.stringify(identity));
 
     // var vault = new DIDDocument(entity);
     // await vault.save();

@@ -43,6 +43,6 @@ const VerifiableCredentialSchema: Schema = new Schema({
 //   return VerifiableCredential.find().where('boss').in(this.id).exec();
 // });
 
-const VerifiableCredential: Model<IVerifiableCredential> = model('VerifiableCredential', VerifiableCredentialSchema);
+const VerifiableCredential = model('VerifiableCredential', VerifiableCredentialSchema);
 
 export { VerifiableCredential, IVerifiableCredential };

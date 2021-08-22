@@ -55,18 +55,10 @@ interface IDIDDocumentMetadata {
 const DIDDocumentSchema: Schema = new Schema({
   '@context': Schema.Types.Mixed,
   id: { type: String, required: true },
-  // verificationMethod: [{
-  //   id: String,
-  //   type: String,
-  //   controller: String,
-  //   publicKeyBase58: String,
-  //   publicKeyJwk: Schema.Types.Mixed,
-  //   publicKeyBuffer: Buffer
-  // }],
-  verificationMethod: [Schema.Types.Mixed],
-  service: [Schema.Types.Mixed],
-  authentication: [Schema.Types.Mixed],
-  assertionMethod: [Schema.Types.Mixed]
+  verificationMethod: { type: [Schema.Types.Mixed], default: undefined },
+  service: { type: [Schema.Types.Mixed], default: undefined },
+  authentication: { type: [Schema.Types.Mixed], default: undefined },
+  assertionMethod: { type: [Schema.Types.Mixed], default: undefined },
 }, { _id: false });
 
 const ProofSchema: Schema = new Schema({
@@ -116,7 +108,7 @@ IdentityDocumentSchema.index({
 // VaultSchema.plugin(mongoosePaginate);
 
 // const DIDDocument: Model<IDIDDocument> = model('DIDDocument', DIDDocumentSchema);
-const Identity: Model<IIdentityDocument> = model('Identity', IdentityDocumentSchema);
+const Identity = model('Identity', IdentityDocumentSchema);
 
 export { Identity, IIdentityDocument, IDIDDocument };
 

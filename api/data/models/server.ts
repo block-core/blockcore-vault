@@ -147,7 +147,7 @@ var docEncrypted = {
 //   return this._id;
 // });
 
-const Server: Model<IServer> = model('Server', ServerSchema);
+const Server = model('Server', ServerSchema);
 // const ServerHistory: Model<IServer> = model('Server-History', ServerSchema);
 
 export { Server, IServer };

@@ -25,6 +25,6 @@ SettingSchema.method('getSettings', function (cb: any) {
   return Setting.findOne().exec();
 });
 
-const Setting: Model<ISetting> = model('Setting', SettingSchema);
+const Setting = model('Setting', SettingSchema);
 
 export { Setting, ISetting };

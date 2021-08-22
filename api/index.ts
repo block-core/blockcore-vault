@@ -300,7 +300,7 @@ wss.on('connection', function connection(ws: { on: (arg0: string, arg1: (message
       }
 
 
-      cursor.on('data', function (event) {
+      cursor.on('data', function (event: any) {
         //console.log(event);
         log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
 
@@ -610,7 +610,7 @@ const syncEvents = async (server: IServer) => {
         cursor = OperationRequest.find({ _id: { $gt: minimumObjectId }, received: { $lt: ws.state.syncStart } }).cursor();
       }
 
-      cursor.on('data', function (event) {
+      cursor.on('data', function (event: any) {
         //console.log(event);
         log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
 
@@ -785,7 +785,7 @@ const connectToServer = (server: IServer) => {
         cursor = OperationRequest.find({ _id: { $gt: minimumObjectId }, received: { $lt: ws.state.syncStart } }).cursor();
       }
 
-      cursor.on('data', function (event) {
+      cursor.on('data', function (event: any) {
         //console.log(event);
         log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
 

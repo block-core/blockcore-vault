@@ -12,6 +12,6 @@ const DIDSchema: Schema = new Schema({
   versionKey: false
 });
 
-const DID: Model<IDID> = model('DIDDocument', DIDSchema);
+const DID = model('DIDDocument', DIDSchema);
 
 export { DID, IDID };
