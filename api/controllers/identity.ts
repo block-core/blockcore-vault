@@ -505,6 +505,10 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     var documentId = decodedContent.payload.id;
     var sequence = operation.sequence;
 
+    var created = new Date();
+    var now = new Date();
+    var modified = undefined;
+
     // When the operation type is identity, we'll get the 'verificationMethod' directly from the payload.
     // For all other operations, we will use DID Resolve to get the correct verification method.
     if (operation.type == 'identity') {
@@ -558,6 +562,12 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
                 throw Error('Unable to find the previous DID Document. Cannot update. Ensure that the sequence number is correct.');
             }
 
+            // Make sure the new sequence has same created date as previous update.
+            created = latestIdentity.metadata.created;
+
+            // Make sure we set an modified date on this update.
+            modified = new Date();
+
             // If the previous sequence is not exactly one less, don't allow this update to continue.
             // if ((latestIdentity.sequence != (sequence - 1))) {
             //     throw Error(`Unable to update DID Document. Sequence number is incorrect. Current ${latestIdentity.sequence} and supplied ${sequence}.`);
@@ -608,8 +618,8 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     // When an operation (event) is first observed, we set the published date. If the payload already has published, we'll use that.
     // We will additionally verify that the published is never more than few minutes ahead of current time, to avoid anyone manipulating
     // the dates far into the future.
-    operation.published = new Date();
-    operation.received = new Date();
+    operation.published = created;
+    operation.received = now;
 
     // Get the IP of external user, used for surveilance of abuse.
     // TODO: Verify if we should get IP using any methods here: https://stackoverflow.com/questions/19266329/node-js-get-clients-ip
@@ -638,13 +648,16 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     // Store the verified identity in our identity store.
     //var document = new DIDDocument(req.body);
 
+
+
     // Entity to be stored in a collection. IIdentityDocument
     var entity = {
         id: documentId,
         sequence: sequence,
         document: decodedContent.payload,
         metadata: { // This must follow spec: https://w3c.github.io/did-core/#did-document-metadata
-            created: operation.received, // TODO: We probably should require "iat" (issued at) for the operation request.
+            created: created, // TODO: We probably should require "iat" (issued at) for the operation request.
+            modified: modified
         },
         extended: { // Extended metadata, not part of standard specification.
             proof: {

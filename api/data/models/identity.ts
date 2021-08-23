@@ -68,6 +68,7 @@ const ProofSchema: Schema = new Schema({
 
 const DIDDocumentMetadataSchema: Schema = new Schema({
   created: { type: Date, required: true },
+  modified: { type: Date, default: undefined },
   proof: ProofSchema
 }, { _id: false });
 
