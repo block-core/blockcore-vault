@@ -66,6 +66,8 @@ import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService as AuthGuard } from './services/auth-guard.service';
 import { LogoutComponent } from './logout/logout.component';
 import { HelpComponent } from './help/help.component';
+import { EventsComponent } from './events/events.component';
+import { IdentitiesComponent } from './identities/identities.component';
 
 const routes: Routes = [
   {
@@ -76,6 +78,16 @@ const routes: Routes = [
   {
     path: 'settings', component: SettingsComponent, resolve: {
       chain: LoadingResolverService
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'events', component: EventsComponent, resolve: {
+      chain: LoadingResolverService,
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'identities', component: IdentitiesComponent, resolve: {
+      chain: LoadingResolverService,
     }, canActivate: [AuthGuard]
   },
   {

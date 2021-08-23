@@ -69,6 +69,9 @@ import { VaultAddComponent } from './vaults/add/add.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { MatChipsModule } from '@angular/material/chips';
+import { IdentitiesComponent } from './identities/identities.component';
+import { EventsComponent } from './events/events.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -112,7 +115,9 @@ import { MatChipsModule } from '@angular/material/chips';
     VaultsComponent,
     VaultAddComponent,
     AccountComponent,
-    ConnectComponent
+    ConnectComponent,
+    IdentitiesComponent,
+    EventsComponent
   ],
   imports: [
     BrowserModule,
@@ -146,7 +151,8 @@ import { MatChipsModule } from '@angular/material/chips';
     MatTableModule,
     MatStepperModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatPaginatorModule
   ],
   exports: [
     ScrollDirective,

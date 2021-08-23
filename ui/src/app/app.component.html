@@ -48,11 +48,6 @@
         <div mat-line>Dashboard</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">
-        <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
-        <div mat-line>Vaults</div>
-      </a>
-      
       <!-- Enable later: -->
       <!-- <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
         <mat-icon mat-list-icon>apps</mat-icon>
@@ -76,12 +71,27 @@
         <div mat-line>Identity</div>
       </a>  -->
 
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
+        <div mat-line>Vaults</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/identities']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>people</mat-icon>
+        <div mat-line>Identities</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/events']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>category</mat-icon>
+        <div mat-line>Events</div>
+      </a>
+
       <mat-divider></mat-divider>
 
-      <a mat-list-item [routerLink]="['/setup/account']" routerLinkActive="active-link" *ngIf="!appState.vault">
+      <!-- <a mat-list-item [routerLink]="['/setup/account']" routerLinkActive="active-link" *ngIf="!appState.vault">
         <mat-icon mat-list-icon>perm_identity</mat-icon>
-        <div mat-line>Setup</div>
-      </a>
+        <div mat-line>Setup222</div>
+      </a> -->
 
       <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon>perm_identity</mat-icon>
