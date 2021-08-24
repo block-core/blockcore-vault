@@ -9,6 +9,8 @@ To set up the application, first clone the repo. Then, install the dependencies 
 
 ```bash
 npm install
+cd ui
+npm install
 ```
 
 ## Run All

@@ -3,7 +3,7 @@ services:
   vault:
     container_name: blockcore-vault-test1
     restart: unless-stopped
-    image: sondreb/blockcore-vault
+    image: blockcore/blockcore-vault
     environment:
       - NODE_ENV=production
       - MONGODB_URL=mongodb://blockcore-vault-db-test1:27017/BlockcoreVault
@@ -27,7 +27,7 @@ services:
   vault2:
     container_name: blockcore-vault-test2
     restart: unless-stopped
-    image: sondreb/blockcore-vault
+    image: blockcore/blockcore-vault
     environment:
       - NODE_ENV=production
       - MONGODB_URL=mongodb://blockcore-vault-db-test2:27017/BlockcoreVault
