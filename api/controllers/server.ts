@@ -1,7 +1,6 @@
 import { Handler } from "../types";
 import { Vault, IVault } from '../data/models';
 import { Server, IServer } from '../data/models';
-import { OperationRequest } from "../data/models/operation-request";
 import { storeEvent } from "../data/event-store";
 import { log } from '../services/logger';
 import PubSub from 'pubsub-js';
@@ -272,53 +271,7 @@ export const updateServer: Handler = async (req, res) => {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
-
-    // var query = {'username': req.user.username};
-    // req.newData.username = req.user.username;
-
-    // MyModel.findOneAndUpdate(query, req.newData, {upsert: true}, function(err, doc) {
-    //     if (err) return res.send(500, {error: err});
-    //     return res.send('Succesfully saved.');
-    // });
-
-    // await Contact.updateOne({
-    //     phone: request.phone
-    // }, { status: request.status }, { upsert: true });
-
-    // const doc = await Contact.findOneAndUpdate({
-    //     phone: request.phone
-    // }, { status: request.status }, { upsert: true, useFindAndModify: false });
-
-    //Vault.f
-
-    // await Contact.updateOne({
-    //     phone: request.phone
-    // }, { status: request.status }, { upsert: true });
-
-
-
-    // var vault = new Vault({ name: "TEST1" });
-    // await vault.save();
 };
-
-// app.put('url', (req, res) => {
-
-//     const modelId = req.body.model_id;
-//     const newName = req.body.name;
-
-//     MyModel.findById(modelId).then((model) => {
-//         return Object.assign(model, {name: newName});
-//     }).then((model) => {
-//         return model.save();
-//     }).then((updatedModel) => {
-//         res.json({
-//             msg: 'model updated',
-//             updatedModel
-//         });
-//     }).catch((err) => {
-//         res.send(err);
-//     });
-// });
 
 /**
  * @swagger
@@ -370,12 +323,6 @@ export const getLocalServer: Handler = async (req, res) => {
 
 export const updateLocalServer: Handler = async (req, res) => {
     try {
-        log.info('UPDATE LOCAL SERVER!');
-
-        // if (!req.body.created) {
-        //     req.body.created = new Date();
-        // }
-
         // Set the update time right now.
         // req.body.updated = new Date();
 

@@ -59,60 +59,8 @@ const ServerSchema: Schema = new Schema({
   versionKey: false, timestamps: { createdAt: 'created', updatedAt: 'updated' }
 });
 
-// ServerSchema.validate(function (err: any) {
-
-//   // Copy the ID and remove.
-//   this._id = this.id;
-//   delete this.id;
-
-//   if (err) handleError(err);
-//   else // validation passed
-// });
-
-// ServerSchema.pre('save', function (next) {
-
-//   console.log('SAVE!!');
-
-//   // Copy the ID and remove.
-//   // this._id = this.id;
-//   // delete this.id;
-
-//   // do stuff
-//   next();
-// });
-
-// ServerSchema.pre('remove', function (next) {
-
-//   console.log('remove!!');
-
-//   // Copy the ID and remove.
-//   // this._id = this.id;
-//   // delete this.id;
-
-//   // do stuff
-//   next();
-// });
-
-// ServerSchema.pre('updateOne', function (next) {
-
-//   console.log('updateOne!!');
-
-//   // Copy the ID and remove.
-//   // this._id = this.id;
-//   // delete this.id;
-
-//   // do stuff
-//   next();
-// });
-
 ServerSchema.pre('updateOne', async function () {
-  //console.log(this);
 
-  // this.updated = new Date();
-
-  // console.log('query criteria',this.getQuery());// { _id: 5bc8d61f28c8fc16a7ce9338 }
-  // console.log(this._update);// { '$set': { name: 'I was updated!' } }
-  // console.log(this._conditions);
 });
 
 // W3C Spec:
@@ -130,24 +78,6 @@ var docEncrypted = {
   "jwe": ""
 };
 
-// ServerSchema.pre('deleteOne', function (next) {
-
-//   console.log('deleteOne!!');
-
-//   // Copy the ID and remove.
-//   // this._id = this.id;
-//   // delete this.id;
-
-//   // do stuff
-//   next();
-// });
-
-// ServerSchema.virtual('id').get(() => {
-//   // const self = this as any;
-//   return this._id;
-// });
-
 const Server = model('Server', ServerSchema);
-// const ServerHistory: Model<IServer> = model('Server-History', ServerSchema);
 
 export { Server, IServer };

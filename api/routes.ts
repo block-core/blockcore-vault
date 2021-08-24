@@ -1,5 +1,4 @@
 import { getEvent, getEvents, latestEvent, totalEvents } from "./controllers/event";
-// import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, getIdentities, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, getSettings, updateLocalServer, updateServer, updateSettings } from "./controllers/server";
 import { getStatistics } from "./controllers/stats";
@@ -77,14 +76,6 @@ export const routes: Route[] = [
     middleware: [requestLogger],
     handler: getEvent,
   },
-  // {
-  //   method: "get",
-  //   path: "/event/:id",
-  //   middleware: [requestLogger],
-  //   handler: getEvent,
-  // },
-
-
   {
     method: "get",
     path: "/management/server",
@@ -153,14 +144,6 @@ export const routes: Route[] = [
     middleware: [requestLogger],
     handler: handleOperation,
   },
-
-  // {
-  //   method: "get",
-  //   path: "/identity",
-  //   middleware: [requestLogger],
-  //   handler: getDIDDocuments,
-  // },
-
   {
     method: "get",
     path: "/identity",

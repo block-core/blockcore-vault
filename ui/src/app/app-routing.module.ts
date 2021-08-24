@@ -196,11 +196,6 @@ const routes: Routes = [
       chain: LoadingResolverService
     }
   },
-  // {
-  //   path: ':chain', component: TickerComponent, resolve: {
-  //     chain: LoadingResolverService
-  //   }
-  // },
   {
     path: ':chain/explorer', component: ExplorerComponent, resolve: {
       chain: LoadingResolverService

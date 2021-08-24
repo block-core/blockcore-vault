@@ -3,8 +3,6 @@ import { Vault, IVault } from '../data/models/vault';
 import { Identity, IIdentityDocument } from "../data/models/identity";
 import { storeEvent, storeOperation } from "../data/event-store";
 import { decodeJWT, verifyJWS, verifyJWT } from "did-jwt";
-import { Resolver } from "did-resolver";
-import { getResolver } from "../services/resolver";
 import * as bs58 from 'bs58';
 import { payments } from "bitcoinjs-lib";
 const { performance } = require('perf_hooks');
@@ -61,32 +59,8 @@ export const putVault: Handler = async (req, res) => {
     var vault = new Vault({ name: "TEST1" });
     await vault.save();
 
-    // Equivalent to `User.updateOne({ email }, { firstName })`
-    // const res: any = await User.
-    //   find({ email: 'bill@microsoft.com' }).
-    //   updateOne({}, { firstName: 'William' });
-
-    // const user: IVault = new Vault({
-    //     email: 'bill@microsoft.com',
-    //     firstName: 'Bill',
-    //     lastName: 'Gates'
-    //   });
-
-    //   await user.save();
-
     log.info(req.body);
     res.send({ 'status': 'ok' });
-    // const { username, password } = req.body;
-
-    // console.log(req.body);
-
-    // if (!username?.trim() || !password?.trim()) {
-    //     return res.status(400).send("Bad username or password");
-    // }
-
-    // addUser({ username, password });
-
-    // res.status(201).send("User created");
 };
 
 /**
@@ -119,11 +93,7 @@ export const deleteVault: Handler = (req, res) => {
  *         description: 
  */
 export const getVault: Handler = async (req, res) => {
-
     var vaultId = req.params.id;
-
-    // const user: IUser = await User.findOne({ email: 'bill@microsoft.com' });
-    // const users: Array<IUser> = await User.find({ email: 'bill@microsoft.com' });
 
     res.send({
         '@context': 'https://identity.foundation/.well-known/did-configuration/v1',
@@ -234,35 +204,6 @@ var deleteOperation = {
     "payload": "string" // { id: 'id' }
 };
 
-// export const getDIDDocuments: Handler = async (req, res) => {
-//     const { page = 1, limit = 10 } = req.query;
-//     var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?
-//     var limitNumber = limit as number;
-
-//     if (limitNumber > 100) {
-//         res.status(500).json({ status: 500, message: 'The limit can be maxium 100.' });
-//     }
-
-//     try {
-//         const data = await DIDDocument.find()
-//             .limit(limitNumber * 1)
-//             .skip((pageNumber - 1) * limitNumber)
-//             .exec();
-
-//         const count = await DIDDocument.countDocuments();
-
-//         res.json({
-//             data,
-//             totalNumber: count,
-//             totalPages: Math.ceil(count / limitNumber),
-//             currentPage: page
-//         });
-//     } catch (err) {
-//         console.error(err.message);
-//         return res.status(400).json({ status: 400, message: err.message });
-//     }
-// };
-
 /** Gets the latest available instance of the identity document. */
 const getLatestIdentity = async (id: string) => {
     const item = await Identity.findOne({ id: id }, null, { sort: { sequence: -1 } });
@@ -332,18 +273,8 @@ export const getDIDDocument: Handler = async (req, res) => {
         metadata.duration = Math.round((t1 - t0));
         metadata.sequence = item.sequence; // Consider using "seqNo" to use same as other DID Methods.
 
-        // const metaDataJson = JSON.stringify(item.metadata);
-
-        // console.log(metaDataJson);
-
-        // const documentMetadata = { ...JSON.parse(metadata) };
-
         // We store proof together with other metadata, but the DID specification
         // does not allow us to put proof on the document metadata, we must move to resolution
-        // metadata.
-        // metadata.proof = item.metadata.proof;
-        // delete documentMetadata.proof;
-
         didResolution.didDocument = item.document;
         didResolution.didResolutionMetadata = metadata; // Resolution metadata, blockchain attestation should be added here.
         didResolution.didDocumentMetadata = item.metadata; // Document metadata, can only contain these values: https://w3c.github.io/did-core/#did-document-metadata
@@ -678,8 +609,6 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     // Store the verified identity in our identity store.
     //var document = new DIDDocument(req.body);
 
-
-
     // Entity to be stored in a collection. IIdentityDocument
     var entity = {
         id: documentId,
@@ -697,26 +626,12 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
         }
     };
 
-    // var identity = new Identity();
-    // identity.id = 
     log.info('Entity Store entry:');
     log.info(entity);
 
-    console.log('processOperation::entity:');
-    console.log(JSON.stringify(entity));
-
     var identity = new Identity(entity);
 
-    console.log('processOperation::identity:beforesave');
-    console.log(JSON.stringify(identity));
-
     await identity.save();
-
-    console.log('processOperation::identity:aftersave');
-    console.log(JSON.stringify(identity));
-
-    // var vault = new DIDDocument(entity);
-    // await vault.save();
 }
 
 /**

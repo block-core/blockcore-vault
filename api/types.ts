@@ -1,8 +1,6 @@
 import { Request, RequestHandler as Middleware, Response } from "express";
 import { IServer } from "./data/models";
 
-// export type User = { username: string; password: string };
-
 export type Vault = {
   id: string, enabled: boolean, name: string,
   description: string, url: string, created: Date,

@@ -1,6 +1,3 @@
-
-
-
 var nft = {
     "title": "Asset Metadata",
     "type": "object",

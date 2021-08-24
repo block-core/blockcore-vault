@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ApiService } from './services/api.service';
 import { SetupService } from './services/setup.service';
-import { Router, ActivatedRoute, NavigationEnd, ResolveEnd, NavigationStart } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Router, ActivatedRoute, NavigationStart } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -95,21 +94,6 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.welcomeVisible = false;
     }, 5000);
-
-    this.activatedRoute.paramMap.subscribe(async params => {
-
-      console.log('PARAMS:', params);
-
-      // const id: any = params.get('address');
-      // console.log('Address:', id);
-
-      // this.transactions = null;
-      // this.address = id;
-      // this.balance = await this.api.getAddress(id);
-      // console.log(this.balance);
-
-      // await this.updateTransactions('/api/query/address/' + id + '/transactions?limit=' + this.limit);
-    });
   }
 
   subscriptions: EventBusSubscription[] = [];
@@ -160,11 +144,4 @@ export class AppComponent implements OnInit, OnDestroy {
       this.router.navigate(['/connect', vault.id]);
     }
   }
-
-  // getName() {
-  //   this.http.get<any>(this.baseUrl + '.auth/me').subscribe(result => {
-  //     this.parseToken(result);
-  //     console.log(result);
-  //   }, error => console.error(error));
-  // }
 }

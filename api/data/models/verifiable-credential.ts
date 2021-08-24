@@ -23,25 +23,10 @@ const VerifiableCredentialSchema: Schema = new Schema({
     proof: {
         type: String,
         jwt: String
-    },
-
-    //   enabled: Boolean,
-    //   name: { type: String, index: true, required: true },
-    //   description: String,
-    //   url: { type: String, required: true },
-    //   created: Date,
-    //   modified: Date,
-    //   lastSeen: Date,
-    //   lastFullSync: Date,
-    //   wellKnownConfiguration: String,
-    //   state: String
+    }
 }, {
     versionKey: false
 });
-
-// VerifiableCredentialSchema.method('getVaults', function (cb: any) {
-//   return VerifiableCredential.find().where('boss').in(this.id).exec();
-// });
 
 const VerifiableCredential = model('VerifiableCredential', VerifiableCredentialSchema);
 

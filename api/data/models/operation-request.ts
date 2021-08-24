@@ -13,21 +13,6 @@ interface IOperationRequest extends Document {
   _id: string
 }
 
-// var addOperation = {
-//     "operation": "create",
-//     "payload": "string"
-// };
-
-// var replaceOperation = {
-//     "operation": "replace",
-//     "payload": "string"
-// };
-
-// var deleteOperation = {
-//     "operation": "deactivate",
-//     "payload": "string"
-// };
-
 const OperationRequestSchema: Schema = new Schema({
   type: { type: String, required: true },
   id: { type: String, required: true },

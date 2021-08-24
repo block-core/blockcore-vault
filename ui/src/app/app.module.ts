@@ -124,7 +124,6 @@ import { EventComponent } from './event/event.component';
   ],
   imports: [
     BrowserModule,
-    // BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     AppRoutingModule,

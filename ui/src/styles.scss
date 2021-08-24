@@ -32,22 +32,6 @@ a:visited {
   font-family: Roboto Mono, monospace !important;
 }
 
-// ::-webkit-scrollbar {
-//   width: 10px;
-// }
-
-// ::-webkit-scrollbar-track {
-//   background: #f1f1f1;
-// }
-
-// ::-webkit-scrollbar-thumb {
-//   background: #888;
-// }
-
-// ::-webkit-scrollbar-thumb:hover {
-//   background: #555;
-// }
-
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
@@ -135,12 +119,6 @@ a:visited {
 .welcome-content {
   width: 100%;
   height: 100%;
-  //  position: absolute;
-  //  z-index: 50000;
-  //  top: 0;
-  //  left: 0;
-  //  bottom: 0;
-  //  right: 0;
 
   background: url("/assets/wallpaper-01.jpg") no-repeat center center fixed;
   -webkit-background-size: cover;
@@ -148,9 +126,6 @@ a:visited {
   -o-background-size: cover;
   background-size: cover;
 
-  //  background-position: 0px 0px;
-  //  background-repeat: repeat-x;
-  //animation: animatedBackground 2s linear;
   transition: all 1.2s;
   transform: scale(1.2);
 
@@ -287,32 +262,6 @@ a:visited {
   header {
     display: none !important;
   }
-
-  //   html,
-  //   body {
-  //     font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
-  //       Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-  //     margin: 0;
-  //     padding: 0;
-  //     overflow: hidden;
-  //     background-color: white;
-  //     font-size: 2rem;
-  //   }
-
-  //   .btn {
-  //     display: none;
-  //   }
-
-  //   body {
-  //     display: none;
-  //   }
-
-  //   .tble {
-  //     background-color: #cd853f;
-  //     border: 1px solid green;
-  //     -webkit-print-color-adjust: exact;
-  //     /*above line of codes will set the table background-color and change the border color when we give the print and preview (print preview only when we see on print preview via browser) command*/
-  //   }
 }
 
 @media screen {

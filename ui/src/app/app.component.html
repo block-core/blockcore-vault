@@ -1,6 +1,6 @@
 <!-- Uncomment to show splashloading dialog -->
 
-<!-- <div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
+<div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
   <div class="welcome-content">
 
     <div class="welcome-text">
@@ -11,7 +11,7 @@
     <img class="welcome-logo" src="assets/blockcore-light-small.png" *ngIf="welcomeLogo" [@fadeInDownOnEnter] [@fadeOutUpOnLeave]>
     <div class="welcome-backdrop"></div>
   </div>
-</div> -->
+</div>
 
 <div *ngIf="!appState.authenticated">
   <router-outlet></router-outlet>
@@ -29,7 +29,6 @@
 
     <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
       <button mat-menu-item (click)="connectTo(null)">Connect to new...</button>
-      <!-- <button mat-menu-item [matMenuTriggerFor]="accounts">Account</button> -->
       <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button>
     </mat-menu>
 
@@ -48,29 +47,6 @@
         <div mat-line>Dashboard</div>
       </a>
 
-      <!-- Enable later: -->
-      <!-- <a mat-list-item [routerLink]="['/apps']" routerLinkActive="active-link">
-        <mat-icon mat-list-icon>apps</mat-icon>
-        <div mat-line>Apps</div>
-      </a>
-      <a mat-list-item [routerLink]="['/search']" routerLinkActive="active-link">
-        <mat-icon mat-list-icon>search</mat-icon>
-        <div mat-line>Search</div>
-      </a> -->
-
-      <!-- <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link">
-      <mat-icon mat-list-icon>forum</mat-icon>
-      <div mat-line>Forums</div>
-      </a>
-      <a mat-list-item [routerLink]="['/gateway']" routerLinkActive="active-link">
-        <mat-icon mat-list-icon>folder</mat-icon>
-        <div mat-line>Data</div>
-      </a>
-      <a mat-list-item [routerLink]="['/identity']" routerLinkActive="active-link">
-        <mat-icon mat-list-icon>account_circle</mat-icon>
-        <div mat-line>Identity</div>
-      </a>  -->
-
       <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
         <div mat-line>Vaults</div>
@@ -87,11 +63,6 @@
       </a>
 
       <mat-divider></mat-divider>
-
-      <!-- <a mat-list-item [routerLink]="['/setup/account']" routerLinkActive="active-link" *ngIf="!appState.vault">
-        <mat-icon mat-list-icon>perm_identity</mat-icon>
-        <div mat-line>Setup222</div>
-      </a> -->
 
       <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon>perm_identity</mat-icon>
@@ -135,26 +106,12 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
 
-      <!-- <button [routerLink]="[appState.goBack]" mat-menu-item *ngIf="appState.goBack">
-        <mat-icon>home</mat-icon>
-        <span>Home</span>
-      </button>
-
-      <mat-icon >back</mat-icon> -->
-
       <span class="example-spacer">{{appState.title}}</span>
-
-      <!-- <button mat-icon-button matTooltip="Show conversation details" [style.margin]="'0 -5px'">
-        <mat-icon>info</mat-icon>
-      </button> -->
 
       <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button
         [matTooltip]="action.tooltip">
         <mat-icon>{{action.icon}}</mat-icon>
       </button>
-
-      <!-- <mat-icon class="example-icon">favorite</mat-icon> -->
-      <!-- <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
 
     </mat-toolbar>
     <router-outlet></router-outlet>
