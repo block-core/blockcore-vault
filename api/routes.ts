@@ -1,4 +1,4 @@
-import { getEvents, latestEvent, totalEvents } from "./controllers/event";
+import { getEvent, getEvents, latestEvent, totalEvents } from "./controllers/event";
 // import { home } from "./controllers/home";
 import { createDIDDocument, deleteDIDDocument, getDIDDocument, handleOperation, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, getSettings, updateLocalServer, updateServer, updateSettings } from "./controllers/server";
@@ -70,6 +70,12 @@ export const routes: Route[] = [
     path: "/event/latest",
     middleware: [requestLogger],
     handler: latestEvent,
+  },
+  {
+    method: "get",
+    path: "/event/:id/:type/:operation/:sequence",
+    middleware: [requestLogger],
+    handler: getEvent,
   },
   // {
   //   method: "get",

@@ -72,6 +72,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { IdentitiesComponent } from './identities/identities.component';
 import { EventsComponent } from './events/events.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { EventComponent } from './event/event.component';
 
 
 @NgModule({
@@ -117,7 +118,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     AccountComponent,
     ConnectComponent,
     IdentitiesComponent,
-    EventsComponent
+    EventsComponent,
+    EventComponent
   ],
   imports: [
     BrowserModule,

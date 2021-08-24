@@ -1,0 +1,12 @@
+<div class="page" *ngIf="result">
+  <h2 class="mono">{{result.id}}</h2>
+  Type: <strong>{{result.type}}</strong><br>
+  Operation: <strong>{{result.operation}}</strong><br>
+  Sequence: <strong>{{result.sequence}}</strong><br>
+  Published: <strong>{{result.published}}</strong><br>
+  Received: <strong>{{result.received}}</strong><br>
+  <br>
+  Payload:<br>
+  <pre class="json">{{decoded | json}}</pre>
+  JWT: <div class="jwt">{{result.jwt}}</div><br>
+</div>

@@ -15,7 +15,13 @@ a:hover {
     text-decoration: none;
 }
 
+.jwt {
+  overflow-wrap: break-word;
+}
 
+.json {
+  overflow-wrap: break-word;
+}
 
 /* Structure */
 .example-container {

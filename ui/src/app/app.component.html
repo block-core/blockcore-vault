@@ -115,6 +115,14 @@
 
     </mat-nav-list>
   </mat-sidenav>
+
+  <mat-sidenav #draweraccount class="sidenav print-hidden" fixedInViewport [attr.role]="'navigation'" [mode]="'over'"
+  position="end">
+
+  <button mat-button (click)="draweraccount.toggle()">Close</button>
+  
+  </mat-sidenav>
+
   <mat-sidenav-content>
     <mat-toolbar color="primary" class="print-hidden">
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
@@ -122,6 +130,17 @@
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
       <span></span>
+
+      <button *ngIf="appState.goBack" [routerLink]="[appState.goBack]" mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <!-- <button [routerLink]="[appState.goBack]" mat-menu-item *ngIf="appState.goBack">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </button>
+
+      <mat-icon >back</mat-icon> -->
 
       <span class="example-spacer">{{appState.title}}</span>
 

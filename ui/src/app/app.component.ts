@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ApiService } from './services/api.service';
 import { SetupService } from './services/setup.service';
 import { Router, ActivatedRoute, NavigationEnd, ResolveEnd, NavigationStart } from '@angular/router';
@@ -10,6 +10,8 @@ import { ApplicationState } from './services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation, fadeInUpAnimation, fadeOutDownAnimation, fadeInUpOnEnterAnimation, fadeOutDownOnLeaveAnimation, zoomOutOnLeaveAnimation, fadeOutLeftOnLeaveAnimation, fadeOutLeftBigOnLeaveAnimation, bounceOutLeftOnLeaveAnimation, fadeInDownOnEnterAnimation, fadeOutUpOnLeaveAnimation } from 'angular-animations';
 import { HttpClient } from '@angular/common/http';
 import { VaultService } from './services/vault.service';
+import { MatSidenav } from '@angular/material/sidenav';
+import { EventBusService, EventBusSubscription } from './services/event-bus.service';
 
 @Component({
   selector: 'app-root',
@@ -31,8 +33,10 @@ import { VaultService } from './services/vault.service';
     // bounceOutDownOnLeaveAnimation({ anchor: 'leave', duration: 500, delay: 200, translate: '40px' })
   ]
 })
-export class AppComponent implements OnInit {
-  title = 'app';
+export class AppComponent implements OnInit, OnDestroy {
+  @ViewChild('drawer') drawer!: MatSidenav;
+  @ViewChild('draweraccount') draweraccount!: MatSidenav;
+  @Output() openEvent = new EventEmitter<string>();
   welcomeLoaded = false;
   welcomeLoadedSecond = false;
   welcomeVisible = true;
@@ -52,12 +56,20 @@ export class AppComponent implements OnInit {
     public vaultService: VaultService,
     private api: ApiService,
     private setup: SetupService,
+    private bus: EventBusService,
     private router: Router,
-
-
     // /.auth/me
     private activatedRoute: ActivatedRoute,
     private breakpointObserver: BreakpointObserver) {
+
+    router.events.subscribe((val) => {
+      // When navigation starts, clear the goBack value.
+      if (val instanceof NavigationStart) {
+        console.log('NavigationStart!!');
+        // this.uiState.showBackButton = false;
+        this.appState.goBack = null;
+      }
+    });
 
     let path = localStorage.getItem('path');
     if (path) {
@@ -100,8 +112,32 @@ export class AppComponent implements OnInit {
     });
   }
 
-  async ngOnInit() {
+  subscriptions: EventBusSubscription[] = [];
 
+  ngOnDestroy(): void {
+    this.bus.unlisten(this.subscriptions);
+  }
+
+  ngOnInit() {
+    this.subscriptions.push(this.bus.listen('details-open', () => {
+      this.draweraccount.open();
+    }));
+
+    this.subscriptions.push(this.bus.listen('details-close', () => {
+      this.draweraccount.close();
+    }));
+  }
+
+  onOpenEvent() {
+    this.openEvent.emit();
+  }
+
+  openEventHander($event: any) {
+    console.log($event);
+  }
+
+  onOpenDetails() {
+    this.draweraccount.open();
   }
 
   parseToken(token: any[]) {

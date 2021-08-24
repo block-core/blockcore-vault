@@ -68,6 +68,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { HelpComponent } from './help/help.component';
 import { EventsComponent } from './events/events.component';
 import { IdentitiesComponent } from './identities/identities.component';
+import { EventComponent } from './event/event.component';
 
 const routes: Routes = [
   {
@@ -82,6 +83,11 @@ const routes: Routes = [
   },
   {
     path: 'events', component: EventsComponent, resolve: {
+      chain: LoadingResolverService,
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'events/:id/:type/:operation/:sequence', component: EventComponent, resolve: {
       chain: LoadingResolverService,
     }, canActivate: [AuthGuard]
   },

@@ -156,6 +156,11 @@ export class ApiService {
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
+   getEvent(id: string, type: string, operation: string, sequence: string) {
+      return this.get(`event/${id}/${type}/${operation}/${sequence}`);
+      // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
+   }
+
    getStatistics() {
       return this.get('management/statistics');
    }

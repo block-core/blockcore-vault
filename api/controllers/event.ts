@@ -32,6 +32,26 @@ export const latestEvent: Handler = async (req, res) => {
     }
 };
 
+/** Returns a unique event */
+export const getEvent: Handler = async (req, res) => {
+
+    console.log('GET EVENT!!!');
+
+    try {
+        // TODO: Implement some sort of caching mechanism
+        const item = await OperationRequest.findOne({ id: req.params.id, type: req.params.type, operation: req.params.operation, sequence: req.params.sequence });
+
+        if (item) {
+            return res.json(item);
+        } else {
+            return res.sendStatus(404);
+        }
+    } catch (err) {
+        log.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};
+
 export const getEvents: Handler = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?

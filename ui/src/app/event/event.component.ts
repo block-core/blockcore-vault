@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { EventBusService } from '../services/event-bus.service';
+import { decodeJWT } from 'did-jwt';
 
 export class TableStickyHeaderExample {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
@@ -34,11 +35,11 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 @Component({
-  selector: 'app-events',
-  templateUrl: './events.component.html',
-  styleUrls: ['./events.component.css'],
+  selector: 'app-event',
+  templateUrl: './event.component.html',
+  styleUrls: ['./event.component.css'],
 })
-export class EventsComponent implements OnInit, AfterViewInit {
+export class EventComponent implements OnInit, AfterViewInit {
   @HostBinding('class.content-centered') hostClass = true;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -47,11 +48,13 @@ export class EventsComponent implements OnInit, AfterViewInit {
   dataSource = ELEMENT_DATA;
   dataSource2: [] = [];
   result: any;
+  decoded: any;
 
   isLoadingResults = true;
   isRateLimitReached = false;
 
   length = 0;
+  pageSize = 5;
   pageSizeOptions: number[] = [5, 10, 25, 100];
 
   // MatPaginator Output
@@ -65,26 +68,41 @@ export class EventsComponent implements OnInit, AfterViewInit {
     private bus: EventBusService,
     private route: ActivatedRoute,
     @Inject('BASE_URL') private baseUrl: string) {
-    appState.title = 'Events';
+    appState.title = 'Event';
+    appState.goBack = '/events';
+
+    console.log(appState);
+
+    this.route.paramMap.subscribe(async params => {
+      this.api.getEvent(params.get('id'), params.get('type'), params.get('operation'), params.get('sequence')).subscribe(result => {
+        const item = result as any;
+        this.result = item;
+        
+        const decodedOperation = decodeJWT(item.jwt);
+        const contentJWT = decodedOperation.payload.content;
+        this.decoded = decodeJWT(contentJWT).payload;
+
+      });
+    });
+
   }
 
-  getData(event: PageEvent) {
-    console.log(event);
-    this.isLoadingResults = true;
-    this.appState.pageSize = event.pageSize;
+  // getData(event: PageEvent) {
+  //   console.log(event);
+  //   this.isLoadingResults = true;
 
-    this.api.getEvents((event.pageIndex + 1), event.pageSize).subscribe(result => {
-      var events = result as any;
-      this.result = events;
-      this.dataSource2 = events.data
-      console.log('EVENTS:');
-      console.log(events);
-      this.isLoadingResults = false;
+  //   this.api.getEvents((event.pageIndex + 1), event.pageSize).subscribe(result => {
+  //     var events = result as any;
+  //     this.result = events;
+  //     this.dataSource2 = events.data
+  //     console.log('EVENTS:');
+  //     console.log(events);
+  //     this.isLoadingResults = false;
 
-      this.length = events.totalNumber;
+  //     this.length = events.totalNumber;
 
-    }, error => console.error(error));
-  }
+  //   }, error => console.error(error));
+  // }
 
   select(row: any) {
     console.log(row);
@@ -99,18 +117,18 @@ export class EventsComponent implements OnInit, AfterViewInit {
     return (this.row == row);
   }
 
-  // setPageSizeOptions(setPageSizeOptionsInput: string) {
+  setPageSizeOptions(setPageSizeOptionsInput: string) {
 
-  //   console.log(setPageSizeOptionsInput);
+    console.log(setPageSizeOptionsInput);
 
-  //   if (setPageSizeOptionsInput) {
-  //     this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
-  //     console.log(this.pageSizeOptions);
-  //   }
-  // }
+    if (setPageSizeOptionsInput) {
+      this.pageSizeOptions = setPageSizeOptionsInput.split(',').map(str => +str);
+      console.log(this.pageSizeOptions);
+    }
+  }
 
   ngAfterViewInit() {
-    this.getData({ pageIndex: 0, pageSize: this.appState.pageSize, previousPageIndex: 0, length: 0 });
+    // this.getData({ pageIndex: 0, pageSize: this.pageSize, previousPageIndex: 0, length: 0 });
 
     // this.isLoadingResults = true;
 

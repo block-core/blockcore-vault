@@ -24,7 +24,11 @@ export class ApplicationState {
 
    vault: any;
 
+   goBack: string;
+
    authenticated: boolean;
+
+   pageSize = 10;
 
    private _vaultUrl: string = '';
 
