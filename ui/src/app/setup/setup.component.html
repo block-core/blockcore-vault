@@ -1,0 +1,113 @@
+<div class="page">
+
+    <!-- <div [class.mat-elevation-z8]="true" class="setup-section"> -->
+
+    <!-- <p>
+            This page allows you to generate a valid and signed Vault Configuration that can be used to configure an
+            individual Blockcore Vault.
+        </p> -->
+
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>DID</mat-label>
+            <input matInput disabled [ngModel]="appState.vault.id">
+        </mat-form-field>
+    </p>
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Domain</mat-label>
+            <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+            <input matInput disabled [ngModel]="appState.vault.linked_dids[0].credentialSubject.origin">
+        </mat-form-field>
+    </p>
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Issuance</mat-label>
+            <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+            <input matInput disabled [ngModel]="appState.vault.linked_dids[0].issuanceDate">
+        </mat-form-field>
+    </p>
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Expiration</mat-label>
+            <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+            <input matInput disabled [ngModel]="appState.vault.linked_dids[0].expirationDate">
+        </mat-form-field>
+    </p>
+
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name of your Vault">
+        </mat-form-field>
+    </p>
+
+    <p>
+        <mat-checkbox [(ngModel)]="enabled">Enabled</mat-checkbox>
+    </p>
+
+    <!-- <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Id</mat-label>
+            <input matInput [(ngModel)]="id" disabled autocomplete="off"
+                placeholder="Public Key of your Data Vault identity">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Domain (URL)</mat-label>
+            <input matInput [(ngModel)]="url" autocomplete="off" placeholder="https://yourdomain">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name of your Vault">
+        </mat-form-field>
+    </p> -->
+
+    <!-- <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Password (required to update identity)</mat-label>
+        <input matInput type="password" [(ngModel)]="password" autocomplete="off" placeholder="Account password">
+    </mat-form-field> -->
+
+    <div class="error-list">
+        <mat-chip-list *ngIf="error">
+
+            <mat-chip *ngIf="error" color="warn" selected (removed)="removeError()">{{error}}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+    </div>
+
+    <!-- <p>
+        <button mat-flat-button color="primary" (click)="saveEdit()">Generate</button>&nbsp;
+        <button mat-stroked-button (click)="cancelEdit()">Clear</button>
+    </p>
+
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Generated and Signed .well-known Configuration</mat-label>
+            <textarea matInput rows="12" [(ngModel)]="configurationJson"></textarea>
+        </mat-form-field>
+    </p>
+
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Vault Setup Configuration</mat-label>
+            <textarea matInput rows="12" [(ngModel)]="setupDocumentJson"></textarea>
+        </mat-form-field>
+    </p> -->
+
+    <p>
+        <button mat-flat-button color="primary" (click)="save()">Save</button>
+        <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+    </p>
+
+    <script>
+        $(document).ready(function () {
+            $('input').attr('autocomplete', 'off');
+        });
+    </script>
+
+    <!-- </div> -->
+
+</div>

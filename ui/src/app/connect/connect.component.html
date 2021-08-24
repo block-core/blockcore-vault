@@ -1,0 +1,64 @@
+<mat-toolbar class="logo-icon">
+  <img src="assets/blockcore-light-small.png">
+  <div>Blockcore Vault</div>
+</mat-toolbar>
+
+<div class="center">
+  <div class="content">
+    <br>
+    <mat-card [class.mat-elevation-z10]="true">
+      <mat-card-header>
+        <mat-card-title>Connect to Vault</mat-card-title>
+        <mat-card-subtitle>Connect to a Vault for Management</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Choose Vault</mat-label>
+          <mat-select [(value)]="vault">
+            <mat-option>Connect to new</mat-option>
+            <mat-option *ngFor="let vault of vaultService.vaults" [value]="vault">{{vault.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>DID or URL</mat-label>
+          <input matInput [disabled]="hasVaultSelected" [(ngModel)]="vault.url" placeholder="Url or DID to Vault">
+        </mat-form-field>
+
+        <!-- <button mat-flat-button color="primary">Query</button> -->
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Management Key (API)</mat-label>
+          <input matInput [(ngModel)]="vault.key" placeholder="Key">
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="vault.remember">Remember API key</mat-checkbox>
+        <br>
+
+        <div class="error-list">
+          <mat-chip-list *ngIf="error">
+
+            <mat-chip *ngIf="error" color="warn" selected (removed)="removeError()">{{error}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" [disabled]="!vault.url" (click)="connect()">Connect</button>
+        <button mat-stroked-button (click)="clear()">Clear</button>
+        <button mat-stroked-button color="warn" *ngIf="hasVaultSelected" (click)="remove(this.vault)">Remove</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <br>
+    <p>
+      Want to learn more about Blockcore Vault? Check the documentation below.
+    </p>
+
+    <a href="/docs" class="link">OpenAPI Documentation</a> | <a href="https://www.blockcore.net"
+      class="link">www.blockcore.net</a>
+  </div>
+</div>

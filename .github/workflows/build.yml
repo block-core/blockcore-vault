@@ -1,0 +1,62 @@
+name: Build and Release
+
+on: 
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    
+    env:
+      PROJECT_NAME: 'Blockcore.Vault'
+
+    steps:
+
+    - uses: actions/checkout@master
+      name: Checkout
+
+    # Should we force a version or attempt to rely on pre-installed on build agent / production environment?
+    # - name: Setup Node.js (${{ matrix.node_version }})
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: ${{ matrix.node_version }}
+
+    - name: Variables
+      run: |
+        echo VERSION=$(npm run version --silent) >> $GITHUB_ENV
+      shell: bash
+
+    - name: Package Name
+      run: |
+        echo RELEASE_NAME=${{ env.PROJECT_NAME }}-${{ env.VERSION }}.zip >> $GITHUB_ENV
+      shell: bash
+
+    - name: Build
+      run: |
+        npm ci
+        npm run build
+        npm run ui:install
+        npm run ui:build
+        npm run ui:copy
+
+    - name: Package
+      run: zip -r ${{env.RELEASE_NAME}} package.json ./build/
+
+    - uses: actions/upload-artifact@v1
+      with:
+        name: blockcore-vault-preview-${{env.VERSION}}
+        path: "${{env.RELEASE_NAME}}"
+
+    - name: Release
+      uses: sondreb/action-release@main
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: "${{env.RELEASE_NAME}}"
+        draft: true
+        prerelease: false
+        name: "Blockcore Vault (Release ${{env.VERSION}})"
+        tag: ${{env.VERSION}}

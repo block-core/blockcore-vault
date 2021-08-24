@@ -1,0 +1,13 @@
+.page {
+  padding: 3em;
+}
+
+.error-list {
+  padding: 1em 0;
+}
+
+.warning-text {
+  padding: 1em;
+  margin: 1em 0;
+  background-color: #f44336;
+}

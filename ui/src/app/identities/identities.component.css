@@ -1,0 +1,25 @@
+.page {
+    padding: 2em 3em;
+    font-size: 1.2em;
+}
+
+a {
+    color: white;
+}
+
+p {
+    font-weight: 100;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+
+.example-container {
+    overflow: auto;
+  }
+  
+  table {
+    width: 100%;
+  }

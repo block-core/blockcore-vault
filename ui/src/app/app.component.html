@@ -1,0 +1,119 @@
+<!-- Uncomment to show splashloading dialog -->
+
+<div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
+  <div class="welcome-content">
+
+    <div class="welcome-text">
+      <h3 class="mat-display-2 welcome-font-black" *ngIf="welcomeLoaded" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>Welcome to Blockcore Vault</h3>
+      <h4 class="mat-display-4 welcome-font-light" *ngIf="welcomeLoadedSecond" [@fadeInUpOnEnter] [@fadeOutDownOnLeave]>
+        {{welcomeName}}</h4>
+    </div>
+    <img class="welcome-logo" src="assets/blockcore-light-small.png" *ngIf="welcomeLogo" [@fadeInDownOnEnter] [@fadeOutUpOnLeave]>
+    <div class="welcome-backdrop"></div>
+  </div>
+</div>
+
+<div *ngIf="!appState.authenticated">
+  <router-outlet></router-outlet>
+</div>
+
+<mat-sidenav-container class="sidenav-container" *ngIf="appState.authenticated">
+  <mat-sidenav #drawer class="sidenav print-hidden" fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'" [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false">
+
+    <mat-toolbar class="logo-icon" [matMenuTriggerFor]="animals">
+      <img src="assets/blockcore-light-small.png">
+      <div>Blockcore Vault</div>
+    </mat-toolbar>
+
+    <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
+      <button mat-menu-item (click)="connectTo(null)">Connect to new...</button>
+      <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button>
+    </mat-menu>
+
+    <mat-menu #accounts="matMenu">
+      <button mat-menu-item>John</button>
+      <button mat-menu-item>John Doe</button>
+    </mat-menu>
+
+    <mat-menu #servers="matMenu">
+      <button mat-menu-item (click)="connectTo(vault)" *ngFor="let vault of vaultService.vaults" [value]="vault">{{vault.name}}</button>
+    </mat-menu>
+
+    <mat-nav-list class="menu-options">
+      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>dashboard</mat-icon>
+        <div mat-line>Dashboard</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
+        <div mat-line>Vaults</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/identities']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>people</mat-icon>
+        <div mat-line>Identities</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/events']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>category</mat-icon>
+        <div mat-line>Events</div>
+      </a>
+
+      <mat-divider></mat-divider>
+
+      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>perm_identity</mat-icon>
+        <div mat-line>Setup</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
+        <div mat-line>Settings</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/help']" routerLinkActive="active-link">
+        <mat-icon mat-list-icon mat-list-icon>help_outline</mat-icon>
+        <div mat-line>Help</div>
+      </a>
+
+      <a mat-list-item routerLink="/logout" routerLinkActive="active-link" *ngIf="appState.authenticated">
+        <mat-icon mat-list-icon mat-list-icon>logout</mat-icon>
+        <div mat-line>Exit</div>
+      </a>
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav #draweraccount class="sidenav print-hidden" fixedInViewport [attr.role]="'navigation'" [mode]="'over'"
+  position="end">
+
+  <button mat-button (click)="draweraccount.toggle()">Close</button>
+  
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="print-hidden">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()"
+        *ngIf="isHandset$ | async">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span></span>
+
+      <button *ngIf="appState.goBack" [routerLink]="[appState.goBack]" mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <span class="example-spacer">{{appState.title}}</span>
+
+      <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button
+        [matTooltip]="action.tooltip">
+        <mat-icon>{{action.icon}}</mat-icon>
+      </button>
+
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

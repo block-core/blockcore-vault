@@ -1,0 +1,51 @@
+.sidenav-container {
+   height: 100%;
+   overflow: overlay;
+}
+
+.mat-drawer-inner-container {
+   overflow: overlay;
+}
+
+.sidenav {
+   width: 200px;
+}
+
+.mat-toolbar.mat-primary {
+   position: sticky;
+   top: 0;
+   z-index: 5000;
+}
+
+.logo-icon {
+   justify-content: center;
+   cursor: pointer;
+}
+
+.logo-icon img {
+   height: 60%;
+}
+
+.logo-icon div {
+   font-size: 0.8em;
+   margin-left: 1em;
+}
+
+.example-icon {
+   padding: 0 14px;
+}
+
+.example-spacer {
+   flex: 1 1 auto;
+}
+
+.active-link {
+   border-left: 4px solid #c2185b !important;
+   box-sizing: border-box;
+}
+
+.menu-options a {
+   border-left: 4px solid transparent;
+   box-sizing: border-box;
+}
+

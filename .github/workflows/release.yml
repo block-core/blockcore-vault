@@ -1,0 +1,47 @@
+name: Build and Release Docker Image
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Log Variables
+      run: |
+        echo "action - ${{ github.event.action }}"
+        echo "url - ${{ github.event.release.url }}"
+        echo "assets_url - ${{ github.event.release.assets_url }}"
+        echo "id - ${{ github.event.release.id }}"
+        echo "tag_name - ${{ github.event.release.tag_name }}"
+        echo "assets - ${{ github.event.assets }}"
+        echo "assets[0] - ${{ github.event.assets[0] }}"
+
+    - name: Download release
+      uses: sondreb/action-release-download@master
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        url: ${{ github.event.release.assets_url }}
+        folder: "./artifacts/"
+
+    # This will extract the .zip on root and re-create same structure as normal dev build,
+    # so the same Dockerfile can be used for local debug/build and for the pipeline.
+    - name: Extract asset
+      run: 7z x -aoa ./artifacts/*.zip
+
+    - name: Display structure of downloaded files
+      run: ls -R
+
+    - name: Build the Docker container image
+      run: docker build -f "Dockerfile" -t sondreb/blockcore-vault:latest -t sondreb/blockcore-vault:${{ github.event.release.tag_name }} "."
+
+    - name: Login and Push to Docker Registry
+      run: |
+        docker login -u "sondreb" -p "${{secrets.DockerHubSecret}}"
+        docker push --all-tags sondreb/blockcore-vault

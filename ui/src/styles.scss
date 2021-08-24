@@ -1,0 +1,278 @@
+/*@import 'styles/blockcore', 'styles/explorer';*/
+
+html {
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  font-size: 22px;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  overflow: overlay;
+}
+
+a {
+  color: white;
+}
+
+a:hover {
+  color: silver;
+  text-decoration: none;
+}
+
+a:visited {
+  color: white;
+}
+
+.mono {
+  font-family: Roboto Mono, monospace !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.show-small {
+  display: none;
+}
+
+.menu-mode-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+@keyframes animatedBlur {
+  from {
+    backdrop-filter: blur(6px);
+  }
+  to {
+    backdrop-filter: blur(0px);
+  }
+}
+
+@keyframes animatedBackground {
+  from {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.welcome-logo {
+  position: absolute;
+  z-index: 50002;
+  top: 10%;
+  width: 128px;
+  left: 10%;
+}
+
+.welcome-backdrop {
+  position: absolute;
+  z-index: 50001;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: all 1.2s;
+  animation: animatedBlur 2s normal forwards;
+}
+
+.welcome-text {
+  position: absolute;
+  z-index: 50002;
+}
+
+.welcome {
+  position: absolute;
+  z-index: 50000;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.welcome:hover .welcome-content,
+.welcome:focus .welcome-content {
+  transform: scale(1);
+}
+
+.welcome-content {
+  width: 100%;
+  height: 100%;
+
+  background: url("/assets/wallpaper-01.jpg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+
+  transition: all 1.2s;
+  transform: scale(1.2);
+
+  animation: animatedBackground 2s normal forwards;
+}
+
+.welcome-content::before {
+  content: "";
+  display: none;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.welcome:hover .welcome-content:before,
+.welcome:focus .welcome-content:before {
+  display: block;
+}
+
+.welcome-text {
+  height: 100%;
+  margin-left: 10%;
+  color: white;
+  position: absolute;
+  top: 70%;
+}
+
+.welcome-font-black {
+  font-weight: 900 !important;
+  margin-bottom: 0.2em !important;
+}
+
+.welcome-font-light {
+  font-weight: 300;
+}
+
+@media only screen and (max-width: 60em) {
+  .welcome-font-black {
+    font-size: 2.4em !important;
+    margin-bottom: 0.05em !important;
+  }
+
+  .welcome-font-light {
+    font-size: 4.5em !important;
+  }
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.backdrop {
+  background: url("/assets/wallpaper-01.jpg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  transform: scale(1.2);
+}
+
+.loading-text {
+  font-size: 2em;
+  text-align: center;
+  padding-top: 4em;
+}
+
+@media only screen and (max-width: 120em) {
+  .loading-text {
+    font-size: 1em;
+    padding-top: 3em;
+  }
+}
+
+.icon-color-lead {
+  color: orange;
+}
+
+.icon-color-waiting {
+  color: green;
+}
+
+.container {
+  height: calc(100% - 64px);
+}
+
+.sidepanel-top {
+  text-align: right;
+  padding: 0.4em;
+}
+
+.sidepanel {
+  max-width: 600px;
+  width: 400px;
+}
+
+.input-full-width {
+  width: 100%;
+}
+
+@media only screen and (max-width: 500px) {
+  .sidepanel {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 599px) {
+  .container {
+    height: calc(100% - 56px);
+  }
+}
+
+@media print {
+  .print-visible {
+    display: inline-block;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .mnemonic {
+    font-size: 1.6rem !important;
+    //padding-top: 20% !important;
+  }
+
+  header {
+    display: none !important;
+  }
+}
+
+@media screen {
+  .print-hidden {
+  }
+
+  .print-visible {
+    display: none;
+  }
+}
+
+strong {
+  font-weight: 500;
+}

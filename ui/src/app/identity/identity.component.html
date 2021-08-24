@@ -1,0 +1,21 @@
+<div class="page" *ngIf="result">
+  <h2 class="mono">{{result.didDocument.id}}</h2>
+
+  <div>Sequence: {{result.didResolutionMetadata.sequence}}</div>
+  <div>Retrieved: {{result.didResolutionMetadata.retrieved}}</div>
+  <div>Created: {{result.didDocumentMetadata.created}}</div>
+  <div>Modified: {{result.didDocumentMetadata.modified}}</div>
+
+  <mat-list>
+    <div mat-subheader>Services</div>
+    <mat-list-item *ngFor="let service of result.didDocument.service">
+      <mat-icon mat-list-icon>folder</mat-icon>
+      <div mat-line>{{service.type}}</div>
+      <div mat-line> {{service.serviceEndpoint}} </div>
+    </mat-list-item>
+  </mat-list>
+
+  <br><br>
+  Document:<br><br>
+  <pre class="json">{{result | json}}</pre>
+</div>

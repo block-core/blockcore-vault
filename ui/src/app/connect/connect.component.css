@@ -1,0 +1,31 @@
+.logo-icon {
+   justify-content: center;
+   height: 140px;
+}
+
+.logo-icon img {
+   height: 60%;
+}
+
+.logo-icon div {
+   font-size: 1.2em;
+   margin-left: 1em;
+}
+
+.center {
+   margin-left: auto;
+   margin-right: auto;
+   max-width: 500px;
+}
+
+.content {
+   margin: 2em 0.4em;
+}
+
+.error-list {
+   padding: 1em 0;
+}
+
+a {
+   color: black;
+}

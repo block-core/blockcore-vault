@@ -1,0 +1,209 @@
+<div class="setup-container">
+
+    <h1 class="mat-h1">Blockcore Vault Initial Setup</h1>
+
+    <p>This Blockcore Vault instance has not been setup with an identity.</p>
+
+    <p>You must install <a href="https://github.com/block-core/blockcore-extension/" target="_blank">Blockcore
+            Extension</a>, create a wallet and identity account. On the identity, you can go into
+        advanced options and generate the Blockcore Vault configuration and paste below.</p>
+
+    <p>
+        <mat-form-field appearance="outline" class="input-full-width">
+            <mat-label>Vault Setup Configuration</mat-label>
+            <textarea matInput rows="12" [(ngModel)]="setupDocumentJson"
+                (ngModelChange)="updateInfo($event)"></textarea>
+        </mat-form-field>
+    </p>
+
+    <div *ngIf="setupDocument">
+        <p>
+            <mat-form-field appearance="outline" class="input-full-width">
+                <mat-label>DID</mat-label>
+                <input matInput disabled [ngModel]="setupDocument.didDocument.id">
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field appearance="outline" class="input-full-width">
+                <mat-label>Domain</mat-label>
+                <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+                <input matInput disabled
+                    [ngModel]="setupDocument.didConfiguration.linked_dids[0].credentialSubject.origin">
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field appearance="outline" class="input-full-width">
+                <mat-label>Expiration</mat-label>
+                <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+                <input matInput disabled [ngModel]="setupDocument.didConfiguration.linked_dids[0].expirationDate">
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field appearance="outline" class="input-full-width">
+                <mat-label>Name</mat-label>
+                <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name of your Vault">
+            </mat-form-field>
+        </p>
+
+        <p>
+            <button mat-flat-button color="primary" (click)="save()">Save</button>
+        </p>
+    </div>
+
+    <!-- 
+    <div [class.mat-elevation-z8]="true" class="setup-section">
+
+        <div class="content print-hidden">
+            <h1 class="mat-h1">Create an account</h1>
+
+            <mat-vertical-stepper class="print-hidden" linear>
+                <mat-step label="Introduction" editable="true">
+                    <p>
+                        <strong>Make sure nobody is watching your screen.</strong>
+                    </p>
+                    <p>
+                        I'll generate a random 12 word <strong>recovery phrase</strong> for you. It is very important
+                        that you remember this and keep it safe.
+                    </p>
+                    <p>
+                        The <strong>recovery phrase</strong> can be used to restore your account in the future, on this
+                        or another device. <strong>You are responsible</strong> for keeping it safe.
+                        Nobody can restore it for you, if you lose it.
+                    </p>
+                    <div>
+                        <button mat-raised-button color="primary" matStepperNext type="button">I understand</button>
+                        <button mat-raised-button routerLink="/login" matStepperPrevious type="button">Cancel</button>
+                    </div>
+                </mat-step>
+                <mat-step label="Recovery phrase" editable="true">
+                    <div>
+                        <strong>Your personal recovery phrase:</strong>
+                        <div class="mnemonic">{{mnemonic}}
+                            <button (click)="onPrint()" mat-icon-button title="Print your mnemonic">
+                                <mat-icon aria-label="Print">print</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <p>
+                        It is important that you remember this <strong>recovery phrase</strong> (the order is important)
+                        and save it securely. You can click the printer
+                        icon to save as PDF or print to paper, or write it down carefully and correctly.
+                    </p>
+                    <p>
+                        <strong>IMPORTANT:</strong><br> - Never disclose this sentence to anyone.<br> - Never type this
+                        sentence
+                        on a website.<br> - Do not store it electronically.
+                    </p>
+                    <div>
+                        <button mat-raised-button matStepperPrevious type="button">Back</button>
+                        <button mat-raised-button color="primary" [disabled]="!mnemonic" matStepperNext
+                            type="button">Yes, it
+                            is safe!</button>
+                    </div>
+                </mat-step>
+                <mat-step label="Verification" editable="true">
+                    <p>
+                        Select the correct third word from the <strong>recovery phrase</strong>:
+                    </p>
+                    <div>
+                        <button mat-raised-button matStepperPrevious type="button">Back</button>
+                        <button type="button" color="primary" mat-raised-button>grape</button>
+                        <button type="button" color="primary" matStepperNext mat-raised-button>{{verification}}</button>
+                        <button type="button" color="primary" mat-raised-button>cute</button>
+                    </div>
+                </mat-step>
+                <mat-step label="Extension word (optional)" editable="true" [stepControl]="accountSeedForm">
+                    <form [formGroup]="accountSeedForm">
+                        <strong>Your personal extension word:</strong>
+                        <p>
+                            If you want to increase the security of your wallet, you can enter your personal extension
+                            word. This adds a two-factor security
+                            to your wallet, meaning that you will need both the <strong>recovery phrase</strong> of 12
+                            words, which you
+                            have written down for backup, and the extension word you enter below.</p>
+                        <p>Make sure you can easily remember this extension word. If you lose it, then you will not be
+                            able
+                            to restore your wallet, even if you have a backup of the <strong>recovery phrase</strong>.
+                            Do not overestimate
+                            your ability to remember this word.</p>
+                        <p>If you do not want to use a personal extension word, you can leave this field empty.</p>
+                        <p>
+                            <mat-form-field class="input-full-width">
+                                <input matInput type="text" [formGroup]="accountSeedForm" [(ngModel)]="seedExtension"
+                                    placeholder="Enter any extension word (can be empty)" name="seedExtension"
+                                    formControlName="seedExtension">
+                            </mat-form-field>
+                        </p>
+                        <div>
+                            <button mat-raised-button matStepperPrevious type="button">Back</button>
+                            <button mat-raised-button color="primary" matStepperNext type="button">Next</button>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step label="Password" editable="true" [stepControl]="accountPasswordForm">
+                    <form [formGroup]="accountPasswordForm">
+                        <p>
+                            Provide a password that we can use to protect your wallet when it is saved.
+                            You will be prompted to enter this passord every time your start Blockcore Hub.</p>
+                        <p>
+                            <mat-form-field class="input-full-width">
+                                <input matInput type="password" [formGroup]="accountPasswordForm"
+                                    [(ngModel)]="password1" placeholder="Enter your password" name="accountPassword"
+                                    formControlName="accountPassword" autocomplete="new-password">
+                            </mat-form-field>
+                        </p>
+                        <p>
+                            <mat-form-field class="input-full-width">
+                                <input matInput type="password" [formGroup]="accountPasswordForm"
+                                    [(ngModel)]="password2" placeholder="Enter your password again"
+                                    name="accountPasswordConfirmation" formControlName="accountPasswordConfirmation"
+                                    autocomplete="new-password">
+                                <mat-error
+                                    *ngIf="accountPasswordForm.get('accountPasswordConfirmation').hasError('accountPasswordConfirmation')">
+                                    Passwords must match.
+                                </mat-error>
+                            </mat-form-field>
+                        </p>
+                        <div>
+                            <button mat-raised-button matStepperPrevious type="button">Back</button>
+                            <button mat-raised-button color="primary" matStepperNext type="button"
+                                [disabled]="accountPasswordForm.invalid">Next</button>
+                        </div>
+                    </form>
+                </mat-step>
+                <mat-step label="Name" editable="true" [stepControl]="accountNameForm">
+                    <form [formGroup]="accountNameForm">
+                        <p>
+                            You can name your account here, or keep the default:
+                        </p>
+                        <p>
+                            <mat-form-field appearance="outline">
+                                <mat-label>Account name</mat-label>
+                                <input matInput [(ngModel)]="accountName" formControlName="accountName"
+                                    name="accountName" placeholder="Fill out account name">
+                            </mat-form-field>
+                        </p>
+                        <div>
+                            <button mat-raised-button matStepperPrevious type="button">Back</button>
+                            <button type="button" color="primary" (click)="createAccount()" matStepperNext
+                                mat-raised-button [disabled]="saving || accountNameForm.invalid">Create
+                                account
+                            </button>
+                            <div class="spinner-container" *ngIf="saving">
+                                <mat-spinner [diameter]="24"></mat-spinner>
+                            </div>
+                        </div>
+                    </form>
+                </mat-step>
+            </mat-vertical-stepper>
+
+        </div>
+        <div class="print-visible">
+            <div class="mnemonic-print">{{mnemonic}}</div>
+            <div class="mnemonic-date">Generated on {{currentDate}}</div>
+        </div>
+
+    </div> -->
+
+</div>

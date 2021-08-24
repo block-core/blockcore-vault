@@ -1,0 +1,158 @@
+<div class="page" *ngIf="settings">
+  <mat-form-field appearance="outline" class="input-full-width">
+    <mat-label>Vault API Key</mat-label>
+    <input matInput [(ngModel)]="settings.apiKey" required placeholder="Vault API Key">
+  </mat-form-field>
+
+  <br>
+  <mat-checkbox [(ngModel)]="settings.allowIncomingRequests">Allow Incoming Requests to connect</mat-checkbox>
+  <br><br>
+  <mat-checkbox [(ngModel)]="settings.allowVaultCreateRequests">Allow Data Vault creation</mat-checkbox>
+  <br><br>
+  <mat-checkbox [(ngModel)]="settings.allowVaultUpdateRequests">Allow Data Vault updates</mat-checkbox>
+  <br><br>
+
+  <div class="error-list">
+    <mat-chip-list>
+
+      <mat-chip *ngIf="error" color="warn" selected (removed)="removeError()">{{error}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+
+      <mat-chip *ngIf="success" color="accent" selected (removed)="removeSuccess()">{{success}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+
+    </mat-chip-list>
+  </div>
+
+  <div class="warning-text" *ngIf="hasModifiedApiKey">
+    You've modified the API Key. When you save, you will be logged out
+    and must update your connection with new API key.
+  </div>
+
+  <button mat-flat-button color="primary" [disabled]="!settings.apiKey" (click)="save()">Save Settings</button>&nbsp;
+  <button mat-stroked-button (click)="cancel()">Cancel</button>
+  <!-- <button mat-flat-button color="accent">Reject</button>&nbsp;
+  <button mat-stroked-button>Block</button> -->
+
+</div>
+<!-- <mat-sidenav-container class="container">
+  <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">
+
+    <div class="sidepanel-top" *ngIf="item">
+
+      <span *ngIf="!item._id">Create</span>
+      <span *ngIf="item._id">Edit</span>
+
+      <button (click)="drawer.toggle()" mat-icon-button color="primary">
+        <mat-icon>close</mat-icon>
+      </button>
+
+    </div>
+
+    <mat-card class="profile-card" *ngIf="item">
+      <mat-card-header>
+        <mat-icon mat-card-avatar mat-list-icon class="request-header-image icon-color-{{item.category}}">{{icon(item.category)}}</mat-icon>
+        <mat-card-title>{{item.firstname}} {{item.lastname}}</mat-card-title>
+        <mat-card-subtitle>{{item.category}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <div *ngIf="item._id">
+          ID: {{item._id}}<br><br>
+        </div>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Customer ID (Elwin)</mat-label>
+          <input matInput [(ngModel)]="item.cid" placeholder="Customer ID">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Lead ID (Intercom)</mat-label>
+          <input matInput [(ngModel)]="item.lid" placeholder="Lead ID">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Category</mat-label>
+          <input matInput [(ngModel)]="item.category" placeholder="Title">
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>First name</mat-label>
+          <input matInput [(ngModel)]="item.firstname" placeholder="First name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Last name</mat-label>
+          <input matInput [(ngModel)]="item.lastname" placeholder="Last name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Phone (Must include 0047)</mat-label>
+          <input matInput [(ngModel)]="item.phone" placeholder="Phone (0047...)">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>One Time Password</mat-label>
+          <input matInput [(ngModel)]="item.otp" placeholder="SMS code (6 digits)">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput [(ngModel)]="item.email" placeholder="E-mail">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>SSN</mat-label>
+          <input matInput [(ngModel)]="item.ssn" placeholder="SSN">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-full-width">
+          <mat-label>Content</mat-label>
+          <textarea matInput rows="8" [(ngModel)]="item.content" placeholder="Content"></textarea>
+        </mat-form-field>
+
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" (click)="saveEdit()">Save</button>
+        <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-accordion *ngIf="item?._id" class="example-headers-align" multi>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Actions
+          </mat-panel-title>
+          <mat-panel-description>
+            Danger Zone
+            <mat-icon>build_circle</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <button mat-flat-button (click)="deleteMessage(item)" color="warn">Delete Message Template</button>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+
+  </mat-sidenav>
+
+  <div class="message-log">
+
+    <mat-selection-list [multiple]="false">
+      <mat-list-option *ngFor="let item of dataSource" (click)="selectMessage(item)" [value]="item">
+
+        <mat-icon mat-list-icon class="icon-color-{{item.category}}">{{icon(item.category)}}</mat-icon>
+        <div mat-line> {{item.firstname}} {{item.lastname}} ({{item.email}}) </div>
+        <div mat-line>{{item.category}} | {{item.cid}} | {{item.date | date:'short'}}</div>
+
+      </mat-list-option>
+    </mat-selection-list>
+
+  </div>
+
+</mat-sidenav-container> -->
