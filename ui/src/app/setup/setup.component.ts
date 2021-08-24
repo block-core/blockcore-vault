@@ -1,5 +1,4 @@
 import { Component, HostBinding, Inject, OnInit } from '@angular/core';
-import { SetupService } from '../services/setup.service';
 import { Router } from '@angular/router';
 import { ApplicationState } from '../services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, fadeInUpOnEnterAnimation, bounceOutDownOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation } from 'angular-animations';
@@ -76,15 +75,12 @@ export class SetupComponent implements OnInit {
   constructor(
     private http: HttpClient,
     @Inject('BASE_URL') private baseUrl: string,
-    public setup: SetupService,
     private fb: FormBuilder,
     private router: Router,
     private accountService: AccountService,
     private vaultService: VaultService,
     public appState: ApplicationState) {
     appState.title = 'Setup';
-
-    this.id = setup.did;
 
     console.log(this.appState);
 

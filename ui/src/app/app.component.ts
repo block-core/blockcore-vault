@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ApiService } from './services/api.service';
-import { SetupService } from './services/setup.service';
 import { Router, ActivatedRoute, NavigationStart } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
@@ -54,7 +53,6 @@ export class AppComponent implements OnInit, OnDestroy {
     public appState: ApplicationState,
     public vaultService: VaultService,
     private api: ApiService,
-    private setup: SetupService,
     private bus: EventBusService,
     private router: Router,
     // /.auth/me

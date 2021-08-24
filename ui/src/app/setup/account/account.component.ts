@@ -1,5 +1,4 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
-import { SetupService } from '../../services/setup.service';
 import { Router } from '@angular/router';
 import { ApplicationState } from '../../services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, fadeInUpOnEnterAnimation, bounceOutDownOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation } from 'angular-animations';
@@ -74,7 +73,6 @@ export class AccountComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    public setup: SetupService,
     private fb: FormBuilder,
     private router: Router,
     private vaultService: VaultService,

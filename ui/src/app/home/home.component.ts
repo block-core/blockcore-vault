@@ -1,5 +1,4 @@
 import { Component, HostBinding } from '@angular/core';
-import { SetupService } from '../services/setup.service';
 import { Router } from '@angular/router';
 import { ApplicationState } from '../services/applicationstate.service';
 
@@ -12,7 +11,6 @@ export class HomeComponent {
 
   constructor(
     private appState: ApplicationState,
-    public setup: SetupService,
     private router: Router) {
 
     if (appState.authenticated) {

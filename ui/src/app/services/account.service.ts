@@ -172,9 +172,6 @@ export class AccountService {
         var identity = this.getIdentity(keyPair);
 
         this.appState.identity = identity;
-
-        // this.appState.key = keyPairDid;
-        // this.setup.did = address0;
     }
 
     /** Creates the account and returns masterNode and accountNode. seed > master > account */

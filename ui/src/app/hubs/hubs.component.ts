@@ -1,6 +1,4 @@
-import { Component, HostBinding, OnInit, OnDestroy, NgZone } from '@angular/core';
-import { ApiService } from '../services/api.service';
-import { SetupService } from '../services/setup.service';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Message, HubService } from '../services/hub.service';
 import { PeerService } from '../services/peer.service';
 import { ApplicationState } from '../services/applicationstate.service';
@@ -37,8 +35,7 @@ export class HubsComponent implements OnInit, OnDestroy {
     public appState: ApplicationState,
     public peerService: PeerService,
     private chatService: HubService,
-    private ngZone: NgZone,
-    public setup: SetupService) {
+    private ngZone: NgZone) {
 
     // this.subscription = this.setup.currentChain$.subscribe(async (chain) => {
     //   await this.updateInfo();
