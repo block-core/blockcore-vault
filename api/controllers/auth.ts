@@ -1,3 +1,6 @@
+// TODO: Add authentication handler that relies on JWTs signed with Blockcore Extension.
+// Until then, we'll rely on API Key.
+
 // import { getUser } from "../data/users";
 // import { Handler } from "../types";
 
