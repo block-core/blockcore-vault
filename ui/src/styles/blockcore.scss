@@ -601,7 +601,10 @@ footer {
 // .grid-layout {
 //   display: grid;
 
-//   __<<ngThemingMigrationEscapedComment1>>__
+//   /*grid-template-columns: repeat(2, minmax(0, 1fr));
+//   gap: 0.5em 1em;
+//   width: 80vw;
+//   margin: 0 auto;*/
 // }
 
 // .heading-margin-none {
@@ -1064,7 +1067,10 @@ router-outlet {
 // }
 
 // label {
-// __<<ngThemingMigrationEscapedComment2>>__
+// /* it's a crude simplification, but effectively we remove
+//    the <label> from the DOM and instead show its contents;
+//    the text portion, and the <input>, become independant
+//    grid-items (sort of): */
 //   display: contents;
 // }
 
