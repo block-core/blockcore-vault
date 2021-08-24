@@ -1,45 +1,34 @@
-import { Component, Inject, HostBinding, OnInit } from '@angular/core';
+import { Component, Inject, HostBinding, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ApiService } from '../services/api.service';
 import { VaultService } from '../services/vault.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
-export class TableStickyHeaderExample {
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
-}
-
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-];
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-identities',
   templateUrl: './identities.component.html',
   styleUrls: ['./identities.component.css'],
 })
-export class IdentitiesComponent implements OnInit {
+export class IdentitiesComponent implements OnInit, AfterViewInit {
   @HostBinding('class.content-centered') hostClass = true;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['created', 'id'];
+  dataSource2: [] = [];
+  result: any;
+
+  isLoadingResults = true;
+  isRateLimitReached = false;
+
+  length = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+
+  // MatPaginator Output
+  pageEvent: PageEvent;
 
   constructor(private api: ApiService,
     private http: HttpClient,
@@ -53,5 +42,27 @@ export class IdentitiesComponent implements OnInit {
 
   ngOnInit(): void {
 
+  }
+
+  ngAfterViewInit() {
+    this.getData({ pageIndex: 0, pageSize: this.appState.pageSize, previousPageIndex: 0, length: 0 });
+  }
+
+  getData(event: PageEvent) {
+    console.log(event);
+    this.isLoadingResults = true;
+    this.appState.pageSize = event.pageSize;
+
+    this.api.getIdentities((event.pageIndex + 1), event.pageSize).subscribe(result => {
+      var events = result as any;
+      this.result = events;
+      this.dataSource2 = events.data
+      console.log('EVENTS:');
+      console.log(events);
+      this.isLoadingResults = false;
+
+      this.length = events.totalNumber;
+
+    }, error => console.error(error));
   }
 }

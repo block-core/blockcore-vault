@@ -24,8 +24,6 @@ a:hover {
   
   .example-table-container {
     position: relative;
-    max-height: 400px;
-    overflow: auto;
   }
   
   table {
@@ -59,9 +57,6 @@ a:hover {
   .mat-column-created {
     max-width: 124px;
   }
-
-
-
 
   /* .mat-row .mat-cell {
     border-bottom: 1px solid transparent;

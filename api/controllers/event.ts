@@ -34,9 +34,6 @@ export const latestEvent: Handler = async (req, res) => {
 
 /** Returns a unique event */
 export const getEvent: Handler = async (req, res) => {
-
-    console.log('GET EVENT!!!');
-
     try {
         // TODO: Implement some sort of caching mechanism
         const item = await OperationRequest.findOne({ id: req.params.id, type: req.params.type, operation: req.params.operation, sequence: req.params.sequence });

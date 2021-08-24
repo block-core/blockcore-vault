@@ -146,6 +146,11 @@ export class ApiService {
    //    return this.download('https://chains.blockcore.net/CHAINS.json');
    // }
 
+   getIdentity(id: string) {
+      return this.get(`identity/${id}`);
+      // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
+   }
+
    getIdentities(page: number, limit: number) {
       return this.get(`identity?page=${page}&limit=${limit}`);
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);

@@ -119,7 +119,8 @@ import { EventComponent } from './event/event.component';
     ConnectComponent,
     IdentitiesComponent,
     EventsComponent,
-    EventComponent
+    EventComponent,
+    IdentityComponent
   ],
   imports: [
     BrowserModule,

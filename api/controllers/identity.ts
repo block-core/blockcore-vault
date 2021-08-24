@@ -355,6 +355,36 @@ export const getDIDDocument: Handler = async (req, res) => {
     }
 };
 
+export const getIdentities: Handler = async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    var pageNumber = page as number; // TODO: Figure out a better way to ensure casting to number for this?
+    var limitNumber = limit as number;
+
+    if (limitNumber > 100) {
+        res.status(500).json({ status: 500, message: 'The limit can be maxium 100.' });
+    }
+
+    try {
+        // Get unique set of identities, we'll do that by only returning those with sequence as 0.
+        const data = await Identity.find({ sequence: 0 })
+            .limit(limitNumber * 1)
+            .skip((pageNumber - 1) * limitNumber)
+            .exec();
+
+        const count = await Identity.countDocuments();
+
+        res.json({
+            data,
+            totalNumber: count,
+            totalPages: Math.ceil(count / limitNumber),
+            currentPage: page
+        });
+    } catch (err) {
+        log.error(err.message);
+        return res.status(400).json({ status: 400, message: err.message });
+    }
+};
+
 const inputValidation = (value: any, message?: string) => {
     if (!value) {
         throw Error(message);

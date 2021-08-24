@@ -82,6 +82,11 @@ const routes: Routes = [
     }, canActivate: [AuthGuard]
   },
   {
+    path: 'identity/:id', component: IdentityComponent, resolve: {
+      chain: LoadingResolverService
+    }, canActivate: [AuthGuard]
+  },
+  {
     path: 'events', component: EventsComponent, resolve: {
       chain: LoadingResolverService,
     }, canActivate: [AuthGuard]
@@ -173,11 +178,6 @@ const routes: Routes = [
   },
   {
     path: 'signup', component: SignupComponent, resolve: {
-      chain: LoadingResolverService
-    }, canActivate: [AuthGuard]
-  },
-  {
-    path: 'identity', component: IdentityComponent, resolve: {
       chain: LoadingResolverService
     }, canActivate: [AuthGuard]
   },
