@@ -81,9 +81,14 @@ export class VaultsComponent implements OnDestroy {
   onUrlEntered() {
     if (this.item.url?.indexOf('/') == -1) { // DID
       // this.item.url += '/';
+      let configurationUrl = this.appState.vaultUrl + 'identity/' + this.item.url;
+
+      this.http.get(configurationUrl).subscribe(data => {
+        console.log(data);
+      });
     }
     else { // URL
-      let configurationUrl = this.item.url + '/.well-known/vault-configuration.json';
+      let configurationUrl = this.item.url + '/.well-known/did-configuration.json';
 
       this.http.get(configurationUrl).subscribe(data => {
         console.log(data);

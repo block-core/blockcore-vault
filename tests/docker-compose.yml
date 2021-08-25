@@ -21,7 +21,7 @@ services:
     stop_grace_period: 5m
     restart: unless-stopped
     ports:
-      - 27017:27017
+      - 27016:27017
     volumes:
       - mongodb:/data/db
 

@@ -62,7 +62,6 @@ export class AppComponent implements OnInit, OnDestroy {
     router.events.subscribe((val) => {
       // When navigation starts, clear the goBack value.
       if (val instanceof NavigationStart) {
-        console.log('NavigationStart!!');
         // this.uiState.showBackButton = false;
         this.appState.goBack = null;
       }

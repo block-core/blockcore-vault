@@ -42,7 +42,6 @@ import { VaultsComponent } from './vaults/vaults.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AccountComponent } from './setup/account/account.component';
-import { VaultAddComponent } from './vaults/add/add.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { MatChipsModule } from '@angular/material/chips';
@@ -70,7 +69,6 @@ import { EventComponent } from './event/event.component';
     DashboardComponent,
     SettingsComponent,
     VaultsComponent,
-    VaultAddComponent,
     AccountComponent,
     ConnectComponent,
     IdentitiesComponent,

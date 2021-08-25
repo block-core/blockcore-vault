@@ -18,3 +18,13 @@ When the containers are running, you can open the Docker Desktop dashboard and s
 ![](docker-desktop.png)
 
 Here you can see the ports for the MongoDB instances and the Blockcore Vault instances.
+
+After running the instances, you can access the Vault UI through the following URLs:
+
+http://localhost
+
+API Key: bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050
+
+http://localhost:8080
+
+API Key: b8f7ed15-cdb3-4bb4-a5f9-8f78428920d1

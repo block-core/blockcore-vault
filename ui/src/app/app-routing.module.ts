@@ -9,7 +9,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { VaultsComponent } from './vaults/vaults.component';
 import { AccountComponent } from './setup/account/account.component';
-import { VaultAddComponent } from './vaults/add/add.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService as AuthGuard } from './services/auth-guard.service';
 import { LogoutComponent } from './logout/logout.component';
@@ -66,11 +65,6 @@ const routes: Routes = [
   },
   {
     path: 'vaults', component: VaultsComponent, resolve: {
-      chain: LoadingResolverService
-    }, canActivate: [AuthGuard]
-  },
-  {
-    path: 'vaults/add', component: VaultAddComponent, resolve: {
       chain: LoadingResolverService
     }, canActivate: [AuthGuard]
   },
