@@ -7,6 +7,7 @@ services:
     environment:
       - NODE_ENV=production
       - MONGODB_URL=mongodb://blockcore-vault-db-test1:27017/BlockcoreVault
+      - API_KEY=bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050
     ports:
       - 80:3001
     depends_on:
@@ -31,6 +32,7 @@ services:
     environment:
       - NODE_ENV=production
       - MONGODB_URL=mongodb://blockcore-vault-db-test2:27017/BlockcoreVault
+      - API_KEY=b8f7ed15-cdb3-4bb4-a5f9-8f78428920d1
     ports:
       - 8080:3001
     depends_on:
