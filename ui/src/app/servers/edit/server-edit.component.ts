@@ -1,12 +1,12 @@
 import { Component, Inject, HostBinding, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ApplicationState } from '../services/applicationstate.service';
-import { ApiService } from '../services/api.service';
-import { VaultService } from '../services/vault.service';
+import { ApplicationState } from '../../services/applicationstate.service';
+import { ApiService } from '../../services/api.service';
+import { VaultService } from '../../services/vault.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { EventBusService } from '../services/event-bus.service';
+import { EventBusService } from '../../services/event-bus.service';
 import { decodeJWT } from 'did-jwt';
 
 export class TableStickyHeaderExample {
@@ -35,11 +35,11 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 @Component({
-  selector: 'app-server',
-  templateUrl: './server.component.html',
-  styleUrls: ['./server.component.css'],
+  selector: 'app-server-edit',
+  templateUrl: './server-edit.component.html',
+  styleUrls: ['./server-edit.component.css'],
 })
-export class ServerComponent implements OnInit, AfterViewInit {
+export class ServerEditComponent implements OnInit, AfterViewInit {
   @HostBinding('class.content-centered') hostClass = true;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -65,6 +65,7 @@ export class ServerComponent implements OnInit, AfterViewInit {
   didResolutionMetadata: string;
 
   item: any;
+  original: any;
 
   constructor(private api: ApiService,
     private http: HttpClient,
@@ -76,6 +77,7 @@ export class ServerComponent implements OnInit, AfterViewInit {
     @Inject('BASE_URL') private baseUrl: string) {
     appState.title = 'Server';
     appState.goBack = '/servers';
+    appState.actions = [{ icon: 'edit', tooltip: 'Edit Server', click: () => { this.router.navigate(['/servers', this.item.id, 'edit']) } }];
 
     console.log(appState);
 
@@ -83,6 +85,9 @@ export class ServerComponent implements OnInit, AfterViewInit {
 
       this.api.getServer(params.get('id')).subscribe(result => {
         const item = result as any;
+
+        this.original = JSON.parse(JSON.stringify(item));
+
         this.item = item;
         console.log(item);
 
@@ -97,6 +102,38 @@ export class ServerComponent implements OnInit, AfterViewInit {
       });
     });
 
+  }
+
+  cancelEdit() {
+    this.item = null;
+    this.router.navigateByUrl('/servers');
+  }
+
+  save() {
+    // const setupPayload = {
+    //   "@context": "https://schemas.blockcore.net/.well-known/vault-configuration/v1",
+    //   "id": this.setupDocument.didDocument.id,
+    //   "url": this.setupDocument.didConfiguration.linked_dids[0].credentialSubject.origin,
+    //   "name": this.name,
+    //   "enabled": true,
+    //   "self": true,
+    //   "ws": "ws://localhost:9090",
+    //   "linked_dids": this.setupDocument.didConfiguration.linked_dids,
+    //   "didDocument": this.setupDocument.didDocument,
+    //   "vaultConfiguration": {
+    //   }
+    // };
+
+    this.api.updateServer(this.item).subscribe(result => {
+      console.log('Update Server result:', result);
+
+      if (result.success === true) {
+        // this.appState.vault = setupPayload;
+        // this.appState.authenticated = true;
+        this.router.navigateByUrl('/servers');
+      }
+
+    }, error => console.error(error));
   }
 
   // getData(event: PageEvent) {

@@ -17,7 +17,8 @@ import { EventsComponent } from './events/events.component';
 import { IdentitiesComponent } from './identities/identities.component';
 import { EventComponent } from './event/event.component';
 import { ServersComponent } from './servers/servers.component';
-import { ServerComponent } from './server/server.component';
+import { ServerViewComponent } from './servers/view/server-view.component';
+import { ServerEditComponent } from './servers/edit/server-edit.component';
 
 const routes: Routes = [
   {
@@ -76,7 +77,12 @@ const routes: Routes = [
     }, canActivate: [AuthGuard]
   },
   {
-    path: 'servers/:id', component: ServerComponent, resolve: {
+    path: 'servers/view/:id', component: ServerViewComponent, resolve: {
+      chain: LoadingResolverService
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'servers/edit/:id', component: ServerEditComponent, resolve: {
       chain: LoadingResolverService
     }, canActivate: [AuthGuard]
   },

@@ -50,8 +50,8 @@ import { EventsComponent } from './events/events.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { EventComponent } from './event/event.component';
 import { ServersComponent } from './servers/servers.component';
-import { ServerComponent } from './server/server.component';
-
+import { ServerViewComponent } from './servers/view/server-view.component';
+import { ServerEditComponent } from './servers/edit/server-edit.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +77,8 @@ import { ServerComponent } from './server/server.component';
     EventsComponent,
     EventComponent,
     ServersComponent,
-    ServerComponent
+    ServerViewComponent,
+    ServerEditComponent
   ],
   imports: [
     BrowserModule,

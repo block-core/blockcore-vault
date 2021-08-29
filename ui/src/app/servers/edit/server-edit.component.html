@@ -1,0 +1,32 @@
+<div class="page" *ngIf="item">
+  <h2 class="mono">{{item.id}}</h2>
+
+  <p>
+    <mat-form-field appearance="outline" class="input-full-width">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="item.name" autocomplete="off" placeholder="Name for this server">
+    </mat-form-field>
+  </p>
+
+  <p>
+    <mat-form-field appearance="outline" class="input-full-width">
+      <mat-label>Description</mat-label>
+      <input matInput [(ngModel)]="item.description" autocomplete="off" placeholder="Description of this server">
+    </mat-form-field>
+  </p>
+
+  <p>
+    <mat-checkbox [(ngModel)]="item.enabled">Enabled</mat-checkbox>
+  </p>
+
+  <p>
+    <button mat-flat-button color="primary" (click)="save()">Save</button>
+    <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+  </p>
+
+  <div>Created: {{item.created}}</div>
+  <div>Modified: {{item.updated}}</div>
+
+  <div *ngIf="item.self"><em>This is the server you are connected to and is managing.</em></div>
+
+</div>

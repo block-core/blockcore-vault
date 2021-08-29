@@ -30,6 +30,7 @@ export class ServersComponent implements OnDestroy {
   items = [];
   customers: any;
   isEditing = false;
+  name: string;
 
   constructor(
     private http: HttpClient,
@@ -86,6 +87,8 @@ export class ServersComponent implements OnDestroy {
 
       this.http.get(configurationUrl).subscribe(data => {
         console.log(data);
+        // this.item = (<any>data).didDocument;
+        this.didResolution = data;
       });
     }
 
@@ -108,6 +111,11 @@ export class ServersComponent implements OnDestroy {
           console.log('DID Resolution:', didResolution);
           this.item = (<any>didResolution).didDocument;
           this.didResolution = didResolution;
+
+          if (this.item.service) {
+            this.name = this.item.service[0].serviceEndpoint;
+          }
+
         });
 
       });
@@ -125,7 +133,7 @@ export class ServersComponent implements OnDestroy {
 
     var server: any = {
       id: this.item.id,
-      name: url,
+      name: this.name,
       url,
       description: 'Added at ' + new Date() + '.',
       enabled: true,
@@ -139,7 +147,7 @@ export class ServersComponent implements OnDestroy {
       server.created = Date.now();
       console.log(server);
 
-      this.api.post<any>('management/server', server).subscribe(result => {
+      this.api.createServer(server).subscribe(result => {
         // this.item = null;
         // this.isEditing = false;
         console.log('RESULT FROM CREATE', result);
@@ -180,7 +188,7 @@ export class ServersComponent implements OnDestroy {
   }
 
   deleteItem(item) {
-    this.api.delete('management/server/' + item.id).subscribe(result => {
+    this.api.deleteServer(item.id).subscribe(result => {
       this.loadItems();
     }, error => console.error(error));
   }

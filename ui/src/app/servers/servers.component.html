@@ -43,9 +43,18 @@
             </mat-form-field>
 
             <div *ngIf="didResolution">
-               <p>DID: {{didResolution.didDocument.id}}</p>
-               <!-- TODO: This will obviously crash if the DID Document has zero endpoints. -->
-               <p>URL: {{didResolution.didDocument.service[0].serviceEndpoint}}</p>
+               <p *ngIf="didResolution.didResolutionMetadata.error">Error: {{didResolution.didResolutionMetadata.error}}</p>
+               <p *ngIf="didResolution.didDocument">DID: {{didResolution.didDocument.id}}</p>
+               <!-- TODO: This will obviously crash if the DID Document has zero endpoints. Add validation that the DID has services. -->
+               <p *ngIf="didResolution.didDocument">URL: {{didResolution.didDocument.service[0].serviceEndpoint}}</p>
+
+               <p *ngIf="didResolution.didDocument">
+                  <mat-form-field appearance="outline" class="input-full-width">
+                    <mat-label>Name</mat-label>
+                    <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name for this server">
+                  </mat-form-field>
+                </p>
+
             </div>
 
             <!-- <button mat-flat-button color="primary" [disabled]="!item.url" (click)="saveEdit()">Query</button> -->
@@ -107,7 +116,7 @@
 
             <mat-icon mat-list-icon *ngIf="item.self">public</mat-icon>
             <mat-icon mat-list-icon *ngIf="!item.self">vpn_lock</mat-icon>
-            <div mat-line> <a [routerLink]="['/servers', item.id]">{{item.id}}</a> </div>
+            <div mat-line> <a [routerLink]="['/servers', 'view', item.id]">{{item.id}}</a> </div>
             <div mat-line *ngIf="item.self" class="dimmed">SELF: {{item.name}}</div>
             <div mat-line *ngIf="!item.self" class="dimmed">{{item.name}}</div>
 
@@ -115,9 +124,13 @@
                   <mat-icon>more_vert</mat-icon>
                </button>
                <mat-menu #menu="matMenu">
-                  <button mat-menu-item [routerLink]="['/servers', item.id]">
+                  <button mat-menu-item [routerLink]="['/servers', 'view', item.id]">
                      <mat-icon>source</mat-icon>
                      <span>View Server</span>
+                  </button>
+                  <button mat-menu-item [routerLink]="['/servers', 'edit', item.id]">
+                     <mat-icon>edit</mat-icon>
+                     <span>Edit Server</span>
                   </button>
                   <mat-divider *ngIf="!item.self"></mat-divider>
                   <button (click)="deleteItem(item)" mat-menu-item *ngIf="!item.self">

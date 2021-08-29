@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ApplicationState } from './applicationstate.service';
 import { VaultService } from './vault.service';
+import { Observable } from 'rxjs';
 
 export class HttpError extends Error {
    code: number;
@@ -164,38 +165,50 @@ export class ApiService {
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
-   getServers() {
+   getServers() : Observable<any> {
       return this.get(`management/server`);
    }
-
-   getServer(id: string) {
+   
+   getServer(id: string) : Observable<any> {
       return this.get(`management/server/${id}`);
    }
 
-   getIdentities(page: number, limit: number) {
+   updateServer(server: any) : Observable<any> {
+      return this.put(`management/server/${server.id}`, server);
+   }
+
+   createServer(server: any) : Observable<any> {
+      return this.post(`management/server`, server);
+   }
+
+   deleteServer(id: string) : Observable<any> {
+      return this.delete(`management/server/${id}`);
+   }
+
+   getIdentities(page: number, limit: number) : Observable<any> {
       return this.get(`identity?page=${page}&limit=${limit}`);
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
-   getEvents(page: number, limit: number) {
+   getEvents(page: number, limit: number) : Observable<any> {
       return this.get(`event?page=${page}&limit=${limit}`);
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
-   getEvent(id: string, type: string, operation: string, sequence: string) {
+   getEvent(id: string, type: string, operation: string, sequence: string) : Observable<any> {
       return this.get(`event/${id}/${type}/${operation}/${sequence}`);
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
    }
 
-   getStatistics() {
+   getStatistics() : Observable<any> {
       return this.get('management/statistics');
    }
 
-   getSettings() {
+   getSettings() : Observable<any> {
       return this.get('management/setting');
    }
 
-   updateSettings(data: any) {
+   updateSettings(data: any) : Observable<any> {
       return this.put('management/setting', data);
    }
 
