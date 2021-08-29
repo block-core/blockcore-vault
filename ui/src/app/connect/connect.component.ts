@@ -148,9 +148,6 @@ export class ConnectComponent {
         headers = headers.append('Vault-Api-Key', this.vault.key);
       }
 
-      console.log('HEADERS:');
-      console.log(headers);
-
       this.http.get<any>(this.vault.url + '.well-known/did-configuration.json', {
         headers: headers
       }).subscribe(result => {

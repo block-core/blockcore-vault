@@ -48,8 +48,6 @@ export class ApiService {
 
       headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
-      console.log(headers);
-
       return headers;
    }
 
@@ -77,12 +75,16 @@ export class ApiService {
       });
    }
 
+   getByUrl<T>(url, path) {
+      return this.getUrl<T>(url + path);
+   }
+
    get<T>(path) {
       return this.getUrl<T>(this.appState.vaultUrl + path);
    }
 
    post<T>(path, data) {
-      return this.post<T>(this.appState.vaultUrl + path, data);
+      return this.postUrl<T>(this.appState.vaultUrl + path, data);
    }
 
    put<T>(path, data) {
@@ -149,6 +151,25 @@ export class ApiService {
    getIdentity(id: string) {
       return this.get(`identity/${id}`);
       // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
+   }
+
+   getIdentityFromUrl(id: string, url: string) {
+      const lastCharacter = url.charAt(url.length - 1);
+
+      if (lastCharacter != '/') {
+         url = url + '/';
+      }
+
+      return this.getByUrl(url, `identity/${id}`);
+      // return this.downloadRelative('query/block?offset=' + offset + '&limit=' + limit);
+   }
+
+   getServers() {
+      return this.get(`management/server`);
+   }
+
+   getServer(id: string) {
+      return this.get(`management/server/${id}`);
    }
 
    getIdentities(page: number, limit: number) {

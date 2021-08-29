@@ -8,13 +8,13 @@
     <br>
     <mat-card [class.mat-elevation-z10]="true">
       <mat-card-header>
-        <mat-card-title>Connect to Vault</mat-card-title>
-        <mat-card-subtitle>Connect to a Vault for Management</mat-card-subtitle>
+        <mat-card-title>Connect to Server</mat-card-title>
+        <mat-card-subtitle>Connect to a Server for Vault Management</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
 
         <mat-form-field appearance="fill">
-          <mat-label>Choose Vault</mat-label>
+          <mat-label>Choose Server</mat-label>
           <mat-select [(value)]="vault">
             <mat-option>Connect to new</mat-option>
             <mat-option *ngFor="let vault of vaultService.vaults" [value]="vault">{{vault.name}}</mat-option>

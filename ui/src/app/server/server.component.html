@@ -1,0 +1,24 @@
+<div class="page" *ngIf="item">
+  <h2 class="mono">{{item.id}}</h2>
+
+  <div>Name: {{item.name}}</div>
+  <div *ngIf="item.self"><em>This is the server you are connected to and is managing.</em></div>
+  <br>
+  <div>Description: {{item.description}}</div>
+  <div>Url: {{item.url}}</div>
+  <div>Enabled: {{item.enabled}}</div>
+  <div>Created: {{item.created}}</div>
+  <div>Modified: {{item.updated}}</div>
+
+  <mat-list>
+    <div mat-subheader>Linked identities</div>
+    <mat-list-item *ngFor="let identity of item.linked_dids">
+      <mat-icon mat-list-icon>folder</mat-icon>
+      <div mat-line>{{identity}}</div>
+    </mat-list-item>
+  </mat-list>
+
+  <br><br>
+  Document:<br><br>
+  <pre class="json">{{item | json}}</pre>
+</div>

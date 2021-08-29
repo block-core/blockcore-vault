@@ -49,6 +49,8 @@ import { IdentitiesComponent } from './identities/identities.component';
 import { EventsComponent } from './events/events.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { EventComponent } from './event/event.component';
+import { ServersComponent } from './servers/servers.component';
+import { ServerComponent } from './server/server.component';
 
 
 @NgModule({
@@ -74,7 +76,8 @@ import { EventComponent } from './event/event.component';
     IdentitiesComponent,
     EventsComponent,
     EventComponent,
-    IdentityComponent
+    ServersComponent,
+    ServerComponent
   ],
   imports: [
     BrowserModule,

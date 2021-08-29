@@ -1,6 +1,6 @@
 <!-- Uncomment to show splashloading dialog -->
 
-<div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
+<!-- <div id="welcome" class="welcome noselect" *ngIf="welcomeVisible" [@fadeOutLeftBigOnLeave]>
   <div class="welcome-content">
 
     <div class="welcome-text">
@@ -11,7 +11,7 @@
     <img class="welcome-logo" src="assets/blockcore-light-small.png" *ngIf="welcomeLogo" [@fadeInDownOnEnter] [@fadeOutUpOnLeave]>
     <div class="welcome-backdrop"></div>
   </div>
-</div>
+</div> -->
 
 <div *ngIf="!appState.authenticated">
   <router-outlet></router-outlet>
@@ -45,6 +45,11 @@
       <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.vault">
         <mat-icon mat-list-icon>dashboard</mat-icon>
         <div mat-line>Dashboard</div>
+      </a>
+
+      <a mat-list-item [routerLink]="['/servers']" routerLinkActive="active-link" *ngIf="appState.vault">
+        <mat-icon mat-list-icon>computer</mat-icon>
+        <div mat-line>Servers</div>
       </a>
 
       <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">

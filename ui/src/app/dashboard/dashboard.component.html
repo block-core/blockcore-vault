@@ -14,9 +14,9 @@
           <div *ngIf="stats">
             <!-- ?MB disk usage<br>
             ?MB network usage (daily)<br> -->
-            {{stats.identities}} Identities<br>
-            {{stats.operations}} Operations (Events)<br>
-            {{stats.servers - 1}} Data Vaults<br>
+            {{stats.identities}} <a routerLink="/identities">Identities</a><br>
+            {{stats.operations}} <a routerLink="/events">Operations (Events)</a><br>
+            {{stats.servers - 1}} <a routerLink="/servers">Servers (+ self)</a><br>
             <br>
           </div>
         </mat-card-content>

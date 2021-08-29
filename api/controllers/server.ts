@@ -296,9 +296,9 @@ export const updateServer: Handler = async (req, res) => {
 export const deleteServer: Handler = async (req, res) => {
     try {
         var id = req.params.id;
-        await storeEvent('delete', 'server', { id });
+        // await storeEvent('delete', 'server', { id });
 
-        await Vault.deleteOne({ id: id });
+        await Server.deleteOne({ id: id });
         res.json({ "success": true });
     } catch (err) {
         log.error(err.message);

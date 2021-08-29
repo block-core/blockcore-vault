@@ -16,6 +16,8 @@ import { HelpComponent } from './help/help.component';
 import { EventsComponent } from './events/events.component';
 import { IdentitiesComponent } from './identities/identities.component';
 import { EventComponent } from './event/event.component';
+import { ServersComponent } from './servers/servers.component';
+import { ServerComponent } from './server/server.component';
 
 const routes: Routes = [
   {
@@ -65,6 +67,16 @@ const routes: Routes = [
   },
   {
     path: 'vaults', component: VaultsComponent, resolve: {
+      chain: LoadingResolverService
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'servers', component: ServersComponent, resolve: {
+      chain: LoadingResolverService
+    }, canActivate: [AuthGuard]
+  },
+  {
+    path: 'servers/:id', component: ServerComponent, resolve: {
       chain: LoadingResolverService
     }, canActivate: [AuthGuard]
   },
