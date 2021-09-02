@@ -8,6 +8,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { EventBusService } from '../../services/event-bus.service';
 import { decodeJWT } from 'did-jwt';
+import { Location } from '@angular/common';
 
 export class TableStickyHeaderExample {
   displayedColumns = ['position', 'name', 'weight', 'symbol'];
@@ -72,6 +73,7 @@ export class ServerEditComponent implements OnInit, AfterViewInit {
     public vaultService: VaultService,
     public appState: ApplicationState,
     private router: Router,
+    private location: Location,
     private bus: EventBusService,
     private route: ActivatedRoute,
     @Inject('BASE_URL') private baseUrl: string) {
@@ -106,7 +108,7 @@ export class ServerEditComponent implements OnInit, AfterViewInit {
 
   cancelEdit() {
     this.item = null;
-    this.router.navigateByUrl('/servers');
+    this.location.back();
   }
 
   save() {

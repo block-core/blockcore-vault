@@ -11,11 +11,9 @@ import { ISetting, Setting } from "./data/models/setting";
 import swaggerUI from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import { state } from './services/vault-state';
+import { config } from './config';
 
 const compression = require('compression');
-// const env = process.env.NODE_ENV || 'development';
-// const pkg = require('../package.json');
-const config = require('./config');
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 const WebSocket = require('ws');
@@ -26,6 +24,8 @@ const cors = require('cors');
 const path = require('path');
 const bent = require('bent');
 const getJSON = bent('json');
+
+console.log(`Starting Blockcore Vault on port ${process.env.PORT}.`);
 
 const {
   v1: uuidv1,
@@ -41,21 +41,19 @@ app.use(
   })
 );
 
-log.info(JSON.stringify(config));
-
 // expose package.json to APIs
-app.use(function (req, res, next) {
-  // res.locals.pkg = pkg;
-  res.locals.env = config;
-  next();
-});
+// app.use(function (req, res, next) {
+//   // res.locals.pkg = pkg;
+//   res.locals.env = config;
+//   next();
+// });
 
 // app.use(express.urlencoded());
 app.disable('x-powered-by');
 
-if (config.environment === 'development') {
-  app.locals.pretty = true;
-}
+// if (config.environment === 'development') {
+//   app.locals.pretty = true;
+// }
 
 // Is this needed?
 mongoose.Promise = global.Promise;
@@ -160,74 +158,74 @@ var token2 = PubSub.subscribe('server-replaced', async (msg: any, data: any) => 
   await syncEvents(data);
 });
 
-const wss = new WebSocket.Server({ port: config.ws });
+// const wss = new WebSocket.Server({ port: config.ws });
 
-wss.on('connection', function connection(ws: { on: (arg0: string, arg1: (message: any) => void) => void; send: (arg0: string) => void; }) {
+// wss.on('connection', function connection(ws: { on: (arg0: string, arg1: (message: any) => void) => void; send: (arg0: string) => void; }) {
 
-  // This is incoming connection messages, the peer that connects is responsible for handshaking the sync status.
-  ws.on('message', async (message) => {
-    const json = JSON.parse(message);
+//   // This is incoming connection messages, the peer that connects is responsible for handshaking the sync status.
+//   ws.on('message', async (message) => {
+//     const json = JSON.parse(message);
 
-    if (json.type === 'event') {
-      log.info(`Received: ${json.payload.type} - ${json.payload.operation} - ${json.payload.sequence} - ${json.payload.id}`);
-      log.info(JSON.stringify(json));
+//     if (json.type === 'event') {
+//       log.info(`Received: ${json.payload.type} - ${json.payload.operation} - ${json.payload.sequence} - ${json.payload.id}`);
+//       log.info(JSON.stringify(json));
 
-      // Process the JWT, don't trust the other data.
-      processOperation({
-        sync: true,
-        ...json.payload
-      });
+//       // Process the JWT, don't trust the other data.
+//       processOperation({
+//         sync: true,
+//         ...json.payload
+//       });
 
-    } else if (json.type === 'sync') {
+//     } else if (json.type === 'sync') {
 
-      const received = json.last.received;
-      const id = json.last.id;
-      const sequence = json.last.sequence;
+//       const received = json.last.received;
+//       const id = json.last.id;
+//       const sequence = json.last.sequence;
 
-      // Check if we have the document locally.
-      // If we don't have it, we'll simply remove 1 day from the received date, and 
-      // start sending all those documents.
+//       // Check if we have the document locally.
+//       // If we don't have it, we'll simply remove 1 day from the received date, and 
+//       // start sending all those documents.
 
-      // First verify that we have the document.
-      var lastSyncedEvent = await OperationRequest.findOne({ received: received, id: id, sequence: sequence });
+//       // First verify that we have the document.
+//       var lastSyncedEvent = await OperationRequest.findOne({ received: received, id: id, sequence: sequence });
 
-      var cursor;
+//       var cursor;
 
-      if (!lastSyncedEvent) {
-        // TODO: need to verify what happens when error is throw on this ws library.
-        // TODO: We should probably send a structured JSON object back that contains this error message and error code so it can be handled.
-        // TODO: Until we implement retry with invalid document, we will simply log error and start from genesis.
-        // throw Error('You attempted to sync based on an non-existing entry. Cannot continue. Please retry with another document or empty to sync from genesis.');
-        log.error('Client attempted to sync based on an non-existing entry. Will sync from genesis.');
+//       if (!lastSyncedEvent) {
+//         // TODO: need to verify what happens when error is throw on this ws library.
+//         // TODO: We should probably send a structured JSON object back that contains this error message and error code so it can be handled.
+//         // TODO: Until we implement retry with invalid document, we will simply log error and start from genesis.
+//         // throw Error('You attempted to sync based on an non-existing entry. Cannot continue. Please retry with another document or empty to sync from genesis.');
+//         log.error('Client attempted to sync based on an non-existing entry. Will sync from genesis.');
 
-        cursor = OperationRequest.find().cursor();
-      }
-      else {
-        var minimumObjectId = new mongoose.Types.ObjectId(lastSyncedEvent._id);
+//         cursor = OperationRequest.find().cursor();
+//       }
+//       else {
+//         var minimumObjectId = new mongoose.Types.ObjectId(lastSyncedEvent._id);
 
-        // Get a cursor for all operations after the ID of last sync event:
-        cursor = OperationRequest.find({ _id: { $gt: minimumObjectId } }).cursor();
-      }
+//         // Get a cursor for all operations after the ID of last sync event:
+//         cursor = OperationRequest.find({ _id: { $gt: minimumObjectId } }).cursor();
+//       }
 
-      cursor.on('data', function (event: any) {
-        //console.log(event);
-        log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
+//       cursor.on('data', function (event: any) {
+//         //console.log(event);
+//         log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
 
-        ws.send(JSON.stringify({
-          type: 'event',
-          payload: event
-        }));
-      });
+//         ws.send(JSON.stringify({
+//           type: 'event',
+//           payload: event
+//         }));
+//       });
 
-      cursor.on('close', function () {
-        log.info('Finished sending to client.');
-        ws.send(JSON.stringify({ type: 'sync-completed' }));
-      });
-    };
-  });
+//       cursor.on('close', function () {
+//         log.info('Finished sending to client.');
+//         ws.send(JSON.stringify({ type: 'sync-completed' }));
+//       });
+//     };
+//   });
 
-  ws.send(JSON.stringify({ status: 'You have connected to this server.' }));
-});
+//   ws.send(JSON.stringify({ status: 'You have connected to this server.' }));
+// });
 
 async function seed() {
   // First delete all vaults 
@@ -251,7 +249,6 @@ async function seed() {
   let setting: any = await Setting.findOne({ id: '1' });
 
   if (!setting) {
-
     let apiKey = uuidv4();
 
     // If the ApiKey is specified in ENV, we'll use that on startup.
@@ -286,7 +283,7 @@ async function main() {
 
   for (var index in servers) {
     var server = servers[index];
-    connectToServer(server);
+    // connectToServer(server);
   }
 }
 
@@ -368,177 +365,177 @@ const syncEvents = async (server: IServer) => {
   log.info('Finished sync with vault');
 };
 
-const connectToServer = (server: IServer) => {
+// const connectToServer = (server: IServer) => {
 
-  // TODO: Temporarily disabled while working on REST API sync.
-  return;
+//   // TODO: Temporarily disabled while working on REST API sync.
+//   return;
 
-  log.debug(server);
-  const ws = new WebSocket(server.ws);
+//   log.debug(server);
+//   const ws = new WebSocket(server.ws);
 
-  const syncState: SyncState = {
-    server: server,
-    countReceived: 0,
-    countSent: 0
-  };
+//   const syncState: SyncState = {
+//     server: server,
+//     countReceived: 0,
+//     countSent: 0
+//   };
 
-  // Keep an sync state instance on the WebSocket to manage the sync-state.
-  ws.state = syncState;
+//   // Keep an sync state instance on the WebSocket to manage the sync-state.
+//   ws.state = syncState;
 
-  ws.on('open', async () => {
-    ws.send(JSON.stringify({ status: 'Connection' }));
+//   ws.on('open', async () => {
+//     ws.send(JSON.stringify({ status: 'Connection' }));
 
-    // Get the latest entity from storage.
-    const serverToUpdate = await Server.findOne({ id: ws.server.id });
+//     // Get the latest entity from storage.
+//     const serverToUpdate = await Server.findOne({ id: ws.server.id });
 
-    log.info('Updating server...');
-    log.info(serverToUpdate);
+//     log.info('Updating server...');
+//     log.info(serverToUpdate);
 
-    if (serverToUpdate) {
-      serverToUpdate.state = "online";
-      serverToUpdate.error = '';
-      await serverToUpdate.save();
-    }
+//     if (serverToUpdate) {
+//       serverToUpdate.state = "online";
+//       serverToUpdate.error = '';
+//       await serverToUpdate.save();
+//     }
 
 
-    // After we have recognized the server as online, we'll start sending our latest sync status:
-    // ws.send(JSON.stringify({
-    //   type: 'sync',
-    //   last: {
-    //     id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
-    //     received: '2021-05-07T17:58:22.022+00:00',
-    //     sequence: 0
-    //   }
-    // }));
+//     // After we have recognized the server as online, we'll start sending our latest sync status:
+//     // ws.send(JSON.stringify({
+//     //   type: 'sync',
+//     //   last: {
+//     //     id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+//     //     received: '2021-05-07T17:58:22.022+00:00',
+//     //     sequence: 0
+//     //   }
+//     // }));
 
-    // Set the syncStart, which we will use after getting documents from server.
-    ws.state.syncStart = new Date();
+//     // Set the syncStart, which we will use after getting documents from server.
+//     ws.state.syncStart = new Date();
 
-    ws.send(JSON.stringify({
-      type: 'sync',
-      last: {
-        id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
-        received: '2021-05-07T17:58:22.022+00:00',
-        sequence: 1
-      }
-    }));
+//     ws.send(JSON.stringify({
+//       type: 'sync',
+//       last: {
+//         id: 'did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd',
+//         received: '2021-05-07T17:58:22.022+00:00',
+//         sequence: 1
+//       }
+//     }));
 
-  });
+//   });
 
-  ws.on('message', async (data: any) => {
+//   ws.on('message', async (data: any) => {
 
-    log.debug(data);
-    var json = JSON.parse(data);
+//     log.debug(data);
+//     var json = JSON.parse(data);
 
-    if (json.type === 'sync-completed') {
-      log.info(`The sync with ${ws.server.name} has completed, saving the last state.`);
-      log.info(`Documents received from server, count: ${ws.state.countReceived}`);
+//     if (json.type === 'sync-completed') {
+//       log.info(`The sync with ${ws.server.name} has completed, saving the last state.`);
+//       log.info(`Documents received from server, count: ${ws.state.countReceived}`);
 
-      // Keep the previous last sync so we can run sync.
-      const previousLastSync = ws.server.lastSync;
+//       // Keep the previous last sync so we can run sync.
+//       const previousLastSync = ws.server.lastSync;
 
-      // Now we start sending all documents we received while being disconnected from the server.
-      // First verify that we have the document.
-      var lastSyncedEvent = await OperationRequest.findOne({ received: { $lt: previousLastSync } });
+//       // Now we start sending all documents we received while being disconnected from the server.
+//       // First verify that we have the document.
+//       var lastSyncedEvent = await OperationRequest.findOne({ received: { $lt: previousLastSync } });
 
-      var cursor;
+//       var cursor;
 
-      if (!lastSyncedEvent) {
-        log.error('Did not find last sync event. Will sync from genesis.');
-        cursor = OperationRequest.find().cursor();
-      }
-      else {
-        var minimumObjectId = new mongoose.Types.ObjectId(lastSyncedEvent._id);
+//       if (!lastSyncedEvent) {
+//         log.error('Did not find last sync event. Will sync from genesis.');
+//         cursor = OperationRequest.find().cursor();
+//       }
+//       else {
+//         var minimumObjectId = new mongoose.Types.ObjectId(lastSyncedEvent._id);
 
-        // Get a cursor for all operations after the previous last sync up until the documents we just received from the server.
-        cursor = OperationRequest.find({ _id: { $gt: minimumObjectId }, received: { $lt: ws.state.syncStart } }).cursor();
-      }
+//         // Get a cursor for all operations after the previous last sync up until the documents we just received from the server.
+//         cursor = OperationRequest.find({ _id: { $gt: minimumObjectId }, received: { $lt: ws.state.syncStart } }).cursor();
+//       }
 
-      cursor.on('data', function (event: any) {
-        //console.log(event);
-        log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
+//       cursor.on('data', function (event: any) {
+//         //console.log(event);
+//         log.info(`Sending operation with sequence ${event.sequence} and ID ${event.id}.`);
 
-        ws.send(JSON.stringify({
-          type: 'event',
-          payload: event
-        }));
+//         ws.send(JSON.stringify({
+//           type: 'event',
+//           payload: event
+//         }));
 
-        ++ws.state.countSent;
-      });
+//         ++ws.state.countSent;
+//       });
 
-      cursor.on('close', function () {
-        log.info(`Documents sent to server, count: ${ws.state.countSent}`);
+//       cursor.on('close', function () {
+//         log.info(`Documents sent to server, count: ${ws.state.countSent}`);
 
-        // Now we save the server so the .last state is persisted.
-        // We wait with this until sync has completed both ways, or else we might loose track if sync stops/disconnects/crashes.
-        // Resyncing the same items multiple times is not a problem, but a bigger problem if we don't sync and loose some data.
-        ws.server.lastSync = new Date();
-        ws.server.save();
-        log.debug(ws.server);
+//         // Now we save the server so the .last state is persisted.
+//         // We wait with this until sync has completed both ways, or else we might loose track if sync stops/disconnects/crashes.
+//         // Resyncing the same items multiple times is not a problem, but a bigger problem if we don't sync and loose some data.
+//         ws.server.lastSync = new Date();
+//         ws.server.save();
+//         log.debug(ws.server);
 
-        // We don't really need to send any sync completed to the server, do we? Clients are responsible for keeping sync state, not servers.
-        // ws.send(JSON.stringify({ type: 'sync-completed' }));
-      });
-    } else if (json.type === 'event') {
-      // log.info('Received event with payload: ' + JSON.stringify(json.payload));
-      log.info(`Received: ${json.payload.type} - ${json.payload.operation} - ${json.payload.sequence} - ${json.payload.id}`);
+//         // We don't really need to send any sync completed to the server, do we? Clients are responsible for keeping sync state, not servers.
+//         // ws.send(JSON.stringify({ type: 'sync-completed' }));
+//       });
+//     } else if (json.type === 'event') {
+//       // log.info('Received event with payload: ' + JSON.stringify(json.payload));
+//       log.info(`Received: ${json.payload.type} - ${json.payload.operation} - ${json.payload.sequence} - ${json.payload.id}`);
 
-      // Verify if this works?
-      ++ws.state.countReceived;
-      log.info('Received Count: ' + ws.state.countReceived);
+//       // Verify if this works?
+//       ++ws.state.countReceived;
+//       log.info('Received Count: ' + ws.state.countReceived);
 
-      // Update the last documented synced.
-      ws.server.last = {
-        id: json.payload.id,
-        received: json.payload.received,
-        sequence: json.payload.sequence
-      };
-    }
-  });
+//       // Update the last documented synced.
+//       ws.server.last = {
+//         id: json.payload.id,
+//         received: json.payload.received,
+//         sequence: json.payload.sequence
+//       };
+//     }
+//   });
 
-  ws.on('close', async () => {
-    log.warn('disconnected');
+//   ws.on('close', async () => {
+//     log.warn('disconnected');
 
-    const serverToUpdate = await Server.findOne({ id: ws.server.id });
+//     const serverToUpdate = await Server.findOne({ id: ws.server.id });
 
-    if (serverToUpdate) {
-      serverToUpdate.state = 'offline';
-      serverToUpdate.error = '';
-      await serverToUpdate.save();
-    }
+//     if (serverToUpdate) {
+//       serverToUpdate.state = 'offline';
+//       serverToUpdate.error = '';
+//       await serverToUpdate.save();
+//     }
 
-  });
+//   });
 
-  ws.on('error', async (err: any, server: any) => {
-    log.error(err);
-    log.error(ws.server);
+//   ws.on('error', async (err: any, server: any) => {
+//     log.error(err);
+//     log.error(ws.server);
 
-    const serverToUpdate = await Server.findOne({ id: ws.server.id });
+//     const serverToUpdate = await Server.findOne({ id: ws.server.id });
 
-    if (serverToUpdate) {
+//     if (serverToUpdate) {
 
-      // Just an example, likely need to add various handling here.
-      if (err.code == 'ECONNREFUSED') {
-        serverToUpdate.state = 'error';
-      }
-      else {
-        serverToUpdate.state = 'error';
-      }
+//       // Just an example, likely need to add various handling here.
+//       if (err.code == 'ECONNREFUSED') {
+//         serverToUpdate.state = 'error';
+//       }
+//       else {
+//         serverToUpdate.state = 'error';
+//       }
 
-      serverToUpdate.error = err.code;
-      await serverToUpdate.save();
-    }
+//       serverToUpdate.error = err.code;
+//       await serverToUpdate.save();
+//     }
 
-    //console.error(e.code);
-  });
+//     //console.error(e.code);
+//   });
 
-  // Keep a reference to the server so we can update status.
-  ws.server = server;
+//   // Keep a reference to the server so we can update status.
+//   ws.server = server;
 
-  // const peer = {
-  //   server,
-  //   ws
-  // };
+//   // const peer = {
+//   //   server,
+//   //   ws
+//   // };
 
-  syncpeers.push(ws);
-};
+//   syncpeers.push(ws);
+// };

@@ -1,7 +1,7 @@
 import { Handler } from "../types";
 import { Vault, IVault } from '../data/models/vault';
 import { Identity, IIdentityDocument } from "../data/models/identity";
-import { storeEvent, storeOperation } from "../data/event-store";
+import { getOperation, storeEvent, storeOperation } from "../data/event-store";
 import { decodeJWT, verifyJWS, verifyJWT } from "did-jwt";
 import * as bs58 from 'bs58';
 import { payments } from "bitcoinjs-lib";
@@ -365,6 +365,246 @@ const verifyPublicKeyId = (identity: string, verificationMethod: any[]) => {
 }
 
 export const processOperation = async (options: { sync: boolean, jwt: string, type?: string, operation?: string, sequence?: number, id?: string, published?: Date, received?: Date }) => {
+    // Decode the payload, we'll store both decoded and original value in MongoDB for purposes of Vault Sync.
+    var decoded = decodeJWT(options.jwt);
+
+    console.log('processOperation::decoded:');
+    console.log(JSON.stringify(decoded));
+
+    var documentJwt = decoded.payload.content;
+
+    // Decode the content, we'll get the unique document ID from there.
+    var decodedContent = decodeJWT(documentJwt);
+
+    console.log('processOperation::decodedContent:');
+    console.log(JSON.stringify(decodedContent));
+
+    // Get a reference to the payload which we want to store in our event store.
+    var operation = decoded.payload;
+
+    // Perform input validation after decoding.
+    inputValidation(operation.type, '"type" is required on the operation.');
+    inputValidation(operation.operation, '"operation" is required on the operation.');
+    inputValidation(operation.sequence != null, '"sequence" is required on the operation.'); // null/undefined not allowed, but "0" is correct.
+    inputValidation(decodedContent.payload.id, '"id" is required on the payload.');
+
+    const alreadyExists = await getOperation(operation.type, operation.operation, operation.sequence, decodedContent.payload.id);
+
+    if (alreadyExists) {
+        log.info(`The operation already exists, skipping: ${operation.type}, ${operation.operation}, ${operation.sequence}, ${decodedContent.payload.id}.`);
+        return;
+    } else {
+        log.info(`Does not exists yet:${operation.type}, ${operation.operation}, ${operation.sequence}, ${decodedContent.payload.id}.`);
+    }
+
+    console.log('processOperation::decodedContent2:');
+    console.log(JSON.stringify(decodedContent));
+
+    if (operation.operation == 'create' && operation.sequence != 0) {
+        inputValidation(false, '"sequence" must be 0 for all "create" operations.');
+    }
+
+    // Make sure that issuer on operation JWT and ID of payload JWT is the same.
+    if (decoded.header.issuer != decodedContent.payload.id) {
+        throw Error('The "id" is incorrect between operation and the payload.');
+    }
+
+    // Make sure that the metadata received from server/client during sync is same as the actually signed JWT. This is important or else a vault can send sequence and ID of
+    // documents and block future sync.
+    if (options.sync) {
+        if (decoded.header.issuer != options.id) {
+            log.error(JSON.stringify(decoded.payload));
+            log.error(JSON.stringify(options));
+            throw Error('The "id" is incorrect between synced event and signed payload.');
+        }
+
+        if (decoded.payload.type != options.type) {
+            log.error(JSON.stringify(decoded.payload));
+            log.error(JSON.stringify(options));
+            throw Error('The "type" is incorrect between synced event and signed payload.');
+        }
+
+        if (decoded.payload.sequence != options.sequence) {
+            log.error(JSON.stringify(decoded.payload));
+            log.error(JSON.stringify(options));
+            throw Error('The "sequence" is incorrect between synced event and signed payload.');
+        }
+    }
+
+    var verificationMethod = null;
+    var documentId = decodedContent.payload.id;
+    var sequence = operation.sequence;
+
+    var created = new Date();
+    var now = new Date();
+    var modified = undefined;
+
+    // When the operation type is identity, we'll get the 'verificationMethod' directly from the payload.
+    // For all other operations, we will use DID Resolve to get the correct verification method.
+    if (operation.type == 'identity') {
+        verificationMethod = decodedContent.payload.verificationMethod;
+
+        // Make sure we don't process DID Documents with a lot of keys, a minor validation to reduce attack surface.
+        if (verificationMethod.length > 10) {
+            throw Error('Only 10 or less active verification methods support.');
+        }
+
+        // TODO: Add support for "controller" on the DID Document. This can be used to define which DIDs should be allowed to run
+        // updates on the DID Document. The initial creation must still include public key of the DID in question for DID ID verification,
+        // but future updates can be verified by doing an DID Resolve based upon the controllers and getting the authentication keys from
+        // that DID Document.
+
+        // Upon initial create, we'll verify that the DID ID corresponds to one of the verification method public keys.
+        if (sequence == 0) {
+            // Verify will will throw error if verification fails.
+
+            // Verify the operation token.
+            // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
+            verifyJWS(options.jwt, verificationMethod);
+
+            // Verify the document token.
+            verifyJWS(decoded.payload.content, verificationMethod);
+
+            console.log('processOperation::decodedContent3:');
+            console.log(JSON.stringify(decodedContent));
+
+            // Verify that the issuer of both JWTs and DID Document ID is same.
+            if ((new Set([decoded.header.issuer, decodedContent.header.issuer, documentId])).size !== 1) {
+                throw Error('The issuer of both operation and document must be equal to the DID Document ID');
+            }
+
+            console.log('processOperation::decodedContent4:');
+            console.log(JSON.stringify(decodedContent));
+
+            // Verify that the DID ID is correctly correlated with at least one of the keys provided in verificationMethod.
+            // This will stop using random/custom "did:is:VALUE" for the initial creation. Upon later updates, the verificationMethod
+            // can be updated and the original public key that correspond with the VALUE part of the DID ID can be recycled/removed.
+            verifyPublicKeyId(documentId, verificationMethod);
+        } else {
+            // Upon updates, we'll allow replacement of verification method if needed.
+            // On updates, we need to get existing verification methods and verify against that, to ensure that 
+            // only existing owners are allowed to perform updates.
+            // const latestIdentity = await getLatestIdentity(documentId);
+
+            const latestIdentity = await getIdentityBySequence(documentId, (sequence - 1));
+
+            if (!latestIdentity) {
+                throw Error('Unable to find the previous DID Document. Cannot update. Ensure that the sequence number is correct.');
+            }
+
+            // Make sure the new sequence has same created date as previous update.
+            created = latestIdentity.metadata.created;
+
+            // Make sure we set an modified date on this update.
+            modified = new Date();
+
+            // If the previous sequence is not exactly one less, don't allow this update to continue.
+            // if ((latestIdentity.sequence != (sequence - 1))) {
+            //     throw Error(`Unable to update DID Document. Sequence number is incorrect. Current ${latestIdentity.sequence} and supplied ${sequence}.`);
+            // }
+
+            // Verify the operation token based upon existing verification method.
+            // TODO: Should we perhaps use the "authentication" part of the DID Document to verify operations?
+            verifyJWS(options.jwt, latestIdentity.document.verificationMethod);
+
+            // Verify the document token based on existing verification method.
+            verifyJWS(decoded.payload.content, latestIdentity.document.verificationMethod);
+
+            // TODO: Should we ensure that there is always one verificationMethod? Do we want to allow users to publish DID Documents that cannot
+            // be updated in the future? Perhaps that is a use-case that is valid when "controller" support is added?
+        }
+    }
+    else {
+        // TODO: Implement DID Resolver lookup for verification.
+        // Get the Resolver used to resolver DID Documents from REST API.
+        //const resolver = new Resolver(getResolver());
+        // Get the Bitcoin Resolver used to resolver DID Documents from REST API.
+        // const resolver = new Resolver(getResolver());
+
+        // // Verify the payload content, which is an actual DID Document
+        // console.log(decoded.payload.content);
+        // console.log(jwt);
+
+        // var verified = verifyJWS(jwt, verificationMethod);
+
+        // console.log('Verified:');
+        // console.log(verified);
+
+        // Verify the operation, which is signed with same key.
+        // var verified = await verifyJWT(jwt, { resolver: resolver });
+
+        // console.log('Verified:');
+        // console.log(jwt);
+
+        // verified = await verifyJWT(decoded.payload.content, { resolver: resolver });
+
+        // console.log('Verified:');
+        // console.log(verified);
+    }
+
+    // Get the document identity from the decoded content's payload.
+    operation.id = decodedContent.payload.id;
+
+    // When an operation (event) is first observed, we set the published date. If the payload already has published, we'll use that.
+    // We will additionally verify that the published is never more than few minutes ahead of current time, to avoid anyone manipulating
+    // the dates far into the future.
+    operation.published = created;
+    operation.received = now;
+
+    // Get the IP of external user, used for surveilance of abuse.
+    // TODO: Verify if we should get IP using any methods here: https://stackoverflow.com/questions/19266329/node-js-get-clients-ip
+    // TODO: Consider skipping storing this for privacy reasons.
+    // operation.ip = req.ip;
+
+    // Store the original JSON Web Token, which is used for syncing original operations between Vaults.
+    operation.jwt = options.jwt;
+
+    // Delete extra duplicate fields.
+    delete operation.content;
+    delete operation.signature;
+    delete operation.data;
+
+    log.info('Event Store entry:');
+    log.info(operation);
+
+    // Store a backup of the event in our event store log.
+    await storeOperation(operation);
+
+    // Validate the payload and signature.
+    // TODO: We should probably do input validation and mapping here? This is now 
+    // simply done quick and dirty.
+    // TODO: Validate!
+
+    // Store the verified identity in our identity store.
+    //var document = new DIDDocument(req.body);
+
+    // Entity to be stored in a collection. IIdentityDocument
+    var entity = {
+        id: documentId,
+        sequence: sequence,
+        document: decodedContent.payload,
+        metadata: { // This must follow spec: https://w3c.github.io/did-core/#did-document-metadata
+            created: created, // TODO: We probably should require "iat" (issued at) for the operation request.
+            modified: modified
+        },
+        extended: { // Extended metadata, not part of standard specification.
+            proof: {
+                "type": "JwtProof2020",
+                "jwt": documentJwt
+            }
+        }
+    };
+
+    log.info('Entity Store entry:');
+    log.info(entity);
+
+    var identity = new Identity(entity);
+
+    await identity.save();
+}
+
+/** Backup with examples, should probably be moved to an unit test in the future. */
+export const processOperation2 = async (options: { sync: boolean, jwt: string, type?: string, operation?: string, sequence?: number, id?: string, published?: Date, received?: Date }) => {
     // This method is written with verbose documentation and examples, to help onboard new devs making it easier to understand and relate the
     // various formats and structures.
 

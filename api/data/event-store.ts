@@ -1,5 +1,9 @@
 import { OperationRequest } from "./models/operation-request";
 
+export const getOperation = async (type: string, operation: string, sequence: number, id: string) => {
+    return OperationRequest.exists({ type, operation, sequence, id  });
+};
+
 export const storeOperation = async (operation: any) => {
     // Store the operation in our event source.
     var operationRequest = new OperationRequest(operation);

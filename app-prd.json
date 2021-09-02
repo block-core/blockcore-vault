@@ -1,0 +1,52 @@
+{
+    "apps": [
+        {
+            "name": "blockcore-vault-api",
+            "script": "./build",
+            "exec_mode": "cluster",
+            "instances": -1,
+            "env": {
+                "DB_USER": "root",
+                "DB_PASS": "root"
+            },
+            "env_production": {
+                "NODE_ENV": "production",
+                "PORT": 2000,
+                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050"
+            },
+            "env_develop": {
+                "NODE_ENV": "develop",
+                "PORT": 3000,
+                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050"
+            },
+            "env_test": {
+                "NODE_ENV": "testing",
+                "PORT": 4000
+            }
+        },
+        {
+            "name": "blockcore-vault-sync",
+            "script": "./build/sync/",
+            "exec_mode": "cluster",
+            "instances": 1,
+            "env": {
+                "DB_USER": "root",
+                "DB_PASS": "root"
+            },
+            "env_production": {
+                "NODE_ENV": "production",
+                "PORT": 2000,
+                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050"
+            },
+            "env_develop": {
+                "NODE_ENV": "develop",
+                "PORT": 3000,
+                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050"
+            },
+            "env_test": {
+                "NODE_ENV": "testing",
+                "PORT": 4000
+            }
+        }
+    ]
+}

@@ -91,16 +91,12 @@ export class ServersComponent implements OnDestroy {
         this.didResolution = data;
       });
     }
-
     else { // URL
       let configurationUrl = this.item.url + '/.well-known/did-configuration.json';
 
       this.http.get(configurationUrl).subscribe(async data => {
-
         const configuration = <any>data;
-
         console.log('DID Configuration:', configuration);
-
         this.linked_dids = configuration.linked_dids;
 
         // TODO: Perform validation.
@@ -109,15 +105,14 @@ export class ServersComponent implements OnDestroy {
 
         this.api.getIdentityFromUrl(did, domain).subscribe((didResolution) => {
           console.log('DID Resolution:', didResolution);
-          this.item = (<any>didResolution).didDocument;
+          //this.item = 
+          var didDocument = (<any>didResolution).didDocument;
           this.didResolution = didResolution;
 
-          if (this.item.service) {
-            this.name = this.item.service[0].serviceEndpoint;
+          if (didDocument) {
+            this.name = didDocument.service[0].serviceEndpoint;
           }
-
         });
-
       });
     }
   }
@@ -129,10 +124,11 @@ export class ServersComponent implements OnDestroy {
 
     // this.message.content = JSON.stringify(this.message.content);
 
-    var url = this.item.service[0].serviceEndpoint;
+    var item = this.didResolution.didDocument;
+    var url = item.service[0].serviceEndpoint;
 
     var server: any = {
-      id: this.item.id,
+      id: item.id,
       name: this.name,
       url,
       description: 'Added at ' + new Date() + '.',
@@ -140,51 +136,49 @@ export class ServersComponent implements OnDestroy {
       linked_dids: this.linked_dids
     };
 
-    console.log(this.item);
+    // console.log(this.item);
 
     // If we have a DID Resolution, it means this server has not been added yet.
-    if (this.didResolution) {
-      server.created = Date.now();
-      console.log(server);
+    // if (this.didResolution) {
+    server.created = Date.now();
+    console.log(server);
 
-      this.api.createServer(server).subscribe(result => {
-        // this.item = null;
-        // this.isEditing = false;
-        console.log('RESULT FROM CREATE', result);
+    this.api.createServer(server).subscribe(result => {
+      // this.item = null;
+      // this.isEditing = false;
+      console.log('RESULT FROM CREATE', result);
 
-        this.cancelEdit();
-        this.loadItems();
-      }, error => console.error(error));
+      this.cancelEdit();
+      this.loadItems();
+    }, error => console.error(error));
 
-    }
-    else {
-      if (this.item.created) {
-        this.item.modified = this.item.created = Date.now();
+    // }
+    // else {
+    //   if (this.item.created) {
+    //     this.item.modified = this.item.created = Date.now();
 
-        this.api.put<any>('api/vault/' + this.item.id, this.item).subscribe(result => {
+    //     this.api.put<any>('api/vault/' + this.item.id, this.item).subscribe(result => {
 
-          this.loadItems();
-          this.item = null;
-          this.isEditing = false;
+    //       this.loadItems();
+    //       this.item = null;
+    //       this.isEditing = false;
 
-          console.log('RESULT FROM UPDATE', result);
-        }, error => console.error(error));
-      } else {
+    //       console.log('RESULT FROM UPDATE', result);
+    //     }, error => console.error(error));
+    //   } else {
+    //     this.item.created = Date.now();
+    //     console.log(this.item);
 
-        this.item.created = Date.now();
+    //     this.api.post<any>('api/vault/', this.item).subscribe(result => {
 
-        console.log(this.item);
+    //       this.loadItems();
+    //       this.item = null;
+    //       this.isEditing = false;
 
-        this.api.post<any>('api/vault/', this.item).subscribe(result => {
-
-          this.loadItems();
-          this.item = null;
-          this.isEditing = false;
-
-          console.log('RESULT FROM CREATE', result);
-        }, error => console.error(error));
-      }
-    }
+    //       console.log('RESULT FROM CREATE', result);
+    //     }, error => console.error(error));
+    //   }
+    // }
   }
 
   deleteItem(item) {

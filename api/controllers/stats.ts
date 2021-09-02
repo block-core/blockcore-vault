@@ -18,9 +18,9 @@ import { Identity } from "../data/models/identity";
 export const getStatistics: Handler = async (req, res) => {
 
     try {
-        const servers = await Server.count();
-        const operations = await OperationRequest.count();
-        const identities = await Identity.count();
+        const servers = await Server.countDocuments();
+        const operations = await OperationRequest.countDocuments();
+        const identities = await Identity.find({ sequence: 0 }).countDocuments();
 
         res.json({
             servers: servers,

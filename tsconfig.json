@@ -5,6 +5,7 @@
     "rootDir": "./api",
     "outDir": "./build",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "strict": true
   },
   "exclude": [

@@ -76,7 +76,7 @@
 
          </mat-card-content>
          <mat-card-actions>
-            <button mat-flat-button [disabled]="!item.id" color="primary" (click)="saveEdit()">Add Server</button>
+            <button mat-flat-button [disabled]="!didResolution" color="primary" (click)="saveEdit()">Add Server</button>
             <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
          </mat-card-actions>
       </mat-card>
