@@ -9,7 +9,7 @@ type ServerState =
 interface IServer extends Document {
   id: string, // DID
   name: string, // Name from ".well-known/vault-configuration.json"
-  url: string, // "dataVaultCreationService" (vault-configuration.json) or EncryptedDataVault:serviceEndpoint (from DID Document)
+  url: string, // "dataVaultCreationService" (vault-configuration.json) or VerifiableDataRegistry:serviceEndpoint (from DID Document)
   ws: string, // Do we want to allow Vault admins to manually configure their Web Socket URL? Perhaps in vault-configuration.json.
   description: string, // User provided description.
   enabled: boolean, // User controlled if enable connection with this vault or not.

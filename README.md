@@ -229,18 +229,17 @@ Adding a new Vault can be done in two ways:
 
 - Entering the URL to the Vault, which uses .well-known URL to discover DID. DID Resolve is then performed.
 
-- Entering the DID to the Vault, which will perform DID Resolve and find the `EncryptedDataVault` (TBD) service registered in the DID Document. This should contain the endpoint for the Vault, which is then used to query the .well-known URL to grab additional metadata.
-
+- Entering the DID to the Vault, which will perform DID Resolve and find the `VerifiableDataRegistry` (formally `EncryptedDataVault`) service registered in the DID Document. This should contain the endpoint for the Vault, which is then used to query the .well-known URL to grab additional metadata.
 
 # Vocabulary
 
 - `Vault` - An instance of the Blockcore Vault software.
+- `VerifiableDataRegistry` - Verifiable Data Registry (VDR), the Blockcore Vault software is an implementation of an VDR.
 - `Data Vault` - An registered store of data that is hosted on Blockcore Vault software.
 - `DID` - Decentralized identity.
 - `DID Document` - A document that describes keys and other information about an DID Subject.
 - `DID Resolver` - A library / code that allows lookup of DID Documents against an "DID Registry"/"DID Hub".
 - `VC` - Verifiable Credentials, a signed JSON-document.
-
 
 # TODO
 
