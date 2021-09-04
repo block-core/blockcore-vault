@@ -4,7 +4,7 @@ Verifiable Data Registry ([VDR](https://www.w3.org/TR/did-imp-guide/#verifiable-
 
 ![](/docs/blockcore-vault.png)
 
-Blockcore Vault is a work-in-progress and is focused on delivering implementation of open standard specifications developed by the Decentralized Identity Foundation (DIF).
+Blockcore Vault is a work-in-progress and is focused on delivering implementation of open standard specifications developed by the Decentralized Identity Foundation ([DIF](https://github.com/decentralized-identity)).
 
 The various standards are currently in development, so the Blockcore Vault will continue to be in development and change according to the specifications.
 
