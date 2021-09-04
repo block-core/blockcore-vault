@@ -601,6 +601,12 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
     var identity = new Identity(entity);
 
     await identity.save();
+
+
+    // After operation and identity has been saved, we'll ensure that we also broadcast the incoming request to all our connected servers.
+    if (operation.sync) {
+        // TODO: Implement this broadcast, it should probably happen in the sync service and not in this thread.
+    }
 }
 
 /** Backup with examples, should probably be moved to an unit test in the future. */
@@ -889,7 +895,8 @@ export const handleOperation: Handler = async (req, res) => {
         // The only payload is the JSON Web Token.
         var jwt = req.body.jwt;
 
-        await processOperation({ sync: false, jwt: jwt });
+        // Since we received this operation over the REST API, we should make this operation to be synced to registered servers.
+        await processOperation({ sync: true, jwt: jwt });
 
         res.json({ "success": true });
     } catch (err) {

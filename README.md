@@ -1,7 +1,12 @@
 # Blockcore Vault
 
-Node Express app written in TypeScript.
+Verifiable Data Registry ([VDR](https://www.w3.org/TR/did-imp-guide/#verifiable-data-registry)) for Decentralized Identifiers ([DID](https://www.w3.org/TR/did-core/)) and Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)).
 
+Blockcore Vault is a work-in-progress and is focused on delivering implementation of open standard specifications developed by the Decentralized Identity Foundation (DIF).
+
+The various standards are currently in development, so the Blockcore Vault will continue to be in development and change according to the specifications.
+
+Blockcore Vault is not a reference implementation of the standards, and we have limited development resources available for implementation, so we will implement parts of the standards. We strive towards interopability with other implementations, but can't do full standard implementations without funding and support.
 
 ## Setup
 
@@ -248,3 +253,7 @@ https://nodejs.org/api/worker_threads.html
 https://github.com/uNetworking/uWebSockets.js/blob/master/examples/WorkerThreads.js
 
 Implement the .didState when requiring payments / attestation of submitted DID Documents: https://identity.foundation/did-registration/
+
+
+DID Implementation Guide:
+https://www.w3.org/TR/did-imp-guide/
