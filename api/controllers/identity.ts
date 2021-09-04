@@ -409,27 +409,28 @@ export const processOperation = async (options: { sync: boolean, jwt: string, ty
         throw Error('The "id" is incorrect between operation and the payload.');
     }
 
+    // TODO: VERIFY IF THIS IS ANY CONCERN ANY LONGER? DON'T THINK IT IS, SINCE WE ARE SIMPLY PROCESSING THE JWT AND NOT OTHER METADATA.
     // Make sure that the metadata received from server/client during sync is same as the actually signed JWT. This is important or else a vault can send sequence and ID of
     // documents and block future sync.
-    if (options.sync) {
-        if (decoded.header.issuer != options.id) {
-            log.error(JSON.stringify(decoded.payload));
-            log.error(JSON.stringify(options));
-            throw Error('The "id" is incorrect between synced event and signed payload.');
-        }
+    // if (options.sync) {
+    // if (decoded.header.issuer != options.id) {
+    //     log.error(JSON.stringify(decoded.payload));
+    //     log.error(JSON.stringify(options));
+    //     throw Error('The "id" is incorrect between synced event and signed payload.');
+    // }
 
-        if (decoded.payload.type != options.type) {
-            log.error(JSON.stringify(decoded.payload));
-            log.error(JSON.stringify(options));
-            throw Error('The "type" is incorrect between synced event and signed payload.');
-        }
+    // if (decoded.payload.type != options.type) {
+    //     log.error(JSON.stringify(decoded.payload));
+    //     log.error(JSON.stringify(options));
+    //     throw Error('The "type" is incorrect between synced event and signed payload.');
+    // }
 
-        if (decoded.payload.sequence != options.sequence) {
-            log.error(JSON.stringify(decoded.payload));
-            log.error(JSON.stringify(options));
-            throw Error('The "sequence" is incorrect between synced event and signed payload.');
-        }
-    }
+    // if (decoded.payload.sequence != options.sequence) {
+    //     log.error(JSON.stringify(decoded.payload));
+    //     log.error(JSON.stringify(options));
+    //     throw Error('The "sequence" is incorrect between synced event and signed payload.');
+    // }
+    // }
 
     var verificationMethod = null;
     var documentId = decodedContent.payload.id;
