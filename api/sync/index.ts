@@ -52,12 +52,10 @@ async function syncInterval(arg: any) {
 
         let server = servers[i];
 
-        if (server.self)
+        if (server.self) {
             continue;
+        }
 
-        log.info(server);
-        log.info(server.id);
-        log.info(server.name);
         log.info('Running sync on: ' + JSON.stringify(server));
         await syncEvents(server);
     }

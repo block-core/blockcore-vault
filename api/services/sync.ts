@@ -41,7 +41,7 @@ export const syncEvents = async (server: IServer) => {
         if (server.last.count) {
             log.info('server.last.count:' + server.last.count);
             log.info('limit:' + limit);
-            page = Math.floor(server.last.count / limit); // This can give decimals, so make sure we always round down.
+            page = Math.floor(server.last.count / limit) + 1; // This can give decimals, so make sure we always round down.
             log.info('page:' + page);
 
             // TODO: Verify if this actually skips two pages back after we changed to 1-based index for pages.

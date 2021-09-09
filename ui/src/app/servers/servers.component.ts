@@ -35,7 +35,7 @@ export class ServersComponent implements OnDestroy {
   constructor(
     private http: HttpClient,
     private breakpointObserver: BreakpointObserver,
-    private appState: ApplicationState,
+    public appState: ApplicationState,
     private api: ApiService,
     private changeRef: ChangeDetectorRef,
     private hub: HubService) {
@@ -67,6 +67,18 @@ export class ServersComponent implements OnDestroy {
     } else {
       return 'folder';
     }
+  }
+
+  get saveDisabled(): boolean {
+    if (!this.didResolution) {
+      return true;
+    }
+
+    if (this.didResolution.didDocument.id == this.appState.vault.id) {
+      return true;
+    }
+
+    return false;
   }
 
   cancelEdit() {

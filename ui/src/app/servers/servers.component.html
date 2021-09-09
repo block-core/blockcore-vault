@@ -43,17 +43,26 @@
             </mat-form-field>
 
             <div *ngIf="didResolution">
-               <p *ngIf="didResolution.didResolutionMetadata.error">Error: {{didResolution.didResolutionMetadata.error}}</p>
-               <p *ngIf="didResolution.didDocument">DID: {{didResolution.didDocument.id}}</p>
-               <!-- TODO: This will obviously crash if the DID Document has zero endpoints. Add validation that the DID has services. -->
-               <p *ngIf="didResolution.didDocument">URL: {{didResolution.didDocument.service[0].serviceEndpoint}}</p>
 
-               <p *ngIf="didResolution.didDocument">
-                  <mat-form-field appearance="outline" class="input-full-width">
-                    <mat-label>Name</mat-label>
-                    <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name for this server">
-                  </mat-form-field>
-                </p>
+               <div *ngIf="didResolution.didDocument.id == appState.vault.id">
+                  <p *ngIf="didResolution.didDocument">DID: {{didResolution.didDocument.id}}</p>
+                  <p>The DID is same as current server. You cannot add the server to itself.</p>
+               </div>
+
+               <div *ngIf="didResolution.didDocument.id != appState.vault.id">
+                  <p *ngIf="didResolution.didResolutionMetadata.error">Error:
+                     {{didResolution.didResolutionMetadata.error}}</p>
+                  <p *ngIf="didResolution.didDocument">DID: {{didResolution.didDocument.id}}</p>
+                  <!-- TODO: This will obviously crash if the DID Document has zero endpoints. Add validation that the DID has services. -->
+                  <p *ngIf="didResolution.didDocument">URL: {{didResolution.didDocument.service[0].serviceEndpoint}}</p>
+
+                  <p *ngIf="didResolution.didDocument">
+                     <mat-form-field appearance="outline" class="input-full-width">
+                        <mat-label>Name</mat-label>
+                        <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name for this server">
+                     </mat-form-field>
+                  </p>
+               </div>
 
             </div>
 
@@ -76,7 +85,7 @@
 
          </mat-card-content>
          <mat-card-actions>
-            <button mat-flat-button [disabled]="!didResolution" color="primary" (click)="saveEdit()">Add Server</button>
+            <button mat-flat-button [disabled]="saveDisabled" color="primary" (click)="saveEdit()">Add Server</button>
             <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
          </mat-card-actions>
       </mat-card>
