@@ -10,6 +10,8 @@ The various standards are currently in development, so the Blockcore Vault will 
 
 Blockcore Vault is not a reference implementation of the standards, and we have limited development resources available for implementation, so we will implement parts of the standards. We strive towards interopability with other implementations, but can't do full standard implementations without funding and support.
 
+To learn more about the definitions and concepts, make sure you check out the [Decentralized Identity FAQ](https://identity.foundation/faq/).
+
 ## Setup
 
 To set up the application, first clone the repo. Then, install the dependencies by running npm:
