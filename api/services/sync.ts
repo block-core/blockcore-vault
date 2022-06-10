@@ -8,7 +8,6 @@ import { processOperation } from "../controllers/identity";
 
 /** Returns all servers registered in the vault. This operation does not do paging as there will normally be a small list of servers. */
 export const getServers = () => {
-    log.info('Get Server:');
     return Server.find();
 }
 

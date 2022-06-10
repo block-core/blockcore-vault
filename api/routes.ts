@@ -1,5 +1,5 @@
 import { getEvent, getEvents, latestEvent, totalEvents } from "./controllers/event";
-import { createDIDDocument, deleteDIDDocument, getDIDDocument, getIdentities, handleOperation, updateDIDDocument } from "./controllers/identity";
+import { createDIDDocument, deleteDIDDocument, getDIDDocument, getIdentities, handleOperation, handleOperation2, updateDIDDocument } from "./controllers/identity";
 import { createServer, deleteServer, getLocalServer, getServer, getServers, getSettings, updateLocalServer, updateServer, updateSettings } from "./controllers/server";
 import { getStatistics } from "./controllers/stats";
 import { deleteVault, getVault, getVaults, putVault } from "./controllers/vault";
@@ -143,6 +143,12 @@ export const routes: Route[] = [
     path: "/operation",
     middleware: [requestLogger],
     handler: handleOperation,
+  },
+  {
+    method: "get",
+    path: "/operation2",
+    middleware: [requestLogger],
+    handler: handleOperation2,
   },
   {
     method: "get",

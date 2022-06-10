@@ -1,32 +1,32 @@
 <mat-sidenav-container class="container">
-  <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">
+   <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">
 
-    <div class="sidepanel-top" *ngIf="item">
+      <div class="sidepanel-top" *ngIf="item">
 
-      <span *ngIf="!item._id">Create</span>
-      <span *ngIf="item._id">Edit</span>
+         <span *ngIf="!item._id">Create</span>
+         <span *ngIf="item._id">Edit</span>
 
-      <button (click)="drawer.toggle()" mat-icon-button color="primary">
-        <mat-icon>close</mat-icon>
-      </button>
+         <button (click)="drawer.toggle()" mat-icon-button color="primary">
+            <mat-icon>close</mat-icon>
+         </button>
 
-    </div>
+      </div>
 
-    <mat-card class="profile-card" *ngIf="item">
-      <mat-card-header>
+      <mat-card class="profile-card" *ngIf="item">
+         <mat-card-header>
 
-        <!-- <div mat-card-avatar></div> -->
-        <!-- <mat-icon mat-card-avatar mat-list-icon class="request-header-image">{{icon(message.category)}}
+            <!-- <div mat-card-avatar></div> -->
+            <!-- <mat-icon mat-card-avatar mat-list-icon class="request-header-image">{{icon(message.category)}}
         </mat-icon> -->
 
-        <mat-card-title>Connect to Vault</mat-card-title>
-        <mat-card-subtitle>Connect to other vaults to sync data</mat-card-subtitle>
-      </mat-card-header>
-      <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+            <mat-card-title>Create a Data Vault</mat-card-title>
+            <mat-card-subtitle>Create a container for data that can be synced between servers</mat-card-subtitle>
+         </mat-card-header>
+         <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
            alt="Photo of a Shiba Inu"> -->
-      <mat-card-content>
+         <mat-card-content>
 
-        <!-- <mat-form-field appearance="fill">
+            <!-- <mat-form-field appearance="fill">
           <mat-label>Category</mat-label>
           <mat-select [(ngModel)]="message.category">
             <mat-option value="general"></mat-option>
@@ -37,14 +37,36 @@
           </mat-select>
         </mat-form-field> -->
 
-        <mat-form-field appearance="outline" class="input-full-width">
-          <mat-label>DID or URL</mat-label>
-          <input matInput [(ngModel)]="item.url" placeholder="Url or DID to Vault" (blur)="onUrlEntered()">
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="input-full-width">
+               <mat-label>Controller (DID)</mat-label>
+               <input matInput [(ngModel)]="vault.controller" placeholder="Decentralized Identitifer that creates the vault.">
+            </mat-form-field>
 
-        <!-- <button mat-flat-button color="primary" [disabled]="!item.url" (click)="saveEdit()">Query</button> -->
+            <mat-form-field appearance="outline" class="input-full-width">
+               <mat-label>Public Key (Vault Derived Key)</mat-label>
+               <input matInput [(ngModel)]="publicKey" placeholder="Public key that is used to seed the content ID (CID).">
+            </mat-form-field>
 
-        <!-- <mat-form-field appearance="outline" class="input-full-width">
+            <button mat-button (click)="generate()">Generate CID</button>
+
+            <mat-form-field appearance="outline" class="input-full-width">
+               <mat-label>Vault ID (Content ID/CID)</mat-label>
+               <input matInput [(ngModel)]="vault.id" disabled="true" placeholder="Generated from DID and sequence">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="input-full-width">
+               <mat-label>Invoker (DIDs)</mat-label>
+               <input matInput [(ngModel)]="vault.invoker" placeholder="Invoker">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="input-full-width">
+               <mat-label>Delegator (DIDs)</mat-label>
+               <input matInput [(ngModel)]="vault.delegator" placeholder="Delegator">
+            </mat-form-field>
+
+            <!-- <button mat-flat-button color="primary" [disabled]="!item.url" (click)="saveEdit()">Query</button> -->
+
+            <!-- <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>Id</mat-label>
           <input matInput readonly="true" [(ngModel)]="item.id" placeholder="Category">
         </mat-form-field>
@@ -59,14 +81,14 @@
           <textarea matInput readonly="true" rows="8" [(ngModel)]="item.description" placeholder="Description"></textarea>
         </mat-form-field> -->
 
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button [disabled]="!item.id" color="primary" (click)="saveEdit()">Save</button>
-        <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
-      </mat-card-actions>
-    </mat-card>
+         </mat-card-content>
+         <mat-card-actions>
+            <button mat-flat-button [disabled]="!item.id" color="primary" (click)="saveEdit()">Save</button>
+            <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
+         </mat-card-actions>
+      </mat-card>
 
-    <!-- <mat-accordion class="example-headers-align" multi>
+      <!-- <mat-accordion class="example-headers-align" multi>
 
       
       <mat-expansion-panel>
@@ -85,79 +107,79 @@
       </mat-expansion-panel>
     </mat-accordion> -->
 
-  </mat-sidenav>
+   </mat-sidenav>
 
-  <div class="message-log">
+   <div class="message-log">
 
-    <mat-tab-group>
-      <mat-tab>
-         <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">shield</mat-icon>&nbsp;
-            Vaults
-         </ng-template>
-   
-         <!-- <button mat-mini-fab class="add-node">
+      <mat-tab-group>
+         <mat-tab>
+            <ng-template mat-tab-label>
+               <mat-icon class="example-tab-icon">shield</mat-icon>&nbsp;
+               Vaults
+            </ng-template>
+
+            <!-- <button mat-mini-fab class="add-node">
             <mat-icon>add</mat-icon>
          </button> -->
-         <br>
-         <!-- &nbsp;&nbsp;<button mat-flat-button color="primary">Add Hub</button> -->
-   
-         <mat-list>
-            <mat-list-item>
-               <mat-icon mat-list-icon>account_circle</mat-icon>
-               <div mat-line>id:PTlsaksjkluihJHjk123hf</div>
-               <div mat-line class="dimmed">Identity</div>
-   
-               <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                     <mat-icon>more_vert</mat-icon>
-                  </button>
-                  <mat-menu #menu="matMenu">
-                     <button mat-menu-item>
-                        <mat-icon>delete</mat-icon>
-                        <span>Remove hub</span>
+            <br>
+            <!-- &nbsp;&nbsp;<button mat-flat-button color="primary">Add Hub</button> -->
+
+            <mat-list>
+               <mat-list-item>
+                  <mat-icon mat-list-icon>account_circle</mat-icon>
+                  <div mat-line>id:PTlsaksjkluihJHjk123hf</div>
+                  <div mat-line class="dimmed">Identity</div>
+
+                  <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                        <mat-icon>more_vert</mat-icon>
                      </button>
-                  </mat-menu>
-               </p>
-   
-            </mat-list-item>
-            <mat-list-item>
-               <mat-icon mat-list-icon>public</mat-icon>
-               <div mat-line>80.80.80.80</div>
-               <div mat-line class="dimmed">Public IP Address</div>
-   
-               <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                  <mat-icon>more_vert</mat-icon>
-               </button>
-               <mat-menu #menu="matMenu">
-                  <button mat-menu-item>
-                     <mat-icon>delete</mat-icon>
-                     <span>Remove hub</span>
-                  </button>
-               </mat-menu>
-            </p>
-   
-            </mat-list-item>
-            <mat-list-item>
-               <mat-icon mat-list-icon>vpn_lock</mat-icon>
-               <div mat-line>10.0.0.1</div>
-               <div mat-line class="dimmed">Private IP Address</div>
-   
-               <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                  <mat-icon>more_vert</mat-icon>
-               </button>
-               <mat-menu #menu="matMenu">
-                  <button mat-menu-item>
-                     <mat-icon>delete</mat-icon>
-                     <span>Remove hub</span>
-                  </button>
-               </mat-menu>
-            </p>
-   
-            </mat-list-item>
-         </mat-list>
-   
-   
-         <!-- <div class="app-area">
+                     <mat-menu #menu="matMenu">
+                        <button mat-menu-item>
+                           <mat-icon>delete</mat-icon>
+                           <span>Remove hub</span>
+                        </button>
+                     </mat-menu>
+                  </p>
+
+               </mat-list-item>
+               <mat-list-item>
+                  <mat-icon mat-list-icon>public</mat-icon>
+                  <div mat-line>80.80.80.80</div>
+                  <div mat-line class="dimmed">Public IP Address</div>
+
+                  <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                        <mat-icon>more_vert</mat-icon>
+                     </button>
+                     <mat-menu #menu="matMenu">
+                        <button mat-menu-item>
+                           <mat-icon>delete</mat-icon>
+                           <span>Remove hub</span>
+                        </button>
+                     </mat-menu>
+                  </p>
+
+               </mat-list-item>
+               <mat-list-item>
+                  <mat-icon mat-list-icon>vpn_lock</mat-icon>
+                  <div mat-line>10.0.0.1</div>
+                  <div mat-line class="dimmed">Private IP Address</div>
+
+                  <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                        <mat-icon>more_vert</mat-icon>
+                     </button>
+                     <mat-menu #menu="matMenu">
+                        <button mat-menu-item>
+                           <mat-icon>delete</mat-icon>
+                           <span>Remove hub</span>
+                        </button>
+                     </mat-menu>
+                  </p>
+
+               </mat-list-item>
+            </mat-list>
+
+
+            <!-- <div class="app-area">
             <div class="app-area-left">
             </div>
             <div class="app-area-middle" *ngIf="messages">
@@ -184,85 +206,78 @@
    
             </div>
          </div> -->
-   
-      </mat-tab>
-   
-      <mat-tab>
-         <ng-template mat-tab-label>
-            <mat-icon class="example-tab-icon">announcement</mat-icon>&nbsp;
-            <span matBadge="2" matBadgeOverlap="false">Requests</span>
-         </ng-template>
-   
-         <div class="requests-container">
-   
-            <mat-card class="request-card">
-               <mat-card-header>
-                  <div mat-card-avatar class="request-header-image"></div>
-                  <mat-card-title>Haxxors Paradise</mat-card-title>
-                  <mat-card-subtitle>id:PsPsadkjfdsT13Aab</mat-card-subtitle>
-               </mat-card-header>
-               <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
-                  alt="Photo of a Shiba Inu">
-               <mat-card-content>
-                  <p>IP address: 10.0.0.3</p>
-                  <p>Sent: 2020-05-26 12:00</p>
-                  <p>
-                     Message:<br>
-                     I want to be your friend! PLZ!!!!
-                  </p>
-               </mat-card-content>
-               <mat-card-actions>
-                  <button mat-flat-button color="primary">Accept</button>&nbsp;
-                  <button mat-flat-button color="accent">Reject</button>&nbsp;
-                  <button mat-stroked-button>Block</button>
-               </mat-card-actions>
-            </mat-card>
-   
-   
-            <mat-card class="request-card">
-               <mat-card-header>
-                  <div mat-card-avatar class="request-header-image"></div>
-                  <mat-card-title>Shiba Inu</mat-card-title>
-                  <mat-card-subtitle>id:PasdfdsT123311b</mat-card-subtitle>
-               </mat-card-header>
-               <mat-card-content>
-                  <p>IP address: 10.0.0.4</p>
-                  <p>Sent: 2020-05-26 12:00</p>
-                  <p>
-                     Message:<br>
-                     Add me if you want, or don't. See if I care. I'm just a dog.
-                  </p>
-               </mat-card-content>
-               <mat-card-actions>
-                  <button mat-flat-button color="primary">Accept</button>&nbsp;
-                  <button mat-flat-button color="accent">Reject</button>&nbsp;
-                  <button mat-stroked-button>Block</button>
-               </mat-card-actions>
-            </mat-card>
-   
-   
-         </div>
-   
-      </mat-tab>
-   </mat-tab-group>
+
+         </mat-tab>
+
+         <mat-tab>
+            <ng-template mat-tab-label>
+               <mat-icon class="example-tab-icon">announcement</mat-icon>&nbsp;
+               <span matBadge="2" matBadgeOverlap="false">Requests</span>
+            </ng-template>
+
+            <div class="requests-container">
+
+               <mat-card class="request-card">
+                  <mat-card-header>
+                     <div mat-card-avatar class="request-header-image"></div>
+                     <mat-card-title>Haxxors Paradise</mat-card-title>
+                     <mat-card-subtitle>id:PsPsadkjfdsT13Aab</mat-card-subtitle>
+                  </mat-card-header>
+                  <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+                     alt="Photo of a Shiba Inu">
+                  <mat-card-content>
+                     <p>IP address: 10.0.0.3</p>
+                     <p>Sent: 2020-05-26 12:00</p>
+                     <p>
+                        Message:<br>
+                        I want to be your friend! PLZ!!!!
+                     </p>
+                  </mat-card-content>
+                  <mat-card-actions>
+                     <button mat-flat-button color="primary">Accept</button>&nbsp;
+                     <button mat-flat-button color="accent">Reject</button>&nbsp;
+                     <button mat-stroked-button>Block</button>
+                  </mat-card-actions>
+               </mat-card>
 
 
+               <mat-card class="request-card">
+                  <mat-card-header>
+                     <div mat-card-avatar class="request-header-image"></div>
+                     <mat-card-title>Shiba Inu</mat-card-title>
+                     <mat-card-subtitle>id:PasdfdsT123311b</mat-card-subtitle>
+                  </mat-card-header>
+                  <mat-card-content>
+                     <p>IP address: 10.0.0.4</p>
+                     <p>Sent: 2020-05-26 12:00</p>
+                     <p>
+                        Message:<br>
+                        Add me if you want, or don't. See if I care. I'm just a dog.
+                     </p>
+                  </mat-card-content>
+                  <mat-card-actions>
+                     <button mat-flat-button color="primary">Accept</button>&nbsp;
+                     <button mat-flat-button color="accent">Reject</button>&nbsp;
+                     <button mat-stroked-button>Block</button>
+                  </mat-card-actions>
+               </mat-card>
 
 
+            </div>
 
+         </mat-tab>
+      </mat-tab-group>
 
+      <mat-selection-list [multiple]="false">
+         <mat-list-option *ngFor="let item of dataSource" (click)="selectItem(item)" [value]="item">
 
+            <mat-icon mat-list-icon>folder</mat-icon>
+            <div mat-line> {{item.id}} </div>
+            <div mat-line>{{item.name}}</div>
 
-    <mat-selection-list [multiple]="false">
-      <mat-list-option *ngFor="let item of dataSource" (click)="selectItem(item)" [value]="item">
+         </mat-list-option>
+      </mat-selection-list>
 
-        <mat-icon mat-list-icon>folder</mat-icon>
-        <div mat-line> {{item.id}} </div>
-        <div mat-line>{{item.name}}</div>
-
-      </mat-list-option>
-    </mat-selection-list>
-
-  </div>
+   </div>
 
 </mat-sidenav-container>

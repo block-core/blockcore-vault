@@ -1,66 +1,16 @@
 {
     "apps": [
         {
-            "name": "blockcore-vault-api",
-            "script": "./build",
+            "name": "sync",
+            "script": "./test2/sync/",
             "exec_mode": "cluster",
-            "instances": 1,
-            "env": {
-                "DB_USER": "root",
-                "DB_PASS": "root"
-            },
-            "env_develop": {
-                "NODE_ENV": "develop",
-                "PORT": 3003,
-                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050",
-                "MONGODB_URL": "mongodb://localhost:27017/BlockcoreVaultDev"
-            }
+            "instances": 1
         },
         {
-            "name": "blockcore-vault-sync",
-            "script": "./build/sync/",
+            "name": "api",
+            "script": "./test2",
             "exec_mode": "cluster",
-            "instances": 1,
-            "env": {
-                "DB_USER": "root",
-                "DB_PASS": "root"
-            },
-            "env_develop": {
-                "NODE_ENV": "develop",
-                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050",
-                "MONGODB_URL": "mongodb://localhost:27017/BlockcoreVaultDev"
-            }
-        },
-        {
-            "name": "blockcore-vault-api-2",
-            "script": "./build",
-            "exec_mode": "cluster",
-            "instances": 1,
-            "env": {
-                "DB_USER": "root",
-                "DB_PASS": "root"
-            },
-            "env_develop": {
-                "NODE_ENV": "develop",
-                "PORT": 3004,
-                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050",
-                "MONGODB_URL": "mongodb://localhost:27017/BlockcoreVaultDev2"
-            }
-        },
-        {
-            "name": "blockcore-vault-sync-2",
-            "script": "./build/sync/",
-            "exec_mode": "cluster",
-            "instances": 1,
-            "env": {
-                "DB_USER": "root",
-                "DB_PASS": "root"
-            },
-            "env_develop": {
-                "NODE_ENV": "develop",
-                "API_KEY": "bf83b2d9-cd9e-48f6-a6cc-bcd9c9b48050",
-                "MONGODB_URL": "mongodb://localhost:27017/BlockcoreVaultDev2"
-            }
+            "instances": 1
         }
     ]
 }

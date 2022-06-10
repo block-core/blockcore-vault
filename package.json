@@ -34,18 +34,21 @@
     "swagger-ui-express": "4.1.6",
     "uuid": "8.3.2",
     "winston": "3.3.3",
-    "ws": "7.4.6"
+    "ws": "7.4.6",
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "@types/bs58": "4.0.1",
     "@types/express": "4.17.13",
-    "@types/node": "14.14.41",
+    "@types/node": "16.11.4",
     "@types/pubsub-js": "1.8.2",
     "@types/swagger-jsdoc": "6.0.1",
     "@types/swagger-ui-express": "4.1.3",
+    "@types/yargs": "^17.0.4",
     "copyfiles": "2.4.1",
     "nodemon": "2.0.12",
     "ts-node": "9.1.1",
+    "ts-node-dev": "^1.1.8",
     "typescript": "4.3.5"
   },
   "scripts": {
@@ -56,8 +59,13 @@
     "pm2-debug": "npm run build && pm2 start app-prd.json --attach --env production",
     "pm2-stop": "pm2 stop app-prd.json",
     "pm2-delete": "pm2 delete app-prd.json",
+
     "build": "tsc",
-    "start": "node ./build",
+    "start": "node ./build --port=5000 --instances=2",
+    "start:sync": "node ./build/sync --port=5001",
+
+    "sync": "ts-node-dev --respawn --transpile-only ./api/sync/index.ts --MONGODB_URL=mongodb://localhost:27017/BlockcoreVault2",
+
     "dev": "nodemon src/index.ts",
     "ui:install": "cd ui && npm install",
     "ui:build": "cd ui && npm run build",

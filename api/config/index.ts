@@ -16,7 +16,7 @@
 
 // Default configuration.
 
-export const config = {
+export let config = {
     db: process.env.MONGODB_URL || 'mongodb://localhost:27017/BlockcoreVault',
     port: process.env.PORT || 3000,
     ws: process.env.PORT_WS || 9000,

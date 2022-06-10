@@ -6,6 +6,8 @@ import { HubService } from '../services/hub.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
+import * as CID from 'cids';
+import { digest } from '@angular/compiler/src/i18n/digest';
 
 @Component({
   selector: 'app-vaults',
@@ -28,6 +30,15 @@ export class VaultsComponent implements OnDestroy {
   items = [];
   customers: any;
   isEditing = false;
+  publicKey: string;
+
+  vault = {
+    id: '',
+    controller: '',
+    sequence: 0,
+    invoker: '',
+    delegator: ''
+  }
 
   constructor(
     private http: HttpClient,
@@ -45,9 +56,30 @@ export class VaultsComponent implements OnDestroy {
     console.log(this.baseUrl);
 
     appState.title = 'Vaults';
-    appState.actions = [{ icon: 'add_circle', tooltip: 'Connect to Vault', click: () => { this.addNew(); } }];
+    appState.actions = [{ icon: 'add_circle', tooltip: 'Create a Data Vault', click: () => { this.addNew(); } }];
 
     this.loadItems();
+
+    // let entryCID = new CID('123');
+
+    var cid = new CID('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR').toV1().toString('base32');
+    console.log(cid);
+    console.log(new CID('QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR'));
+  }
+
+  async generate() {
+    const text = `${this.vault.controller}#${this.publicKey}`;
+    const digestHex = await this.digestMessage(text);
+    console.log(digestHex);
+    this.vault.id = digestHex;
+  }
+
+  async digestMessage(message) {
+    const msgUint8 = new TextEncoder().encode(message);                           // encode as (utf-8) Uint8Array
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);           // hash the message
+    const hashArray = Array.from(new Uint8Array(hashBuffer));                     // convert buffer to byte array
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
+    return hashHex;
   }
 
   ngOnDestroy(): void {
