@@ -1,10 +1,22 @@
+<p align="center">
+  <p align="center">
+    <img src="https://avatars3.githubusercontent.com/u/53176002?s=200&v=4" height="100" alt="Blockcore" />
+  </p>
+  <h3 align="center">
+    About Blockcore Vault
+  </h3>
+  <p align="center">
+    Decentralized Web Node (DWN) for Web5
+  </p>
+</p>
+
 # Blockcore Vault
 
 Decentralized Web Node (DWN) for Web5, includes Verifiable Data Registry ([VDR](https://www.w3.org/TR/did-imp-guide/#verifiable-data-registry)) for Decentralized Identifiers ([DID](https://www.w3.org/TR/did-core/)) and Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)) storage.
 
-```
+`
 Web5 is a Decentralized Web Platform that enables developers to leverage Decentralized Identifiers, Verifiable Credentials, and Decentralized Web Nodes to write Decentralized Web Apps, returning ownership and control over identity and data to individuals. - tbd
-```
+`
 
 ## What is Web5?
 
