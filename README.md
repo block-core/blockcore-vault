@@ -3,12 +3,7 @@
 Decentralized Web Node (DWN) for Web5, includes Verifiable Data Registry ([VDR](https://www.w3.org/TR/did-imp-guide/#verifiable-data-registry)) for Decentralized Identifiers ([DID](https://www.w3.org/TR/did-core/)) and Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)) storage.
 
 ```
-Web5 is a Decentralized Web Platform that 
-enables developers to leverage Decentralized 
-Identifiers, Verifiable Credentials, and 
-Decentralized Web Nodes to write Decentralized 
-Web Apps, returning ownership and control over 
-identity and data to individuals. - tbd
+Web5 is a Decentralized Web Platform that enables developers to leverage Decentralized Identifiers, Verifiable Credentials, and Decentralized Web Nodes to write Decentralized Web Apps, returning ownership and control over identity and data to individuals. - tbd
 ```
 
 ## What is Web5?
