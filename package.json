@@ -51,13 +51,6 @@
     "npm-run-all": "^4.1.5"
   },
   "scripts": {
-    "pm2-dev": "npm run build && pm2 start app-dev.json --env develop",
-    "pm2-dev-debug": "npm run build && pm2 start app-dev.json --attach --env develop",
-    "pm2-dev-delete": "pm2 delete app-dev.json",
-    "pm2": "npm run build && pm2 start app-prd.json --env production",
-    "pm2-debug": "npm run build && pm2 start app-prd.json --attach --env production",
-    "pm2-stop": "pm2 stop app-prd.json",
-    "pm2-delete": "pm2 delete app-prd.json",
     "build": "tsc",
     "run": "node ./build",
     "start": "npm-run-all --parallel dev-api dev-ui",
