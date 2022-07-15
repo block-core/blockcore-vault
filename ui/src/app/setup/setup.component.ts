@@ -8,7 +8,7 @@ import { Resolver } from 'did-resolver';
 import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
 import * as bip39 from 'bip39';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../shared/password-validation.directive';
 import { BlockcoreIdentity, BlockcoreIdentityTools } from '@blockcore/identity';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -75,7 +75,7 @@ export class SetupComponent implements OnInit {
   constructor(
     private http: HttpClient,
     @Inject('BASE_URL') private baseUrl: string,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private router: Router,
     private accountService: AccountService,
     private vaultService: VaultService,
@@ -362,9 +362,9 @@ export class SetupComponent implements OnInit {
       name: 'Blockcore Hub (2)'
     }];
 
-  accountPasswordForm: FormGroup;
-  accountSeedForm: FormGroup;
-  accountNameForm: FormGroup;
+  accountPasswordForm: UntypedFormGroup;
+  accountSeedForm: UntypedFormGroup;
+  accountNameForm: UntypedFormGroup;
   accountName = 'vault';
   saving: boolean;
   currentDate: string;
@@ -392,7 +392,7 @@ export class SetupComponent implements OnInit {
     }, { updateOn: 'blur', validator: PasswordValidationDirective.MatchPassword });
 
     this.accountNameForm = this.fb.group({
-      accountName: new FormControl('', Validators.compose([
+      accountName: new UntypedFormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(1),
         Validators.maxLength(24),

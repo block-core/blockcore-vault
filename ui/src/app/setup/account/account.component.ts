@@ -11,7 +11,7 @@ import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import * as bip38 from '../../../libraries/bip38';
 import * as bs58 from 'bs58';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../../shared/password-validation.directive';
 import { payments } from 'bitcoinjs-lib';
 import { BlockcoreIdentity, Identity, BlockcoreIdentityTools } from '@blockcore/identity';
@@ -73,7 +73,7 @@ export class AccountComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private router: Router,
     private vaultService: VaultService,
     private account: AccountService,
@@ -242,9 +242,9 @@ export class AccountComponent implements OnInit {
       name: 'Blockcore Hub (2)'
     }];
 
-  accountPasswordForm: FormGroup;
-  accountSeedForm: FormGroup;
-  accountNameForm: FormGroup;
+  accountPasswordForm: UntypedFormGroup;
+  accountSeedForm: UntypedFormGroup;
+  accountNameForm: UntypedFormGroup;
   accountName = 'vault';
   saving: boolean;
   currentDate: string;
@@ -415,7 +415,7 @@ export class AccountComponent implements OnInit {
     }, { updateOn: 'blur', validator: PasswordValidationDirective.MatchPassword });
 
     this.accountNameForm = this.fb.group({
-      accountName: new FormControl('', Validators.compose([
+      accountName: new UntypedFormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(1),
         Validators.maxLength(24),
