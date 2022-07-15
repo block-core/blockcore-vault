@@ -9,7 +9,7 @@ export const totalEvents: Handler = async (req, res) => {
         // all the documents.
         const count = await OperationRequest.countDocuments();
         return res.json({ count: count });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -22,7 +22,7 @@ export const latestEvent: Handler = async (req, res) => {
         // all the documents.
         const latest = await OperationRequest.findOne({}, null, { sort: { sequence: -1 } });
         return res.json(latest);
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -39,7 +39,7 @@ export const getEvent: Handler = async (req, res) => {
         } else {
             return res.sendStatus(404);
         }
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -68,7 +68,7 @@ export const getEvents: Handler = async (req, res) => {
             totalPages: Math.ceil(count / limitNumber),
             currentPage: page
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -78,7 +78,7 @@ export const getServer: Handler = async (req, res) => {
     try {
         const item = await OperationRequest.findOne({ id: req.params.id });
         res.json(item);
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }

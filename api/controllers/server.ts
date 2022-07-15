@@ -40,7 +40,7 @@ export const getServers: Handler = async (req, res) => {
             totalPages: Math.ceil(count / limitNumber),
             currentPage: page
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -71,7 +71,7 @@ export const getServer: Handler = async (req, res) => {
     try {
         const item = await Server.findOne({ id: req.params.id });
         res.json(item);
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -91,7 +91,7 @@ export const getSettings: Handler = async (req, res) => {
     try {
         const item = await Setting.findOne({ id: '1' });
         res.json(item);
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -147,7 +147,7 @@ export const updateSettings: Handler = async (req, res) => {
         state.apiKey = server.apiKey;
 
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -206,7 +206,7 @@ export const createServer: Handler = async (req, res) => {
         PubSub.publish('server-created', saved);
 
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -267,7 +267,7 @@ export const updateServer: Handler = async (req, res) => {
         PubSub.publish('server-replaced', saved);
 
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -300,7 +300,7 @@ export const deleteServer: Handler = async (req, res) => {
 
         await Server.deleteOne({ id: id });
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -315,7 +315,7 @@ export const getLocalServer: Handler = async (req, res) => {
         }
 
         return res.json(item);
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -334,7 +334,7 @@ export const updateLocalServer: Handler = async (req, res) => {
         }, req.body, { upsert: true });
 
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }

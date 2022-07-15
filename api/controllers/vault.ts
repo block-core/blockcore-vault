@@ -31,7 +31,7 @@ export const getVaults: Handler = async (req, res) => {
             totalPages: Math.ceil(count / limitNumber),
             currentPage: page
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }

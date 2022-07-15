@@ -28,7 +28,7 @@ export const wellKnownVaultConfiguration: Handler = async (req, res) => {
             "dataVaultCreationService": item.url
         });
 
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -57,7 +57,7 @@ export const wellKnownDid: Handler = async (req, res) => {
             '@context': 'https://www.w3.org/ns/did/v1',
             'id': item.id
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -87,7 +87,7 @@ export const wellKnownDidConfiguration: Handler = async (req, res) => {
             'linked_dids': item.linked_dids
         });
 
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }

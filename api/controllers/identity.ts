@@ -35,7 +35,7 @@ export const getVerifiableCredentials: Handler = async (req, res) => {
             totalPages: Math.ceil(count / limitNumber),
             currentPage: page
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -280,7 +280,7 @@ export const getDIDDocument: Handler = async (req, res) => {
         didResolution.didDocumentMetadata = item.metadata; // Document metadata, can only contain these values: https://w3c.github.io/did-core/#did-document-metadata
 
         return res.json(didResolution);
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -310,7 +310,7 @@ export const getIdentities: Handler = async (req, res) => {
             totalPages: Math.ceil(count / limitNumber),
             currentPage: page
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -900,7 +900,7 @@ export const handleOperation: Handler = async (req, res) => {
         await processOperation({ sync: true, jwt: jwt });
 
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -966,7 +966,7 @@ export const createDIDDocument: Handler = async (req, res) => {
         // var vault = new DIDDocument(req.body);
         // await vault.save();
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -992,7 +992,7 @@ export const updateDIDDocument: Handler = async (req, res) => {
         //     id: id
         // }, req.body, { upsert: true });
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
@@ -1013,7 +1013,7 @@ export const deleteDIDDocument: Handler = async (req, res) => {
 
         await Vault.deleteOne({ id: id });
         res.json({ "success": true });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }

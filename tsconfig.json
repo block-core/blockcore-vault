@@ -6,7 +6,8 @@
     "outDir": "./build",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "strict": true
+    "strict": true,
+    "noEmit": false
   },
   "exclude": [
     "ui/**/*"

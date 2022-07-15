@@ -27,7 +27,7 @@ export const getStatistics: Handler = async (req, res) => {
             operations: operations,
             identities: identities
         });
-    } catch (err) {
+    } catch (err: any) {
         log.error(err.message);
         return res.status(400).json({ status: 400, message: err.message });
     }
