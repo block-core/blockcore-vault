@@ -14,9 +14,7 @@
 
 Decentralized Web Node (DWN) for Web5, includes Verifiable Data Registry ([VDR](https://www.w3.org/TR/did-imp-guide/#verifiable-data-registry)) for Decentralized Identifiers ([DID](https://www.w3.org/TR/did-core/)) and Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)) storage.
 
-`
-Web5 is a Decentralized Web Platform that enables developers to leverage Decentralized Identifiers, Verifiable Credentials, and Decentralized Web Nodes to write Decentralized Web Apps, returning ownership and control over identity and data to individuals. - tbd
-`
+`Web5 is a Decentralized Web Platform that enables developers to leverage Decentralized Identifiers, Verifiable Credentials, and Decentralized Web Nodes to write Decentralized Web Apps, returning ownership and control over identity and data to individuals. - tbd`
 
 ## What is Web5?
 
@@ -42,24 +40,39 @@ cd ui
 npm install
 ```
 
-## Run All
+## Build and Watch
 
-To quickly build both the UI and the Server and run it (without auto-reload):
+You can easily build and watch the code for changes and automatically reload using:
 
-```bash
-npm run all
+```sh
+npm start
 ```
 
-## Starting the Server
+This will run both `api` and `ui` build, watch and hosting in parallel.
 
-To start the server, run:
+You can access the UI:
 
-```bash
-npm run dev
+[http://localhost:4202](http://localhost:4202)
+
+And the API:
+
+[http://localhost:3000/docs](http://localhost:3000/docs)
+
+## Build and Deploy
+
+Building the production code and prepare it for deployment can be done using:
+
+```sh
+npm run build
 ```
 
-The server should now be running on port 3000.
+This will build both the `api` (Node.js) and the `ui` (Angular) and copy the output from the `ui` into the API. This allows both the API and UI to be hosted on same web server.
 
+To run the compiled output, use:
+
+```sh
+npm run run
+```
 
 ## Development, Testing & Production
 
@@ -80,10 +93,9 @@ Available options is `production`, `development`, `test`.
 
 The different configuration is available under `./config/env/*.ts`
 
-
 ## Docker
 
-The Dockerfile will take pre-built output and copy that into the image. The `docker-compose.yml` will build the dev image and run local instance of both 
+The Dockerfile will take pre-built output and copy that into the image. The `docker-compose.yml` will build the dev image and run local instance of both
 the vault and the mongodb database.
 
 `deploy/docker-compose.yml` is the file to use if you want to deploy to production of ready-built docker image that is public available on Docker Hub.
@@ -93,7 +105,6 @@ $ npm run build
 $ docker-compose build
 $ docker-compose up
 ```
-
 
 ## Making Requests
 
@@ -109,15 +120,13 @@ The server has many different endpoints:
 
 The GET endpoint can be viewed simply by navigating to `http://localhost:3000`. You should see "Welcome to Blockcore Vault".
 
-
 ## Controllers
-
 
 ### Vault ("Confidential Storage") API
 
 Allows CRUD operations over `DataVaultConfiguration`, allows a vault to have multiple parties that are allowed to post data to it.
 
-When a new `DataVaultConfiguration` is submitted, the `storage provider` can run the Blockcore Vault software in a public and free mode or in manual approval mode, where 
+When a new `DataVaultConfiguration` is submitted, the `storage provider` can run the Blockcore Vault software in a public and free mode or in manual approval mode, where
 individual vaults must be approved before they can be used by the `data vault controller` or `storage agent`.
 
 Example data vault URL:
@@ -130,7 +139,6 @@ Replication configuration is part of the vault creation operation.
 
 Vault type should be part of the vault creation operation. Vault types could be encrypted, unencrypted, immutable, mutable, etc.
 
-
 ### Identity ("DID") API
 
 Allows operations for decentralized identity (DID), including registering new DIDs, updating DID Documents and resolving DID Documents.
@@ -141,16 +149,13 @@ https://did.is/PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd
 
 The ID of this identity: `did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd`
 
-
 ### Server ("Management") API
 
 Allows a storage provider (administrator) to register and manage trusted Blockcore Vault instances to syncronize data with.
 
-
 ### .well-known API
 
 Allows for public discovery using known URLs to find DID, DID Configuration and Vault Configuration.
-
 
 ### Statistics ("Stats") API
 
@@ -158,12 +163,11 @@ Used to retrieve various metrics recorded by the Blockcore Vault instance. This 
 
 Data from this API is used to enforce throtteling rules that an administrator applies to individual vaults.
 
-
 # Using Blockcore Vault
 
 After launching the Blockcore Vault instance, you can use the Blockcore Vault UI to manage your Blockcore Vault instance(s).
 
-The first task to configure a Blockcore Vault, is to create an decentralized identity (DID) and publish the DID Document that describes your Vault to 
+The first task to configure a Blockcore Vault, is to create an decentralized identity (DID) and publish the DID Document that describes your Vault to
 an public DID registry.
 
 After you have initialized your Blockcore Vault, you can start adding communication with other trusted Vaults to become part of a network of Vault instances.
@@ -173,7 +177,6 @@ You can run your own network of Vault instances, or join other networks.
 When you connect with other Vault instances, you will always sync the full repository of DID Documents that exists on the other Vaults.
 
 Other data will be synced based upon the configuration you setup on your Blockcore Vault UI.
-
 
 ## Register a trusted Vault
 
@@ -190,7 +193,6 @@ TODO: When you want to add trust between two Blockcore Vault, you will from the 
 
 CURRENT: Currently the implementation of this is simplified and without any authentication or approval process.
 
-
 ## Data Sync
 
 When an vault adds another vault, that becomes a client-server relationship. There is not a "two-way" relationship, where the server opens connection or performs data sync operations.
@@ -202,7 +204,6 @@ Next step is to start download events from the server. If there is no previous s
 The server does not keep track of sync status of the connected clients. When the client is finished with sync, it will register itself into the "new data room" on Web Socket to be signaled to query for new data.
 
 All connections must be authenticated (to be implemented) to perform operations on the events API.
-
 
 ## Restrictions
 
@@ -222,8 +223,7 @@ It is of course possible to run just a single vault instance, or a single public
 
 Upon registration of a trusted vault, the user can decide if a full sync should be performed. By default a full sync is only done on the first connection, not on secondary. If there are two distinct network of vault that should be joint together, this option is useful to ensure all data exists in both networks (and the vaults that belongs to them). Essentially making the two networks into one.
 
-If a client vault receives an event, it will forward that to all registered and connected server vaults. 
-
+If a client vault receives an event, it will forward that to all registered and connected server vaults.
 
 # Key Management
 
@@ -231,19 +231,17 @@ The keys for identities is based upon standard HD-wallet practices with the spec
 
 Normal HD wallet pattern:
 
-```m / purpose' / coin_type' / account' / change / address_index```
+`m / purpose' / coin_type' / account' / change / address_index`
 
 The purpose and coin_type used for Blockcore Vault is:
 
-
-```m / purpose' / identity_type' / identity' / operation / key_index```
+`m / purpose' / identity_type' / identity' / operation / key_index`
 
 Example:
 
 ```
 m/302'/616'/0'/0/0
 ```
-
 
 # UI
 
@@ -276,7 +274,6 @@ https://nodejs.org/api/worker_threads.html
 https://github.com/uNetworking/uWebSockets.js/blob/master/examples/WorkerThreads.js
 
 Implement the .didState when requiring payments / attestation of submitted DID Documents: https://identity.foundation/did-registration/
-
 
 DID Implementation Guide:
 https://www.w3.org/TR/did-imp-guide/

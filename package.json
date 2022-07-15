@@ -50,17 +50,15 @@
     "typescript": "4.7.4"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npm-run-all api:build ui:build ui:copy",
     "run": "node ./build",
     "start": "npm-run-all --parallel dev-api dev-ui",
     "dev-api": "ts-node-dev --respawn api",
     "dev-ui": "cd ui && npm run start",
-    "ui:install": "cd ui && npm install",
-    "ui:build": "cd ui && npm run build",
-    "ui:start": "cd ui && npm run start",
-    "ui:copy2": "copyfiles -a -u 2 ui/dist build/ui/",
+    "install": "npm install && cd ui && npm install",
+    "api:build": "tsc",
+    "ui:build": "cd ui && npm run prod",
     "ui:copy": "copyfiles -V -a -u 2 \"ui/dist/**/*\" build/ui/",
-    "all": "npm run build && npm run ui:build && npm run ui:copy && npm run start",
     "version": "node -p \"require('./package.json').version\""
   }
 }

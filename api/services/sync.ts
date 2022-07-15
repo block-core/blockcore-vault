@@ -70,7 +70,7 @@ export const syncEvents = async (server: IServer) => {
                         sync: true,
                         ...entry
                     });
-                } catch (err) {
+                } catch (err: any) {
                     log.error('Error during event sync: ' + err.message);
                 }
             }
