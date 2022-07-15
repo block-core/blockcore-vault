@@ -34,10 +34,8 @@ To learn more about the definitions and concepts, make sure you check out the [D
 
 To set up the application, first clone the repo. Then, install the dependencies by running npm:
 
-```bash
-npm install
-cd ui
-npm install
+```sh
+npm run setup
 ```
 
 ## Build and Watch

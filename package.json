@@ -55,7 +55,7 @@
     "start": "npm-run-all --parallel dev-api dev-ui",
     "dev-api": "ts-node-dev --respawn api",
     "dev-ui": "cd ui && npm run start",
-    "install": "npm install && cd ui && npm install",
+    "setup": "npm install && cd ui && npm install",
     "api:build": "tsc",
     "ui:build": "cd ui && npm run prod",
     "ui:copy": "copyfiles -V -a -u 2 \"ui/dist/**/*\" build/ui/",
