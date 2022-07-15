@@ -3,7 +3,6 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { stringify } from '@angular/compiler/src/util';
 import { VaultService } from '../services/vault.service';
 
 @Component({
