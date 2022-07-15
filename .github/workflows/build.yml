@@ -37,7 +37,7 @@ jobs:
 
     - name: Build
       run: |
-        npm ci
+        npm run setup
         npm run build
 
     - name: Package
