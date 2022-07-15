@@ -39,9 +39,6 @@ jobs:
       run: |
         npm ci
         npm run build
-        npm run ui:install
-        npm run ui:build
-        npm run ui:copy
 
     - name: Package
       run: zip -r ${{env.RELEASE_NAME}} package.json ./build/
