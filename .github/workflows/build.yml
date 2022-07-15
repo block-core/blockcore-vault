@@ -55,5 +55,5 @@ jobs:
         files: "${{env.RELEASE_NAME}}"
         draft: true
         prerelease: false
-        name: "Blockcore Vault (Release ${{env.VERSION}})"
+        name: "Blockcore Vault (${{env.VERSION}})"
         tag: ${{env.VERSION}}
