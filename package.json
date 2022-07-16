@@ -57,7 +57,7 @@
     "dev:ui2": "cd ui && npm run start",
     "setup": "npm ci && cd ui && npm ci",
     "api:build": "tsc",
-    "ui:build": "cd ui && npm run prod",
+    "ui:build": "npm run --prefix ui build",
     "ui:copy": "copyfiles -V -a -u 2 \"ui/dist/**/*\" build/ui/",
     "version": "node -p \"require('./package.json').version\""
   }

@@ -6,7 +6,6 @@
     "start": "ng serve --extra-webpack-config ./webpack.config.js",
     "build": "ng build --configuration production --extra-webpack-config ./webpack.config.js",
     "build:dev": "ng build --configuration development --extra-webpack-config ./webpack.config.js",
-    "prod": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
