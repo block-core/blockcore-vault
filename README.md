@@ -91,6 +91,8 @@ Available options is `production`, `development`, `test`.
 
 The different configuration is available under `./config/env/*.ts`
 
+You can also use an .env file during development to configure environment variables. See the `.env.sample` file.
+
 ## Docker
 
 The Dockerfile will take pre-built output and copy that into the image. The `docker-compose.yml` will build the dev image and run local instance of both
