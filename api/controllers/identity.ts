@@ -339,12 +339,15 @@ const getProfileNetwork = () => {
 /** Get the address (identity) of this DID. Returned format is "did:is:[identity]" */
 const getIdentity = (options: { publicKeyBase58?: string | any, publicKeyBuffer?: Buffer }) => {
     // If the buffer is not supplied, then we'll convert base58 to buffer.
-    var publicKeyBuffer = options.publicKeyBuffer || bs58.decode(options.publicKeyBase58)
+    
+    const address = '123';
+    // TODO: FIX THIS!
+    // var publicKeyBuffer = options.publicKeyBuffer || bs58.decode(options.publicKeyBase58)
 
-    const { address } = payments.p2pkh({
-        pubkey: publicKeyBuffer,
-        network: getProfileNetwork(),
-    });
+    // const { address } = payments.p2pkh({
+    //     pubkey: publicKeyBuffer,
+    //     network: getProfileNetwork(),
+    // });
 
     // TODO: Make this configureable or move somewhere it's a shared value.
     const PREFIX = 'did:is:';

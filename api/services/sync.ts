@@ -13,7 +13,7 @@ export const getServers = () => {
 }
 
 /** Call method to perform sync operation against a server. */
-export const syncEvents = async (server: IServer) => {
+export const syncEvents = async (server: IServer | any) => {
     var url = server.url;
     let count = 0;
 
