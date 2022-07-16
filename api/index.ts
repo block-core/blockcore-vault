@@ -13,6 +13,10 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import { state } from './services/vault-state';
 import { config } from './config';
 
+import axiosRetry from 'axios-retry';
+const axios = require('axios').default;
+axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
+
 const compression = require('compression');
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
@@ -22,8 +26,6 @@ const app = express();
 const DEV = true;
 const cors = require('cors');
 const path = require('path');
-const bent = require('bent');
-const getJSON = bent('json');
 
 console.log(`Starting Blockcore Vault on port ${process.env.PORT}.`);
 
@@ -287,11 +289,31 @@ async function main() {
   }
 }
 
+/** Fetch using native fetch API. */
+async function fetchUrl(url: string) {
+  // Default options are marked with *
+  return await fetch(url, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors', // no-cors, *cors, same-origin
+      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      redirect: 'follow', // manual, *follow, error
+      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+  });
+}
+
+
 const syncEvents = async (server: IServer) => {
   log.debug(server);
   var url = server.url;
-  var response = await getJSON(`${url}/event/count`);
-  var count = response.count;
+
+  var response = await fetchUrl(`${url}/event/count`);
+  var document = await response.json();
+
+  var count = document.count;
   log.info(`Count on ${server.name} is currently ${count}.`);
 
   // If the last count we saved is different than the one we just queried, we'll download new events.
@@ -315,7 +337,9 @@ const syncEvents = async (server: IServer) => {
       // Sync events until the returned amount if less than the limit, that means we're at the last page.
       let dataUrl = `${url}/event?page=${page}&limit=${limit}`;
       log.info(dataUrl);
-      let events: Paged<EventResponse> = await getJSON(dataUrl);
+
+      let request = await fetchUrl(dataUrl);
+      let events: Paged<EventResponse> = await request.json();;
 
       // Save the events to our database.
       for (const entry of events.data) {

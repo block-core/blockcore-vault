@@ -9,7 +9,6 @@ import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
 import { Issuer } from 'did-jwt-vc';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
-import * as bip38 from '../../../libraries/bip38';
 import * as bs58 from 'bs58';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../../shared/password-validation.directive';

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --extra-webpack-config ./webpack.config.js",
     "build": "ng build --configuration production --extra-webpack-config ./webpack.config.js",
     "build:dev": "ng build --configuration development --extra-webpack-config ./webpack.config.js",
     "prod": "ng build --configuration production",

@@ -12,7 +12,6 @@ import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
 import { Issuer } from 'did-jwt-vc';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
-import * as bip38 from '../../libraries/bip38';
 import * as bs58 from 'bs58';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { payments } from 'bitcoinjs-lib';

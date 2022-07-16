@@ -12,7 +12,6 @@ import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc'
 import { Issuer } from 'did-jwt-vc';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
-import * as bip38 from '../../libraries/bip38';
 import * as bs58 from 'bs58';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { payments } from 'bitcoinjs-lib';
@@ -102,7 +101,8 @@ export class AccountService {
 
     unlockAccount(encryptedSeed: string, password: string, chainCode: Buffer) {
         var network = this.getProfileNetwork();
-        const decryptedMasterNodeKey = bip38.decrypt(encryptedSeed, password, null, null, network);
+        // TODO: FIX!!
+        const decryptedMasterNodeKey = null; // bip38.decrypt(encryptedSeed, password, null, null, network);
         const decryptedMasterNode = bip32.fromPrivateKey(decryptedMasterNodeKey.privateKey, chainCode, network);
         const accountNode = decryptedMasterNode.derivePath(this.getPath()); // m/302'/616'
 
@@ -139,7 +139,8 @@ export class AccountService {
 
         const address0 = this.getAddress(identity0);
 
-        const encryptedKeySeed = bip38.encrypt(masterNode.privateKey, true, password, null, null, network);
+        // TODO: FIX!!
+        const encryptedKeySeed = null;//bip38.encrypt(masterNode.privateKey, true, password, null, null, network);
 
         // Extended public key for this account, we cannot derive identities from this.
         const xpub = accountNode.neutered().toBase58();

@@ -1,10 +1,8 @@
 import { Handler } from "../types";
-import { Vault, IVault } from '../data/models/vault';
-import { Identity, IIdentityDocument } from "../data/models/identity";
+import { Vault } from '../data/models/vault';
+import { Identity } from "../data/models/identity";
 import { getOperation, storeEvent, storeOperation } from "../data/event-store";
-import { decodeJWT, verifyJWS, verifyJWT } from "did-jwt";
-import * as bs58 from 'bs58';
-import { payments } from "bitcoinjs-lib";
+import { decodeJWT, verifyJWS } from "did-jwt";
 const { performance } = require('perf_hooks');
 import { log } from '../services/logger';
 
