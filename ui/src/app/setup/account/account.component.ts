@@ -1,19 +1,38 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationState } from '../../services/applicationstate.service';
-import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, fadeInUpOnEnterAnimation, bounceOutDownOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation } from 'angular-animations';
+import {
+  fadeInOnEnterAnimation,
+  fadeOutOnLeaveAnimation,
+  fadeInUpOnEnterAnimation,
+  bounceOutDownOnLeaveAnimation,
+  flipInYOnEnterAnimation,
+  flipOutYOnLeaveAnimation,
+} from 'angular-animations';
 import { verifyJWT } from 'did-jwt';
 import * as didJWT from 'did-jwt';
 import { Resolver } from 'did-resolver';
-import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
+import {
+  JwtCredentialPayload,
+  createVerifiableCredentialJwt,
+} from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
 import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { PasswordValidationDirective } from '../../shared/password-validation.directive';
 import { payments } from 'bitcoinjs-lib';
-import { BlockcoreIdentity, Identity, BlockcoreIdentityTools } from '@blockcore/identity';
+import {
+  BlockcoreIdentity,
+  Identity,
+  BlockcoreIdentityTools,
+} from '@blockcore/identity';
 import { IdentityComponent } from 'src/app/identity/identity.component';
 // import { BlockcoreIdentityIssuer } from 'blockcore-identity';
 import { keyUtils, Secp256k1KeyPair } from '@transmute/did-key-secp256k1';
@@ -32,7 +51,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
     flipOutYOnLeaveAnimation(),
     // fadeInUpOnEnterAnimation({ anchor: 'enter', duration: 1000, delay: 100, translate: '30px' }),
     // bounceOutDownOnLeaveAnimation({ anchor: 'leave', duration: 500, delay: 200, translate: '40px' })
-  ]
+  ],
 })
 export class AccountComponent implements OnInit {
   @HostBinding('class.content-centered') hostClass = true;
@@ -43,7 +62,8 @@ export class AccountComponent implements OnInit {
   selectedHubIdInternal = 'local';
 
   id: string = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
-  key: string = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
+  key: string =
+    '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
   name: string;
   description: string;
   wellknownconfiguration: string;
@@ -54,6 +74,7 @@ export class AccountComponent implements OnInit {
   password2 = '';
   setupDocumentJson: any;
   setupDocument: any;
+  domain: string;
 
   get selectedHubId() {
     return this.selectedHubIdInternal;
@@ -76,7 +97,8 @@ export class AccountComponent implements OnInit {
     private router: Router,
     private vaultService: VaultService,
     private account: AccountService,
-    private appState: ApplicationState) {
+    private appState: ApplicationState
+  ) {
     appState.title = 'Setup / Account';
 
     if (vaultService.hasWallet()) {
@@ -85,6 +107,8 @@ export class AccountComponent implements OnInit {
     }
 
     this.onGenerate();
+
+    this.domain = window.location.host;
 
     // When we are not in multichain mode, redirect to chain-home.
     // if (!setup.multiChain) {
@@ -107,6 +131,28 @@ export class AccountComponent implements OnInit {
     this.setupDocument = JSON.parse(this.setupDocumentJson);
   }
 
+  async sign() {
+    // The URL that should be in the signed document.
+    const url = this.appState.vaultUrl;
+
+    const blockcore = globalThis.blockcore;
+
+    let jwt = null;
+    let msg = JSON.stringify({ domain: this.domain });
+
+    try {
+      var signature = await blockcore.request({
+        method: 'vaultSetup',
+        params: [{ message: msg }],
+      });
+      jwt = await blockcore.sign(`{ url: ${url} }`);
+    } catch (err) {
+      console.error(err);
+    }
+
+    console.log(jwt);
+  }
+
   private getNewMnemonicLocal() {
     this.mnemonic = bip39.generateMnemonic();
     this.verification = this.mnemonic.split(' ')[2];
@@ -114,17 +160,18 @@ export class AccountComponent implements OnInit {
 
   save() {
     const setupPayload = {
-      "@context": "https://schemas.blockcore.net/.well-known/vault-configuration/v1",
-      "id": this.setupDocument.didDocument.id,
-      "url": this.setupDocument.didConfiguration.linked_dids[0].credentialSubject.origin,
-      "name": this.name,
-      "enabled": true,
-      "self": true,
-      "ws": "ws://localhost:9090",
-      "linked_dids": this.setupDocument.didConfiguration.linked_dids,
-      "didDocument": this.setupDocument.didDocument,
-      "vaultConfiguration": {
-      }
+      '@context':
+        'https://schemas.blockcore.net/.well-known/vault-configuration/v1',
+      id: this.setupDocument.didDocument.id,
+      url: this.setupDocument.didConfiguration.linked_dids[0].credentialSubject
+        .origin,
+      name: this.name,
+      enabled: true,
+      self: true,
+      ws: 'ws://localhost:9090',
+      linked_dids: this.setupDocument.didConfiguration.linked_dids,
+      didDocument: this.setupDocument.didDocument,
+      vaultConfiguration: {},
     };
 
     console.log('Vault URL: ' + this.appState.vaultUrl);
@@ -132,18 +179,275 @@ export class AccountComponent implements OnInit {
     var headers = new HttpHeaders();
     headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
-    this.http.put<any>(this.appState.vaultUrl + 'management/setup', setupPayload, {
-      headers: headers
-    }).subscribe(result => {
-      console.log('RESULT FROM UPDATE', result);
+    this.http
+      .put<any>(this.appState.vaultUrl + 'management/setup', setupPayload, {
+        headers: headers,
+      })
+      .subscribe(
+        (result) => {
+          console.log('RESULT FROM UPDATE', result);
 
-      if (result.success === true) {
-        this.appState.vault = setupPayload;
-        this.appState.authenticated = true;
-        this.router.navigateByUrl('/dashboard');
-      }
-    }, error => console.error(error));
+          if (result.success === true) {
+            this.appState.vault = setupPayload;
+            this.appState.authenticated = true;
+            this.router.navigateByUrl('/dashboard');
+          }
+        },
+        (error) => console.error(error)
+      );
   }
+
+  // // REFACTORY IDENTITY LATER!
+
+  // async createVaultConfigurationDocument(domain: string) {
+  //     var account = this.manager.walletManager.activeAccount;
+  //     var wallet = this.manager.walletManager.activeWallet;
+
+  //     if (!account || !wallet) {
+  //         return;
+  //     }
+
+  //     let password = this.state.passwords.get(wallet.id);
+
+  //     if (!password) {
+  //         throw Error('missing password');
+  //     }
+
+  //     let unlockedMnemonic = null;
+  //     unlockedMnemonic = await this.crypto.decryptData(wallet.mnemonic, password);
+
+  //     // TODO: MUST VERIFY THAT ACCOUNT RESTORE AND NODES IS ALL CORRECT BELOW.
+  //     var masterSeed = await bip39.mnemonicToSeed(unlockedMnemonic, '');
+  //     const masterNode = bip32.fromSeed(masterSeed, this.crypto.getProfileNetwork());
+
+  //     // Get the hardened purpose and account node.
+  //     const accountNode = masterNode.derivePath(account.derivationPath); // m/302'/616'
+
+  //     const address0 = this.crypto.getAddress(accountNode);
+  //     var keyPair = await this.crypto.getKeyPairFromNode(accountNode);
+
+  //     // Get the identity corresponding with the key pair, does not contain the private key any longer.
+  //     var identity = this.crypto.getIdentity(keyPair);
+
+  //     let document = null;
+
+  //     // if (services) {
+  //     //     document = identity.document({ service: services });
+  //     // } else {
+  //     //     document = identity.document();
+  //     // }
+
+  //     // Create an issuer from the identity, this is used to issue VCs.
+  //     const issuer = identity.issuer({ privateKey: keyPair.privateKeyBuffer?.toString('hex') });
+
+  //     let configuration = await identity.configuration(domain, issuer);
+
+  //     return configuration;
+
+  //     // TODO: The URL should be provided by website triggering DID Document signing.
+  //     // let configuration = await identity.configuration('https://localhost', issuer);
+  //     // let configurationJson = JSON.stringify(configuration);
+
+  //     // const signedJwt = await identity.signJwt({ payload: payload, privateKeyJwk: keyPairWebKey.privateKeyJwk });
+  //     // console.log('SIGNED PAYLOAD:');
+  //     // console.log(signedJwt);
+
+  //     // const jws = await identity.jws({
+  //     //     payload: document,
+  //     //     privateKey: keyPair.privateKeyBuffer?.toString('hex')
+  //     // });
+
+  //     // const jwt = await identity.jwt({
+  //     //     payload: document,
+  //     //     privateKey: keyPair.privateKeyBuffer?.toString('hex')
+  //     // });
+
+  //     // var decodedDidDocument = decodeJWT(jws) as unknown as DIDPayload;
+  //     // var decodedDidDocument2 = decodeJWT(jwt);
+
+  //     // this.state.store.identities.push({ id: identity.id, published: false, services: [], didPayload: decodedDidDocument, didDocument: decodedDidDocument.payload });
+
+  //     // account.identifier = identity.id;
+  //     // account.name = identity.id;
+  // }
+
+  // async createIdentityDocument(services?: ServiceEndpoint[]) {
+  //     var account = this.state.activeAccount;
+  //     var wallet = this.state.activeWallet;
+
+  //     if (!account || !wallet) {
+  //         return;
+  //     }
+
+  //     let password = this.state.passwords.get(wallet.id);
+
+  //     if (!password) {
+  //         throw Error('missing password');
+  //     }
+
+  //     let unlockedMnemonic = null;
+  //     unlockedMnemonic = await this.crypto.decryptData(wallet.mnemonic, password);
+
+  //     // TODO: MUST VERIFY THAT ACCOUNT RESTORE AND NODES IS ALL CORRECT BELOW.
+  //     var masterSeed = await bip39.mnemonicToSeed(unlockedMnemonic, '');
+  //     const masterNode = bip32.fromSeed(masterSeed, this.crypto.getProfileNetwork());
+
+  //     // Get the hardened purpose and account node.
+  //     const accountNode = masterNode.derivePath(account.derivationPath); // m/302'/616'
+
+  //     const address0 = this.crypto.getAddress(accountNode);
+  //     var keyPair = await this.crypto.getKeyPairFromNode(accountNode);
+
+  //     // Get the identity corresponding with the key pair, does not contain the private key any longer.
+  //     var identity = this.crypto.getIdentity(keyPair);
+
+  //     let document = null;
+
+  //     if (services) {
+  //         document = identity.document({ service: services });
+  //     } else {
+  //         document = identity.document();
+  //     }
+
+  //     // var tmp = JSON.parse(JSON.stringify(document));
+
+  //     // document.id = '';
+  //     // //document.id2 = '';
+  //     // document.verificationMethod = '';
+  //     // document.controller = '';
+  //     // document.authentication = '';
+  //     // document.assertionMethod = '';
+
+  //     // Make sure the properties are in right order to rule out bug with Mongoose.
+  //     // document.id = tmp.id;
+  //     //document.id2 = tmp.id;
+  //     // document.verificationMethod = tmp.verificationMethod;
+  //     // document.controller = tmp.controller;
+  //     // document.authentication = tmp.authentication;
+  //     // document.assertionMethod = tmp.assertionMethod;
+
+  //     // Create an issuer from the identity, this is used to issue VCs.
+  //     const issuer = identity.issuer({ privateKey: keyPair.privateKeyBuffer?.toString('hex') });
+
+  //     // TODO: The URL should be provided by website triggering DID Document signing.
+  //     // let configuration = await identity.configuration('https://localhost', issuer);
+  //     // let configurationJson = JSON.stringify(configuration);
+
+  //     // const signedJwt = await identity.signJwt({ payload: payload, privateKeyJwk: keyPairWebKey.privateKeyJwk });
+  //     // console.log('SIGNED PAYLOAD:');
+  //     // console.log(signedJwt);
+
+  //     const jws = await identity.jws({
+  //         payload: document,
+  //         privateKey: keyPair.privateKeyBuffer?.toString('hex')
+  //     });
+
+  //     const jwt = await identity.jwt({
+  //         payload: document,
+  //         privateKey: keyPair.privateKeyBuffer?.toString('hex')
+  //     });
+
+  //     var decodedDidDocument = decodeJWT(jws) as unknown as DIDPayload;
+  //     var decodedDidDocument2 = decodeJWT(jwt);
+
+  //     this.state.store.identities.push({ id: identity.id, published: false, sequence: -1, services: [], didPayload: decodedDidDocument, didDocument: decodedDidDocument.payload });
+
+  //     account.identifier = identity.id;
+  //     account.name = identity.id;
+  // }
+
+  // async updateIdentityDocument(data: Identity) {
+  //     // First get the signing key for this identity.
+  //     var account = this.state.activeWallet?.accounts.find(a => a.identifier == data.id);
+
+  //     if (!account) {
+  //         throw Error('Did not find account to update identity document on.');
+  //     }
+
+  //     // var account = this.state.activeAccount;
+  //     var wallet = this.state.activeWallet;
+
+  //     if (!account || !wallet) {
+  //         return;
+  //     }
+
+  //     let password = this.state.passwords.get(wallet.id);
+
+  //     if (!password) {
+  //         throw Error('missing password');
+  //     }
+
+  //     let unlockedMnemonic = null;
+  //     unlockedMnemonic = await this.crypto.decryptData(wallet.mnemonic, password);
+
+  //     // TODO: MUST VERIFY THAT ACCOUNT RESTORE AND NODES IS ALL CORRECT BELOW.
+  //     var masterSeed = await bip39.mnemonicToSeed(unlockedMnemonic, '');
+  //     const masterNode = bip32.fromSeed(masterSeed, this.crypto.getProfileNetwork());
+
+  //     // Get the hardened purpose and account node.
+  //     const accountNode = masterNode.derivePath(account.derivationPath); // m/302'/616'
+
+  //     const address0 = this.crypto.getAddress(accountNode);
+  //     var keyPair = await this.crypto.getKeyPairFromNode(accountNode);
+
+  //     // Get the identity corresponding with the key pair, does not contain the private key any longer.
+  //     var identity = this.crypto.getIdentity(keyPair);
+
+  //     let document = null;
+
+  //     if (data.services) {
+  //         document = identity.document({ service: data.services });
+  //     } else {
+  //         document = identity.document();
+  //     }
+
+  //     // Create an issuer from the identity, this is used to issue VCs.
+  //     const issuer = identity.issuer({ privateKey: keyPair.privateKeyBuffer?.toString('hex') });
+
+  //     // TODO: The URL should be provided by website triggering DID Document signing.
+  //     // let configuration = await identity.configuration('https://localhost', issuer);
+  //     // let configurationJson = JSON.stringify(configuration);
+
+  //     // const signedJwt = await identity.signJwt({ payload: payload, privateKeyJwk: keyPairWebKey.privateKeyJwk });
+  //     // console.log('SIGNED PAYLOAD:');
+  //     // console.log(signedJwt);
+
+  //     const jws = await identity.jws({
+  //         payload: document,
+  //         privateKey: keyPair.privateKeyBuffer?.toString('hex')
+  //     });
+
+  //     const jwt = await identity.jwt({
+  //         payload: document,
+  //         privateKey: keyPair.privateKeyBuffer?.toString('hex')
+  //     });
+
+  //     var decodedDidDocument = decodeJWT(jws) as unknown as DIDPayload;
+  //     var decodedDidDocument2 = decodeJWT(jwt);
+
+  //     var updatedIdentity = data;
+  //     updatedIdentity.didPayload = decodedDidDocument;
+  //     updatedIdentity.didDocument = decodedDidDocument.payload;
+
+  //     // var updatedIdentity = { id: data.id, published: data.published, services: data.services, didPayload: decodedDidDocument, didDocument: decodedDidDocument.payload };
+
+  //     var existingIndex = this.state.store.identities.findIndex(i => i.id == data.id);
+
+  //     if (existingIndex > -1) {
+  //         this.state.store.identities.splice(existingIndex, 1);
+  //         this.state.store.identities.push(updatedIdentity);
+  //         // this.state.store.identities[existingIndex] = updatedIdentity
+  //     } else {
+  //         // This shouldn't happen on updates...
+  //         this.state.store.identities.push(updatedIdentity);
+  //     }
+
+  //     console.log('CHECK THIS:');
+  //     console.log(JSON.stringify(this.state.store.identities));
+
+  //     // account.identifier = identity.id;
+  //     // account.name = identity.id;
+  // }
 
   async saveEdit() {
     // // private key User:
@@ -151,36 +455,26 @@ export class AccountComponent implements OnInit {
     // const privateKeyHex = '0xA82AA158A4801BABCA9361D06404E077B7D9D5FDF9674DFCC6B581FA1F32A36F';
     // const privateKeyBase64 = 'qCqhWKSAG6vKk2HQZATgd7fZ1f35Z038xrWB+h8yo28=';
     // const address = 'PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
-
     // // private key Blockcore
     // const privateKeyBlockcoreHex = '039C4896D85A3121039AB57637B9D18FB8686E23AA3EBD26C9731A5F04D5298119';
     // const addressBlockcore = 'PU5DqJxAif5Jr1H3od4ynrnXxLuMejaHuU';
-
     // const identity = new BlockcoreIdentity(address, privateKeyHex);
-
     // const jwt = await identity.jwt();
     // console.log('JWT: ' + jwt);
-
     // console.log('Blockcore Identity (CLI): Create');
     // console.log('Your DID is: ' + identity.id); // 'did:is:PTcn77wZrhugyrxX8AwZxy4xmmqbCvZcKu';
     // console.log('Your DID document is: ' + JSON.stringify(identity.document()));
     // console.log('.well-known configuration: ' + JSON.stringify(identity.wellKnownConfiguration('did.is')));
-
     // // this.wellknownconfiguration = JSON.stringify(identity.wellKnownConfiguration('did.is'));
     // this.wellknownconfiguration = JSON.stringify(identity.document2(this.name, this.description));
-
     // // console.log('JWT: ' + identity.jwt());
-
     // let decoded = didJWT.decodeJWT(jwt)
     // console.log(decoded);
-
     // // TODO: Fix the getResolver implementation.
     // // const blockcoreResolver = new BlockcoreResolver().getResolver();
     // // const resolver = new Resolver(blockcoreResolver);
-
     // // const doc = await resolver.resolve(identity.id);
     // // console.log('DID Document: ' + doc);
-
     // const vcPayload: JwtCredentialPayload = {
     //   sub: identity.id,
     //   nbf: Math.floor(Date.now() / 1000),
@@ -195,27 +489,22 @@ export class AccountComponent implements OnInit {
     //     }
     //   }
     // }
-
     // // const issuer: Issuer = new issuer EthrDID({
     // //    address: '0xf1232f840f3ad7d23fcdaa84d6c66dac24efb198',
     // //    privateKey: 'd8b595680851765f38ea5405129244ba3cbad84467d190859f4c8b20c1ff6c75'
     // //  })
-
     // const issuer: Issuer = new BlockcoreDID({
     //   address: addressBlockcore,
     //   privateKey: privateKeyBlockcoreHex
     // })
-
     // // const issuer = new Issuer().  didJWT.SimpleSigner(privateKeyHex);
-
     // const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
-
     // console.log('VC JWT:');
     // console.log(vcJwt);
   }
 
   get hub() {
-    return this.hubs.find(h => h.id === this.selectedHubId);
+    return this.hubs.find((h) => h.id === this.selectedHubId);
   }
 
   hubs = [
@@ -223,23 +512,27 @@ export class AccountComponent implements OnInit {
       host: 'https://localhost:9912',
       id: 'local',
       updated: '2020-05-26 12:00',
-      name: 'Local'
-    }, {
+      name: 'Local',
+    },
+    {
       host: 'http://20.20.20.20',
       id: 'P0PsadkjfdsT13Aab',
       updated: '2020-05-26 12:00',
-      name: 'Haxxors Paradise'
-    }, {
+      name: 'Haxxors Paradise',
+    },
+    {
       host: 'https://hub.blockcore.net',
       id: 'P1PsadkjfdsT13Aab',
       updated: '2020-05-27 06:00',
-      name: 'Blockcore Hub'
-    }, {
+      name: 'Blockcore Hub',
+    },
+    {
       host: 'https://hub2.blockcore.net',
       id: 'P2PsadkjfdsT13Aab',
       updated: '2020-05-28 14:00',
-      name: 'Blockcore Hub (2)'
-    }];
+      name: 'Blockcore Hub (2)',
+    },
+  ];
 
   accountPasswordForm: UntypedFormGroup;
   accountSeedForm: UntypedFormGroup;
@@ -253,7 +546,12 @@ export class AccountComponent implements OnInit {
     // this.log.info('Create account:', this.accountName);
     // this.createWallet(new WalletCreation(this.accountName, this.mnemonic, this.password1, this.seedExtension));
 
-    await this.account.restoreFromMnemonic(this.accountName, this.password1, this.mnemonic, this.seedExtension);
+    await this.account.restoreFromMnemonic(
+      this.accountName,
+      this.password1,
+      this.mnemonic,
+      this.seedExtension
+    );
 
     this.router.navigateByUrl('/setup');
 
@@ -388,8 +686,6 @@ export class AccountComponent implements OnInit {
     // // }
 
     // console.log(address0);
-
-
   }
 
   public onGenerate() {
@@ -400,26 +696,35 @@ export class AccountComponent implements OnInit {
 
   ngOnInit(): void {
     this.accountSeedForm = this.fb.group({
-      seedExtension: ['', { updateOn: 'blur' }]
+      seedExtension: ['', { updateOn: 'blur' }],
     });
 
-    this.accountPasswordForm = this.fb.group({
-      accountPassword: ['', {
-        validators: Validators.compose([
-          Validators.required,
-          Validators.minLength(1)
-        ])
-      }],
-      accountPasswordConfirmation: [''],
-    }, { updateOn: 'blur', validator: PasswordValidationDirective.MatchPassword });
+    this.accountPasswordForm = this.fb.group(
+      {
+        accountPassword: [
+          '',
+          {
+            validators: Validators.compose([
+              Validators.required,
+              Validators.minLength(1),
+            ]),
+          },
+        ],
+        accountPasswordConfirmation: [''],
+      },
+      { updateOn: 'blur', validator: PasswordValidationDirective.MatchPassword }
+    );
 
     this.accountNameForm = this.fb.group({
-      accountName: new UntypedFormControl('', Validators.compose([
-        Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(24),
-        Validators.pattern(/^[a-zA-Z0-9]*$/)
-      ]))
+      accountName: new UntypedFormControl(
+        '',
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(24),
+          Validators.pattern(/^[a-zA-Z0-9]*$/),
+        ])
+      ),
     });
   }
 }

@@ -1,57 +1,95 @@
 <div class="setup-container">
+  <h1 class="mat-h1">Blockcore Vault Initial Setup</h1>
 
-    <h1 class="mat-h1">Blockcore Vault Initial Setup</h1>
+  <p>This Blockcore Vault instance has not been setup with an identity.</p>
 
-    <p>This Blockcore Vault instance has not been setup with an identity.</p>
+  <p>
+    You must install
+    <a href="https://github.com/block-core/blockcore-extension/" target="_blank"
+      >Blockcore Extension</a
+    >, create a wallet and identity account. On the identity, you can go into
+    advanced options and generate the Blockcore Vault configuration and paste
+    below.
+  </p>
 
-    <p>You must install <a href="https://github.com/block-core/blockcore-extension/" target="_blank">Blockcore
-            Extension</a>, create a wallet and identity account. On the identity, you can go into
-        advanced options and generate the Blockcore Vault configuration and paste below.</p>
+  <p>
+    <mat-form-field class="input-full-width" appearance="outline">
+      <mat-label>Domain</mat-label>
+      <input matInput [(ngModel)]="domain" required />
+    </mat-form-field>
+  </p>
 
+  <p>
+    <mat-form-field appearance="outline" class="input-full-width">
+      <mat-label>Vault Setup Configuration</mat-label>
+      <textarea
+        matInput
+        rows="12"
+        [(ngModel)]="setupDocumentJson"
+        (ngModelChange)="updateInfo($event)"
+      ></textarea>
+    </mat-form-field>
+  </p>
+
+  <p>
+    <button mat-flat-button color="primary" (click)="sign()">
+      Choose identity and sign setup configuration
+    </button>
+  </p>
+
+  <div *ngIf="setupDocument">
     <p>
-        <mat-form-field appearance="outline" class="input-full-width">
-            <mat-label>Vault Setup Configuration</mat-label>
-            <textarea matInput rows="12" [(ngModel)]="setupDocumentJson"
-                (ngModelChange)="updateInfo($event)"></textarea>
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>DID</mat-label>
+        <input matInput disabled [ngModel]="setupDocument.didDocument.id" />
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Domain</mat-label>
+        <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+        <input
+          matInput
+          disabled
+          [ngModel]="
+            setupDocument.didConfiguration.linked_dids[0].credentialSubject
+              .origin
+          "
+        />
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Expiration</mat-label>
+        <!-- We read this from the linked_dids as there can be many services in the DID Document -->
+        <input
+          matInput
+          disabled
+          [ngModel]="
+            setupDocument.didConfiguration.linked_dids[0].expirationDate
+          "
+        />
+      </mat-form-field>
     </p>
 
-    <div *ngIf="setupDocument">
-        <p>
-            <mat-form-field appearance="outline" class="input-full-width">
-                <mat-label>DID</mat-label>
-                <input matInput disabled [ngModel]="setupDocument.didDocument.id">
-            </mat-form-field>
-        </p>
-        <p>
-            <mat-form-field appearance="outline" class="input-full-width">
-                <mat-label>Domain</mat-label>
-                <!-- We read this from the linked_dids as there can be many services in the DID Document -->
-                <input matInput disabled
-                    [ngModel]="setupDocument.didConfiguration.linked_dids[0].credentialSubject.origin">
-            </mat-form-field>
-        </p>
-        <p>
-            <mat-form-field appearance="outline" class="input-full-width">
-                <mat-label>Expiration</mat-label>
-                <!-- We read this from the linked_dids as there can be many services in the DID Document -->
-                <input matInput disabled [ngModel]="setupDocument.didConfiguration.linked_dids[0].expirationDate">
-            </mat-form-field>
-        </p>
+    <p>
+      <mat-form-field appearance="outline" class="input-full-width">
+        <mat-label>Name</mat-label>
+        <input
+          matInput
+          [(ngModel)]="name"
+          autocomplete="off"
+          placeholder="Name of your Vault"
+        />
+      </mat-form-field>
+    </p>
 
-        <p>
-            <mat-form-field appearance="outline" class="input-full-width">
-                <mat-label>Name</mat-label>
-                <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name of your Vault">
-            </mat-form-field>
-        </p>
+    <p>
+      <button mat-flat-button color="primary" (click)="save()">Save</button>
+    </p>
+  </div>
 
-        <p>
-            <button mat-flat-button color="primary" (click)="save()">Save</button>
-        </p>
-    </div>
-
-    <!-- 
+  <!-- 
     <div [class.mat-elevation-z8]="true" class="setup-section">
 
         <div class="content print-hidden">
@@ -205,5 +243,4 @@
         </div>
 
     </div> -->
-
 </div>
