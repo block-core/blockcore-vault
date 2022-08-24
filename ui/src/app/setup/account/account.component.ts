@@ -143,14 +143,19 @@ export class AccountComponent implements OnInit {
     try {
       var signature = await blockcore.request({
         method: 'vaultSetup',
-        params: [{ message: msg }],
+        params: [{ domain: this.domain, message: msg }],
       });
-      jwt = await blockcore.sign(`{ url: ${url} }`);
+
+      this.setupDocumentJson = signature;
+
+      console.log('signature:', signature);
+
+      // jwt = await blockcore.sign(`{ url: ${url} }`);
     } catch (err) {
       console.error(err);
     }
 
-    console.log(jwt);
+    // console.log(jwt);
   }
 
   private getNewMnemonicLocal() {

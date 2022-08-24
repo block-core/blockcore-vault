@@ -5,11 +5,9 @@
 
   <p>
     You must install
-    <a href="https://github.com/block-core/blockcore-extension/" target="_blank"
-      >Blockcore Extension</a
-    >, create a wallet and identity account. On the identity, you can go into
-    advanced options and generate the Blockcore Vault configuration and paste
-    below.
+    <a href="https://chrome.google.com/webstore/detail/blockcore-wallet/peigonhbenoefaeplkpalmafieegnapj" target="_blank"
+      >Blockcore Wallet</a
+    > (browser extension), create a wallet and identity account.
   </p>
 
   <p>
@@ -17,6 +15,13 @@
       <mat-label>Domain</mat-label>
       <input matInput [(ngModel)]="domain" required />
     </mat-form-field>
+  </p>
+
+  
+  <p>
+    <button mat-flat-button color="primary" (click)="sign()">
+      Choose identity and sign setup configuration
+    </button>
   </p>
 
   <p>
@@ -29,12 +34,6 @@
         (ngModelChange)="updateInfo($event)"
       ></textarea>
     </mat-form-field>
-  </p>
-
-  <p>
-    <button mat-flat-button color="primary" (click)="sign()">
-      Choose identity and sign setup configuration
-    </button>
   </p>
 
   <div *ngIf="setupDocument">
