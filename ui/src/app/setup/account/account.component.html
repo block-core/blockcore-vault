@@ -23,29 +23,27 @@
       Choose identity and sign setup configuration
     </button>
   </p>
+  
+  <br><br>
 
   <p>
     <mat-form-field appearance="outline" class="input-full-width">
       <mat-label>Vault Setup Configuration</mat-label>
       <textarea
         matInput
-        rows="12"
+        rows="40"
         [(ngModel)]="setupDocumentJson"
         (ngModelChange)="updateInfo($event)"
       ></textarea>
     </mat-form-field>
-  </p>
 
-  <br>
-
-  <p>
-    <mat-form-field appearance="outline" class="input-full-width">
+    <!-- <mat-form-field appearance="outline" class="input-full-width">
       <mat-label>Signature</mat-label>
       <input
         matInput
         [(ngModel)]="setupDocumentSignature"
       />
-    </mat-form-field>
+    </mat-form-field> -->
   </p>
 
   <p>
