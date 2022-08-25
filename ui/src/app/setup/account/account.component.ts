@@ -75,6 +75,7 @@ export class AccountComponent implements OnInit {
   setupDocumentJson: any;
   setupDocument: any;
   domain: string;
+  setupDocumentSignature: string;
 
   get selectedHubId() {
     return this.selectedHubIdInternal;
@@ -138,17 +139,18 @@ export class AccountComponent implements OnInit {
     const blockcore = globalThis.blockcore;
 
     let jwt = null;
-    let msg = JSON.stringify({ domain: this.domain });
+    // let msg = JSON.stringify({ domain: this.domain });
 
     try {
-      var signature = await blockcore.request({
+      var result = await blockcore.request({
         method: 'vaultSetup',
-        params: [{ domain: this.domain, message: msg }],
+        params: [{ domain: this.domain }],
       });
 
-      this.setupDocumentJson = signature;
+      this.setupDocumentSignature = result.signature;
+      this.setupDocumentJson = JSON.stringify(result.content, null, 2);
 
-      console.log('signature:', signature);
+      console.log('result from signing:', result);
 
       // jwt = await blockcore.sign(`{ url: ${url} }`);
     } catch (err) {

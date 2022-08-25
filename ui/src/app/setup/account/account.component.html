@@ -36,6 +36,24 @@
     </mat-form-field>
   </p>
 
+  <br>
+
+  <p>
+    <mat-form-field appearance="outline" class="input-full-width">
+      <mat-label>Signature</mat-label>
+      <input
+        matInput
+        [(ngModel)]="setupDocumentSignature"
+      />
+    </mat-form-field>
+  </p>
+
+  <p>
+    <button mat-flat-button [disabled]="!setupDocumentJson" color="primary" (click)="sign()">
+      Activate
+    </button>
+  </p>
+
   <div *ngIf="setupDocument">
     <p>
       <mat-form-field appearance="outline" class="input-full-width">
