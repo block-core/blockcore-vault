@@ -23,13 +23,11 @@ body {
 body {
   font-size: 22px;
   color: var(--foreground);
-  font-family: "Raleway", sans-serif;
   overflow-x: hidden;
   overflow: overlay;
 }
 
 h1 {
-  font-family: "Manrope", sans-serif;
   font-size: 2.6em;
   margin-top: 0;
   font-weight: 300;
@@ -629,8 +627,6 @@ footer {
   font-size: 1.2em;
   padding: 0.6em 0.4em 0.6em 2em;
   width: 100%;
-  font-family: "Manrope", sans-serif;
-  font-family: "Raleway", sans-serif;
 }
 
 .input-icon {
