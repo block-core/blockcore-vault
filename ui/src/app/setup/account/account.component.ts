@@ -17,7 +17,6 @@ import {
   createVerifiableCredentialJwt,
 } from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
-import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
 import {
@@ -113,8 +112,6 @@ export class AccountComponent implements OnInit {
       return;
     }
 
-    this.onGenerate();
-
     this.domain = window.location.host;
 
     // When we are not in multichain mode, redirect to chain-home.
@@ -134,18 +131,15 @@ export class AccountComponent implements OnInit {
     window.print();
   }
 
-  updateInfo(event) {
-    this.setupDocument = JSON.parse(this.setupDocumentJson);
-  }
+  // updateInfo(event) {
+  //   this.setupDocument = JSON.parse(this.setupDocumentJson);
+  // }
 
   async sign() {
     // The URL that should be in the signed document.
     const url = this.appState.vaultUrl;
-
     const blockcore = globalThis.blockcore;
-
     let jwt = null;
-    // let msg = JSON.stringify({ domain: this.domain });
 
     try {
       var result = await blockcore.request({
@@ -154,60 +148,52 @@ export class AccountComponent implements OnInit {
       });
 
       this.setupDocumentSignature = result.signature;
-      this.setupDocumentJson = JSON.stringify(result.content, null, 2);
+      this.setupDocument = result.content;
+      this.setupDocumentJson = JSON.stringify(this.setupDocument, null, 2);
 
       console.log('result from signing:', result);
-
-      // jwt = await blockcore.sign(`{ url: ${url} }`);
     } catch (err) {
       console.error(err);
     }
-
-    // console.log(jwt);
-  }
-
-  private getNewMnemonicLocal() {
-    this.mnemonic = bip39.generateMnemonic();
-    this.verification = this.mnemonic.split(' ')[2];
   }
 
   save() {
     const setupPayload = {
       '@context':
         'https://schemas.blockcore.net/.well-known/vault-configuration/v1',
-      id: this.setupDocument.didDocument.id,
-      url: this.setupDocument.didConfiguration.linked_dids[0].credentialSubject
-        .origin,
+      id: this.setupDocument.wellKnownConfiguration.linked_dids[0].credentialSubject.id,
+      url: this.setupDocument.wellKnownConfiguration.linked_dids[0].credentialSubject.origin,
       name: this.name,
       enabled: true,
       self: true,
       ws: 'ws://localhost:9090',
-      linked_dids: this.setupDocument.didConfiguration.linked_dids,
+      linked_dids: this.setupDocument.wellKnownConfiguration.linked_dids,
       didDocument: this.setupDocument.didDocument,
       vaultConfiguration: {},
     };
 
+    console.log(setupPayload);
     console.log('Vault URL: ' + this.appState.vaultUrl);
 
-    var headers = new HttpHeaders();
-    headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
+    // var headers = new HttpHeaders();
+    // headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
-    this.http
-      .put<any>(this.appState.vaultUrl + 'management/setup', setupPayload, {
-        headers: headers,
-      })
-      .subscribe(
-        (result) => {
-          console.log('RESULT FROM UPDATE', result);
+    // this.http
+    //   .put<any>(this.appState.vaultUrl + 'management/setup', setupPayload, {
+    //     headers: headers,
+    //   })
+    //   .subscribe(
+    //     (result) => {
+    //       console.log('RESULT FROM UPDATE', result);
 
-          if (result.success === true) {
-            this.appState.vault = setupPayload;
-            this.appState.authenticated = true;
-            this.router.navigateByUrl('/dashboard');
-          }
-        },
-        (error) => console.error(error)
-      );
+    //       if (result.success === true) {
+    //         this.appState.vault = setupPayload;
+    //         this.appState.authenticated = true;
+    //         this.router.navigateByUrl('/dashboard');
+    //       }
+    //     },
+    //     (error) => console.error(error)
+    //   );
   }
 
   // // REFACTORY IDENTITY LATER!
@@ -556,155 +542,18 @@ export class AccountComponent implements OnInit {
 
   async createAccount() {
     this.saving = true;
+
     // this.log.info('Create account:', this.accountName);
     // this.createWallet(new WalletCreation(this.accountName, this.mnemonic, this.password1, this.seedExtension));
 
-    await this.account.restoreFromMnemonic(
-      this.accountName,
-      this.password1,
-      this.mnemonic,
-      this.seedExtension
-    );
-
-    this.router.navigateByUrl('/setup');
-
-    // var network = this.getProfileNetwork();
-
-    // // C#: HdOperations.GetExtendedKey(recoveryPhrase, string.Empty);
-    // var masterSeed = await bip39.mnemonicToSeed(this.mnemonic, this.seedExtension);
-
-    // const self = this;
-    // const masterNode = bip32.fromSeed(masterSeed, network);
-
-    // // eslint-disable-next-line
-    // const accountNode = masterNode.derivePath(this.getPath()); // m/302'/616'
-
-    // const identity00 = accountNode.derivePath("0'");
-    // const identity11 = accountNode.derivePath("1'");
-
-    // const address00 = this.getAddress(identity00, network);
-    // const address11 = this.getAddress(identity11, network);
-
-    // // Extended public key for this account (which can hold multiple identities).
-    // const xpub = accountNode.neutered().toBase58();
-
-    // // bip38.encryptAsync(masterNode.privateKey, true, wallet.password, (out) => {
-    // // }, null, this.appState.networkParams);
-
-    // // eslint-disable-next-line prefer-const
-    // let encryptedKeySeed = bip38.encrypt(masterNode.privateKey, true, this.password1, null, null, network);
-
-    // var wallet = {
-    //   name: this.accountName,
-    //   isExtPubKeyWallet: false,
-    //   extPubKey: xpub,
-    //   encryptedSeed: encryptedKeySeed,
-    //   chainCode: masterNode.chainCode,
-    //   network: 'identity',
-    //   creationTime: Date.now() / 1000,
-    //   coinType: 616,
-    //   lastBlockSyncedHeight: 0,
-    //   lastBlockSyncedHash: ''
-    // };
-
-    // this.setup.wallet = wallet;
-
-    // const start = new Date().getTime();
-    // console.log(wallet);
-
-    // // bip38.decryptAsync(wallet.encryptedSeed, walletLoad.password, (decryptedKey) => {
-    // // }, null, this.appState.networkParams);
-
-    // const decryptedMasterNodeKey = bip38.decrypt(wallet.encryptedSeed, this.password1, null, null, network);
-    // const decryptedMasterNode = bip32.fromPrivateKey(decryptedMasterNodeKey.privateKey, wallet.chainCode, network);
-    // const accountNodePrivate = decryptedMasterNode.derivePath(this.getPath()); // m/302'/616'
-
-    // console.log('decrypted!');
-    // console.log(decryptedMasterNodeKey);
-    // console.log(decryptedMasterNode);
-    // console.log(accountNodePrivate);
-
-    // const stop = new Date().getTime();
-
-    // const diff = stop - start;
-    // console.log(diff + 'ms taken to decrypt.');
-
-    // const xpubkey = wallet.extPubKey;
-    // const root = bip32.fromBase58(xpubkey, network);
-    // const accountNodeRestored = bip32.fromBase58(xpubkey, network);
-
-    // console.log(accountNodeRestored);
-
-    // const identity0 = accountNodePrivate.derivePath("0'");
-    // const identity1 = accountNodePrivate.derivePath("1'");
-    // // const accountNodeRestored = root.derivePath(this.getPurpose() + "/0'/0'");
-
-    // // Get the first identity, which is the only one we use for vault instances.
-    // const address0 = this.getAddress(identity0, network);
-    // const address1 = this.getAddress(identity1, network);
-
-    // const xpubidentity0 = identity0.neutered().toBase58();
-    // const xpubidentity1 = identity1.neutered().toBase58();
-
-    // localStorage.setItem('DataVault:Identity:0', xpubidentity0);
-    // localStorage.setItem('DataVault:Identity:1', xpubidentity1);
-
-    // const identity0Restored = bip32.fromBase58(xpubidentity0, network);
-
-    // if (address0 != this.getAddress(identity0Restored, network)) {
-    //   console.log('NO!!! DIFFERENT!!!');
-    // }
-    // else {
-    //   console.log('YES, IS SAME!');
-    // }
-
-    // const tools = new BlockcoreIdentityTools();
-
-    // // accountNode.privateKey;
-    // // accountNode.publicKey;
-
-    // const didJwk = keyUtils.privateKeyJwkFromPrivateKeyHex(
-    //   identity0.privateKey.toString('hex')
+    // await this.account.restoreFromMnemonic(
+    //   this.accountName,
+    //   this.password1,
+    //   this.mnemonic,
+    //   this.seedExtension
     // );
 
-    // const didPublicKeyBase58 = bs58.encode(identity0.publicKey);
-
-    // let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: identity0.privateKey.toString('hex') });
-    // // let keyPairWebKey = await didKeyPair.toJsonWebKeyPair(true);
-
-    // console.log(didJwk);
-    // console.log(keyPairDid);
-
-    // // let keyPairDid = await tools.keyPairFrom({ publicKeyBase58: didPublicKeyBase58, privateKeyHex: didKeyPair.privateKeyBuffer?.toString('hex') });
-    // // let keyPairWebKey = await didJwk.toJsonWebKeyPair(true);
-
-    // // var tools = new BlockcoreIdentityTools();
-    // // return tools.generateKeyPair()
-    // var identity = new BlockcoreIdentity(keyPairDid.toKeyPair(false));
-
-    // this.appState.identity = identity;
-    // this.appState.key = keyPairDid;
-
-    // console.log(identity);
-
-    // this.setup.did = address0;
-
-    // // eslint-disable-next-line @typescript-eslint/prefer-for-of
-    // // for (let i = 0; i < 2; i++) {
-    // //     // TODO: Find the last used indexed from querying indexer (persisted to IndexedDB locally)
-    // //     var path = root.derivePath('0/' + i);
-    // //     const address = this.getAddress(path, network);
-    // //     unusedAddresses.push(address);
-    // //     console.log('0/' + i);
-    // // }
-
-    // console.log(address0);
-  }
-
-  public onGenerate() {
-    this.mnemonic = this.account.generateMnemonic();
-    this.verification = this.mnemonic.split(' ')[2];
-    this.currentDate = new Date().toDateString();
+    this.router.navigateByUrl('/setup');
   }
 
   ngOnInit(): void {

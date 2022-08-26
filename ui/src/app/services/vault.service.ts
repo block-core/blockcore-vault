@@ -10,7 +10,6 @@ import * as didJWT from 'did-jwt';
 import { Resolver } from 'did-resolver';
 import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
-import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import * as bs58 from 'bs58';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';

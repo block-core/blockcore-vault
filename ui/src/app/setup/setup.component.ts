@@ -7,7 +7,6 @@ import * as didJWT from 'did-jwt';
 import { Resolver } from 'did-resolver';
 import { JwtCredentialPayload, createVerifiableCredentialJwt } from 'did-jwt-vc';
 import { Issuer } from 'did-jwt-vc';
-import * as bip39 from 'bip39';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { PasswordValidationDirective } from '../shared/password-validation.directive';
 import { BlockcoreIdentity, BlockcoreIdentityTools } from '@blockcore/identity';
@@ -106,11 +105,6 @@ export class SetupComponent implements OnInit {
 
   public onPrint() {
     window.print();
-  }
-
-  private getNewMnemonicLocal() {
-    this.mnemonic = bip39.generateMnemonic();
-    this.verification = this.mnemonic.split(' ')[2];
   }
 
   save() {

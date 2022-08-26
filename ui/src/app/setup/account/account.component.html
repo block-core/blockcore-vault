@@ -35,7 +35,7 @@
       mat-flat-button
       [disabled]="!setupDocumentJson"
       color="primary"
-      (click)="sign()"
+      (click)="save()"
     >
       Activate</button
     >&nbsp;&nbsp;
@@ -55,7 +55,6 @@
         matInput
         rows="40"
         [(ngModel)]="setupDocumentJson"
-        (ngModelChange)="updateInfo($event)"
       ></textarea>
     </mat-form-field>
 
