@@ -77,6 +77,12 @@ export class AccountComponent implements OnInit {
   domain: string;
   setupDocumentSignature: string;
 
+  showSetupDocument = false;
+
+  toggleSetup() {
+    this.showSetupDocument = !this.showSetupDocument;
+  }
+
   get selectedHubId() {
     return this.selectedHubIdInternal;
   }

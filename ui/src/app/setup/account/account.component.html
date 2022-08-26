@@ -5,9 +5,12 @@
 
   <p>
     You must install
-    <a href="https://chrome.google.com/webstore/detail/blockcore-wallet/peigonhbenoefaeplkpalmafieegnapj" target="_blank"
+    <a
+      href="https://chrome.google.com/webstore/detail/blockcore-wallet/peigonhbenoefaeplkpalmafieegnapj"
+      target="_blank"
       >Blockcore Wallet</a
-    > (browser extension), create a wallet and identity account.
+    >
+    (browser extension), create a wallet and identity account.
   </p>
 
   <p>
@@ -17,16 +20,35 @@
     </mat-form-field>
   </p>
 
-  
   <p>
-    <button mat-flat-button color="primary" (click)="sign()">
+    <button mat-stroked-button color="primary" color="primary" (click)="sign()">
       Choose identity and sign setup configuration
     </button>
   </p>
-  
-  <br><br>
 
   <p>
+    <mat-divider></mat-divider>
+  </p>
+
+  <p>
+    <button
+      mat-flat-button
+      [disabled]="!setupDocumentJson"
+      color="primary"
+      (click)="sign()"
+    >
+      Activate</button
+    >&nbsp;&nbsp;
+    <button
+      mat-stroked-button
+      (click)="toggleSetup()"
+      [disabled]="!setupDocumentJson"
+    >
+      Show/Hide Setup Configuration
+    </button>
+  </p>
+
+  <p *ngIf="showSetupDocument">
     <mat-form-field appearance="outline" class="input-full-width">
       <mat-label>Vault Setup Configuration</mat-label>
       <textarea
@@ -46,17 +68,15 @@
     </mat-form-field> -->
   </p>
 
-  <p>
-    <button mat-flat-button [disabled]="!setupDocumentJson" color="primary" (click)="sign()">
-      Activate
-    </button>
-  </p>
-
-  <div *ngIf="setupDocument">
+  <div *ngIf="showSetupDocument">
     <p>
       <mat-form-field appearance="outline" class="input-full-width">
         <mat-label>DID</mat-label>
-        <input matInput disabled [ngModel]="setupDocument.didDocument.id" />
+        <input
+          matInput
+          disabled
+          [ngModel]="setupDocumentJson.wellKnownConfiguration.id"
+        />
       </mat-form-field>
     </p>
     <p>
@@ -67,8 +87,8 @@
           matInput
           disabled
           [ngModel]="
-            setupDocument.didConfiguration.linked_dids[0].credentialSubject
-              .origin
+            setupDocumentJson.wellKnownConfiguration.linked_dids[0]
+              .credentialSubject.origin
           "
         />
       </mat-form-field>
@@ -81,7 +101,8 @@
           matInput
           disabled
           [ngModel]="
-            setupDocument.didConfiguration.linked_dids[0].expirationDate
+            setupDocumentJson.wellKnownConfiguration.linked_dids[0]
+              .expirationDate
           "
         />
       </mat-form-field>
