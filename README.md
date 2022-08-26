@@ -30,6 +30,12 @@ Blockcore Vault is not a reference implementation of the standards, and we have 
 
 To learn more about the definitions and concepts, make sure you check out the [Decentralized Identity FAQ](https://identity.foundation/faq/).
 
+## All Your Devices
+
+Blockcore Vault will in the future be available for many devices, and all your data will flow with you across those devices. Your diplomas, tickets, receipts, messages and everything else of important data in your life, will be accessible from Blockcore Vault on all your digital devices. All your data will seamlessly synchronize between your devices.
+
+For sharing with friends, family and the public, you can rent or host your own Blockcore Vault Server in the cloud, or at home. This will allow you to share with others, data that is always accessible and online, even when you are not.
+
 ## Setup
 
 To set up the application, first clone the repo. Then, install the dependencies by running npm:
