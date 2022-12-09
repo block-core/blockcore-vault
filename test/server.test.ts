@@ -13,9 +13,5 @@ test('Validate the CID (Content ID) implementation', async (t) => {
 	const cid3 = server.parseCid(cid1.toString());
 	t.assert(cid1.equals(cid3));
 
-	// CID(bafyreibmc4xb7biwqftfnpoaeiymjvucqogn2u5tnagrwdgzgcwxdidg3q)
-	// bafyreibmc4xb7biwqftfnpoaeiymjvucqogn2u5tnagrwdgzgcwxdidg3q
-
-	const cid4 = server.parseCid('bafyreibmc4xb7biwqftfnpoaeiymjvucqogn2u5tnagrwdgzgcwxdidg3q');
-	t.assert(cid1.equals(cid4));
+	t.assert(server.parseCid('bafyreibmc4xb7biwqftfnpoaeiymjvucqogn2u5tnagrwdgzgcwxdidg3q').equals(cid1));
 });

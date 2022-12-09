@@ -375,7 +375,7 @@ export class Server {
 		return await CID.createV1(cbor.code, payloadHash);
 	}
 
-	/** Can parse a string to CID, supports both "CID(value)"" and "value" formats. */
+	/** Can parse a string hash to CID */
 	parseCid(str: string): CID {
 		const cid = CID.parse(str).toV1();
 		return cid;
