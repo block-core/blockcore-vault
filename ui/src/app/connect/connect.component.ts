@@ -54,6 +54,12 @@ export class ConnectComponent {
     }
   }
 
+  login() {
+    
+
+
+  }
+
   handleError(error: any) {
     console.error(error);
 

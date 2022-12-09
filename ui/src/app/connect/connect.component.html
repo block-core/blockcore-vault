@@ -14,7 +14,17 @@
         >
       </mat-card-header>
       <mat-card-content>
+
         <button
+          mat-raised-button
+          color="primary"
+          class="login-button"
+        >
+          <mat-icon mat-list-icon>wallet</mat-icon>
+          Login with Web5 Wallet
+        </button>
+
+        <button (click)="login()"
           mat-raised-button
           color="primary"
           class="login-button login-button-blockcore"
