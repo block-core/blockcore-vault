@@ -22,18 +22,14 @@ This software provides a generic interface for storing and serving VCs in a mann
 
 DWN are the future for VC storage, but the specification is currently only in `draft` state. In preparation for a fully fledge DWN specification and implementations, the Blockcore Vault is an alternative with a simpler API interface.
 
-Repo: [blockcore-dwn](https://github.com/block-core/blockcore-dwn)   
+Source code: [blockcore-dwn](https://github.com/block-core/blockcore-dwn)   
 Specification: [decentralized-web-node](https://identity.foundation/decentralized-web-node/spec/)
-
-
 
 ![](/docs/blockcore-vault.png)
 
 ## What is Web5?
 
 Learn more: [https://developer.tbd.website/projects/web5/](https://developer.tbd.website/projects/web5/)
-
-
 
 Blockcore Vault is a work-in-progress and is focused on delivering implementation of open standard specifications developed by the Decentralized Identity Foundation ([DIF](https://github.com/decentralized-identity)).
 

@@ -1,18 +1,46 @@
 <mat-toolbar class="logo-icon">
-  <img src="assets/blockcore-light-small.png">
+  <img src="assets/blockcore-light-small.png" />
   <div>Blockcore Vault</div>
 </mat-toolbar>
 
 <div class="center">
   <div class="content">
-    <br>
+    <br />
     <mat-card [class.mat-elevation-z10]="true">
       <mat-card-header>
         <mat-card-title>Connect to Server</mat-card-title>
-        <mat-card-subtitle>Connect to a Server for Vault Management</mat-card-subtitle>
+        <mat-card-subtitle
+          >Connect to the server using your DID</mat-card-subtitle
+        >
       </mat-card-header>
       <mat-card-content>
+        <button
+          mat-raised-button
+          color="primary"
+          class="login-button login-button-blockcore"
+        >
+          <mat-icon mat-list-icon>people</mat-icon>
+          Login with Blockcore Wallet
+        </button>
 
+        <button
+          mat-raised-button
+          color="primary"
+          class="login-button login-button-coinvault"
+        >
+          <mat-icon mat-list-icon>people</mat-icon>Login with CoinVault Wallet
+        </button>
+
+        <button
+          mat-raised-button
+          color="primary"
+          class="login-button login-button-smartcityplatform"
+        >
+          <mat-icon mat-list-icon>people</mat-icon>Login with Smart City
+          Platform
+        </button>
+
+        <!--
         <mat-form-field appearance="fill">
           <mat-label>Choose Server</mat-label>
           <mat-select [(value)]="vault">
@@ -25,9 +53,9 @@
           <mat-label>DID or URL</mat-label>
           <input matInput [disabled]="hasVaultSelected" [(ngModel)]="vault.url" placeholder="Url or DID to Vault">
         </mat-form-field>
-
+-->
         <!-- <button mat-flat-button color="primary">Query</button> -->
-
+        <!--
         <mat-form-field appearance="outline" class="input-full-width">
           <mat-label>Management Key (API)</mat-label>
           <input matInput [(ngModel)]="vault.key" placeholder="Key">
@@ -43,22 +71,35 @@
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
           </mat-chip-list>
-        </div>
-
+        </div>-->
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button color="primary" [disabled]="!vault.url" (click)="connect()">Connect</button>
+      <!-- <mat-card-actions>
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="!vault.url"
+          (click)="connect()"
+        >
+          Connect
+        </button>
         <button mat-stroked-button (click)="clear()">Clear</button>
-        <button mat-stroked-button color="warn" *ngIf="hasVaultSelected" (click)="remove(this.vault)">Remove</button>
-      </mat-card-actions>
+        <button
+          mat-stroked-button
+          color="warn"
+          *ngIf="hasVaultSelected"
+          (click)="remove(this.vault)"
+        >
+          Remove
+        </button>
+      </mat-card-actions> -->
     </mat-card>
 
-    <br>
+    <br />
     <p>
       Want to learn more about Blockcore Vault? Check the documentation below.
     </p>
 
-    <a href="/docs" class="link">OpenAPI Documentation</a> | <a href="https://www.blockcore.net"
-      class="link">www.blockcore.net</a>
+    <a href="/docs" class="link">OpenAPI Documentation</a> |
+    <a href="https://www.blockcore.net" class="link">www.blockcore.net</a>
   </div>
 </div>

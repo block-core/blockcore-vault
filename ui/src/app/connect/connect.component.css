@@ -29,3 +29,23 @@
 a {
    color: black;
 }
+
+.login-button {
+   margin-bottom: 1em;
+   width: 100%;
+   font-size: 1.2em;
+   padding-top: 0.4em;
+   padding-bottom: 0.4em;
+}
+
+.login-button-smartcityplatform {
+   background-color: #DFAB3C;
+}
+
+.login-button-blockcore {
+   background-color: #22a893;
+}
+
+.login-button-coinvault {
+   background-color: #206997;
+}
