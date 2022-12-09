@@ -6,21 +6,34 @@
     About Blockcore Vault
   </h3>
   <p align="center">
-    Decentralized Web Node (DWN) for Web5
+    Verifiable Credential Server
   </p>
 </p>
 
 # Blockcore Vault
 
-Decentralized Web Node (DWN) for Web5, includes Verifiable Data Registry ([VDR](https://www.w3.org/TR/did-imp-guide/#verifiable-data-registry)) for Decentralized Identifiers ([DID](https://www.w3.org/TR/did-core/)) and Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)) storage.
+Server for Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)) managed by Decentralized Identifiers ([DID](https://www.w3.org/TR/did-core/)).
 
-`Web5 is a Decentralized Web Platform that enables developers to leverage Decentralized Identifiers, Verifiable Credentials, and Decentralized Web Nodes to write Decentralized Web Apps, returning ownership and control over identity and data to individuals. - tbd`
+## What does Blockcore Vault do?
+
+This software provides a generic interface for storing and serving VCs in a manner that is easy to use.
+
+## What about Decentralized Web Nodes?
+
+DWN are the future for VC storage, but the specification is currently only in `draft` state. In preparation for a fully fledge DWN specification and implementations, the Blockcore Vault is an alternative with a simpler API interface.
+
+Repo: [blockcore-dwn](https://github.com/block-core/blockcore-dwn)   
+Specification: [decentralized-web-node](https://identity.foundation/decentralized-web-node/spec/)
+
+
+
+![](/docs/blockcore-vault.png)
 
 ## What is Web5?
 
 Learn more: [https://developer.tbd.website/projects/web5/](https://developer.tbd.website/projects/web5/)
 
-![](/docs/blockcore-vault.png)
+
 
 Blockcore Vault is a work-in-progress and is focused on delivering implementation of open standard specifications developed by the Decentralized Identity Foundation ([DIF](https://github.com/decentralized-identity)).
 
@@ -32,7 +45,7 @@ To learn more about the definitions and concepts, make sure you check out the [D
 
 ## All Your Devices
 
-Blockcore Vault will in the future be available for many devices, and all your data will flow with you across those devices. Your diplomas, tickets, receipts, messages and everything else of important data in your life, will be accessible from Blockcore Vault on all your digital devices. All your data will seamlessly synchronize between your devices.
+Blockcore Vault will in the future be available for many devices, and all your data will flow with you across those devices. Your diplomas, tickets, receipts, messages and everything else of important data in your life, will be accessible from Blockcore Vault (or Blockcore DWN) on all your digital devices. All your data will seamlessly synchronize between your devices.
 
 For sharing with friends, family and the public, you can rent or host your own Blockcore Vault Server in the cloud, or at home. This will allow you to share with others, data that is always accessible and online, even when you are not.
 
