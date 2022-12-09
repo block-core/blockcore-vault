@@ -1,0 +1,54 @@
+{
+	"$id": "https://schemas.blockcore.net/did-server/did-document.json",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"id": {
+			"type": "string",
+			"maxLength": 100
+		},
+		"controller": {
+			"type": "string"
+		},
+		"service": {
+			"type": "array",
+			"minItems": 0,
+			"maxItems": 10,
+			"items": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					},
+					"type": {
+						"type": "string",
+						"maxLength": 100,
+						"minLength": 1
+					},
+					"serviceEndpoint": {
+						"type": "string",
+						"maxLength": 2000,
+						"minLength": 1
+					}
+				}
+			}
+		},
+		"verificationMethod": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 10
+		},
+		"authentication": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 10
+		},
+		"assertionMethod": {
+			"type": "array",
+			"minItems": 0,
+			"maxItems": 10
+		}
+	}
+}

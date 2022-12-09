@@ -1,0 +1,1 @@
+declare module 'lexicographic-integer-encoding';

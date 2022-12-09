@@ -1,15 +1,28 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "rootDir": "./api",
-    "outDir": "./build",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "noEmit": false
-  },
-  "exclude": [
-    "ui/**/*"
-  ]
+	"extends": "@blockcore/tsconfig",
+	"compilerOptions": {
+		"outDir": "dist",
+		"resolveJsonModule": true,
+		"lib": ["es2017", "dom"],
+		"target": "es2022",
+		"module": "es2022",
+		"moduleResolution": "Node",
+		"esModuleInterop": true,
+		"types": ["node"],
+		"allowSyntheticDefaultImports": true,
+		"declaration": true,
+		"sourceMap": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitAny": false,
+		"allowJs": false
+	},
+	"include": ["src", "ambient.d.ts"],
+	"ts-node": {
+		"transpileOnly": true,
+		"files": true,
+		"experimentalResolver": true
+	}
 }

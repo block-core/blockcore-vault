@@ -1,65 +1,89 @@
 {
-  "name": "blockcore-vault",
-  "version": "0.0.9",
-  "license": "MIT",
-  "author": {
-    "name": "Blockcore",
-    "email": "post@blockcore.net",
-    "url": "https://www.blockcore.net"
-  },
-  "description": "Blockcore Vault",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/block-core/blockcore-vault.git"
-  },
-  "bugs": {
-    "url": "https://github.com/block-core/blockcore-vault/issues"
-  },
-  "homepage": "https://github.com/block-core/blockcore-vault#readme",
-  "dependencies": {
-    "axios": "^0.27.2",
-    "axios-retry": "^3.3.1",
-    "bitcoinjs-lib": "6.0.2",
-    "compression": "1.7.4",
-    "cors": "2.8.5",
-    "cross-fetch": "3.1.5",
-    "did-jwt": "6.6.0",
-    "did-jwt-vc": "3.1.0",
-    "did-resolver": "4.0.0",
-    "express": "4.18.1",
-    "mongodb": "4.9.1",
-    "mongoose": "6.5.4",
-    "pubsub-js": "1.9.4",
-    "swagger-jsdoc": "6.2.5",
-    "swagger-ui-express": "4.5.0",
-    "uuid": "8.3.2",
-    "winston": "3.8.1",
-    "ws": "8.8.1"
-  },
-  "devDependencies": {
-    "@types/express": "4.17.13",
-    "@types/node": "18.7.14",
-    "@types/pubsub-js": "1.8.3",
-    "@types/swagger-jsdoc": "6.0.1",
-    "@types/swagger-ui-express": "4.1.3",
-    "copyfiles": "2.4.1",
-    "env-cmd": "^10.1.0",
-    "npm-run-all": "^4.1.5",
-    "ts-node": "10.9.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "4.8.2"
-  },
-  "scripts": {
-    "build": "npm-run-all api:build ui:build ui:copy",
-    "run": "node ./build",
-    "start": "npm-run-all --parallel dev:api dev:ui",
-    "dev:api": "env-cmd ts-node-dev --respawn api",
-    "dev:ui": "npm run --prefix ui start",
-    "dev:ui2": "cd ui && npm run start",
-    "setup": "npm ci && cd ui && npm ci",
-    "api:build": "tsc",
-    "ui:build": "npm run --prefix ui build",
-    "ui:copy": "copyfiles -V -a -u 2 \"ui/dist/**/*\" build/ui/",
-    "version": "node -p \"require('./package.json').version\""
-  }
+	"name": "@blockcore/did-server",
+	"version": "0.0.12",
+	"description": "DID Server implementation that supports public sync and sharing",
+	"main": "dist/host.js",
+	"type": "module",
+	"files": [
+		"dist/**/*",
+		".env.sample"
+	],
+	"engines": {
+		"node": ">=18.*"
+	},
+	"scripts": {
+		"build": "tsc && copyfiles -u 1 ./src/schemas.cjs dist/",
+		"lint": "eslint .",
+		"test": "ava",
+		"test2": "npm run lint && ava",
+		"start": "npm run build && node --es-module-specifier-resolution=node dist/host.js",
+		"start2": "set DATABASE=blockcore-did-database2 && set PORT=4251 && set SERVERS= && node --es-module-specifier-resolution=node dist/host.js",
+		"version": "node -p \"require('./package.json').version\"",
+		"changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
+		"schemas": "node --loader ts-node/esm ./schemas.ts"
+	},
+	"keywords": [
+		"web5",
+		"did",
+		"blockcore",
+		"identity"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/block-core/blockcore-did-server.git"
+	},
+	"author": "Blockcore",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/block-core/blockcore-did-server/issues"
+	},
+	"homepage": "https://github.com/block-core/blockcore-did-server#readme",
+	"dependencies": {
+		"@blockcore/identity": "^0.0.7",
+		"@ipld/dag-cbor": "^8.0.0",
+		"@koa/cors": "4.0.0",
+		"ajv": "^8.11.2",
+		"did-jwt": "^6.9.0",
+		"did-resolver": "^4.0.1",
+		"dotenv": "16.0.3",
+		"install": "^0.13.0",
+		"koa": "2.13.4",
+		"koa-router": "12.0.0",
+		"koa2-ratelimit": "^1.1.2",
+		"koa2-swagger-ui": "5.6.0",
+		"level": "8.0.0",
+		"lexicographic-integer-encoding": "^1.0.1",
+		"raw-body": "^2.5.1"
+	},
+	"devDependencies": {
+		"@blockcore/tsconfig": "0.0.1",
+		"@types/koa": "2.13.5",
+		"@types/koa__cors": "3.3.0",
+		"@types/koa-router": "7.4.4",
+		"@types/koa2-ratelimit": "^0.9.3",
+		"@types/node": "18.11.9",
+		"@typescript-eslint/eslint-plugin": "5.43.0",
+		"@typescript-eslint/parser": "5.43.0",
+		"ava": "5.1.0",
+		"copyfiles": "^2.4.1",
+		"eslint": "8.27.0",
+		"eslint-config-standard": "17.0.0",
+		"eslint-plugin-import": "2.26.0",
+		"eslint-plugin-n": "15.5.1",
+		"eslint-plugin-promise": "6.1.1",
+		"ts-node": "10.9.1",
+		"typescript": "4.9.3"
+	},
+	"ava": {
+		"files": [
+			"test/*"
+		],
+		"timeout": "1m",
+		"extensions": {
+			"ts": "module"
+		},
+		"nodeArguments": [
+			"--loader=ts-node/esm"
+		]
+	}
 }

@@ -3,27 +3,25 @@ name: Build and Release
 on: 
   push:
     branches:
-      - master
       - main
 
 jobs:
   build:
-    name: Build and Push
+    name: Build, Test and Release
     runs-on: ubuntu-latest
     
     env:
-      PROJECT_NAME: 'Blockcore.Vault'
+      PROJECT_NAME: 'blockcore-vault'
 
     steps:
 
     - uses: actions/checkout@master
       name: Checkout
 
-    # Should we force a version or attempt to rely on pre-installed on build agent / production environment?
-    # - name: Setup Node.js (${{ matrix.node_version }})
-    #   uses: actions/setup-node@v1
-    #   with:
-    #     node-version: ${{ matrix.node_version }}
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 18
+        registry-url: 'https://registry.npmjs.org'
 
     - name: Variables
       run: |
@@ -32,20 +30,22 @@ jobs:
 
     - name: Package Name
       run: |
-        echo RELEASE_NAME=${{ env.PROJECT_NAME }}-${{ env.VERSION }}.zip >> $GITHUB_ENV
+        echo RELEASE_NAME=${{ env.PROJECT_NAME }}-${{ env.VERSION }}.tgz >> $GITHUB_ENV
       shell: bash
 
-    - name: Build
+    - name: Install and Build
       run: |
-        npm run setup
+        npm install
         npm run build
-
+    - name: Run Tests
+      run: |
+        npm run test
     - name: Package
-      run: zip -r ${{env.RELEASE_NAME}} package.json ./build/
-
+      run: |
+        npm pack
     - uses: actions/upload-artifact@v1
       with:
-        name: blockcore-vault-preview-${{env.VERSION}}
+        name: ${{env.PROJECT_NAME}}-preview-${{env.VERSION}}
         path: "${{env.RELEASE_NAME}}"
 
     - name: Release
