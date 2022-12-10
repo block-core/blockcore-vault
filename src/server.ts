@@ -10,8 +10,6 @@ import * as validate from './schemas.cjs';
 import * as cbor from '@ipld/dag-cbor';
 import { CID } from 'multiformats/cid';
 import { sha256 } from 'multiformats/hashes/sha2';
-import { importer } from 'ipfs-unixfs-importer';
-import * as Secp256k1 from '@noble/secp256k1';
 
 export function didNotFound(result: DIDResolutionResult) {
 	return result.didResolutionMetadata.error === 'notFound';
@@ -23,7 +21,7 @@ export class Server {
 	private textDecoder = new TextDecoder();
 	private tools = new BlockcoreIdentityTools();
 
-	constructor(location = './blockcore-did-database', private didMethod: string = 'did:is') {
+	constructor(location = './blockcore-vault-database', private didMethod: string = 'did:is') {
 		this.storage = new Storage(location);
 	}
 

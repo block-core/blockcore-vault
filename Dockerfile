@@ -10,7 +10,7 @@ COPY ./dist /host
 
 RUN npm install --omit=dev
 
-#RUN mkdir ./blockcore-did-database
+#RUN mkdir ./blockcore-vault-database
 #USER node
 CMD ["dumb-init", "node", "--es-module-specifier-resolution=node", "dist/host.js"]
 EXPOSE 4250
