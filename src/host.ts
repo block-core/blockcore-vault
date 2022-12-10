@@ -4,8 +4,8 @@ import path from 'path';
 import url from 'url';
 import cors from 'cors';
 import compression from 'cors';
-import { log } from './services/logger';
 import rateLimit from 'express-rate-limit';
+import { log } from './services/logger';
 import { Server } from './server';
 import { SyncProcess } from './sync';
 
@@ -25,7 +25,8 @@ const server = new Server(database, didMethod);
 await server.start();
 
 async function shutdown(signal: any) {
-	console.log(`*^!@4=> Received signal to terminate: ${signal}`);
+	log.info(`*^!@4=> Received signal to terminate: ${signal}`);
+	// console.log(`*^!@4=> Received signal to terminate: ${signal}`);
 	await server.stop();
 	process.kill(process.pid, signal);
 }
@@ -33,7 +34,7 @@ async function shutdown(signal: any) {
 process.once('SIGINT', shutdown);
 process.once('SIGTERM', shutdown);
 
-log.info(`Starting Blockcore Vault on port ${port}.`);
+log.info(`Blockcore Vault starting on port ${port}.`);
 
 const app = express();
 
@@ -120,7 +121,7 @@ const syncFunction = async () => {
 try {
 	// Run the HTTP server that responds to queries.
 	app.listen(port, () => {
-		log.info(`Hosting Blockcore Vault @ http://localhost:${port}`);
+		log.info(`Blockcore Vault running on http://localhost:${port}`);
 	});
 
 	// Run the SYNC service that ensures data is synced cross server instances.
