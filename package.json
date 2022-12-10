@@ -12,7 +12,9 @@
 		"node": ">=18.*"
 	},
 	"scripts": {
-		"build": "tsc && copyfiles -u 1 ./src/schemas.cjs dist/",
+		"build": "npm-run-all build:api build:ui",
+		"build:api": "tsc && copyfiles -u 1 ./src/schemas.cjs dist/",
+		"build:ui": "npm run --prefix ui build",
 		"lint": "eslint .",
 		"test": "ava",
 		"test2": "npm run lint && ava",
@@ -83,7 +85,8 @@
 		"eslint-plugin-n": "15.5.1",
 		"eslint-plugin-promise": "6.1.1",
 		"ts-node": "10.9.1",
-		"typescript": "4.9.3"
+		"typescript": "4.9.3",
+		"npm-run-all": "^4.1.5"
 	},
 	"ava": {
 		"files": [
