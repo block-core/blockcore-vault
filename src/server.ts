@@ -1,12 +1,11 @@
 import { decodeJWT, verifyJWS } from 'did-jwt';
-import { JWTDecoded } from 'did-jwt/lib/JWT.js';
-import { JsonWebKey, DIDResolutionResult, DIDDocument, VerificationMethod } from 'did-resolver';
+import { JsonWebKey, DIDResolutionResult, DIDDocument, VerificationMethod, Resolver } from 'did-resolver';
 import { DocumentEntry, ServerState } from './interfaces/index.js';
 import { Storage } from './store/storage.js';
 import { BlockcoreIdentityTools } from '@blockcore/identity';
 import * as lexint from 'lexicographic-integer-encoding';
 import * as validate from './schemas.cjs';
-
+import is from '@blockcore/did-resolver';
 import * as cbor from '@ipld/dag-cbor';
 import { CID } from 'multiformats/cid';
 import { sha256 } from 'multiformats/hashes/sha2';
@@ -20,6 +19,7 @@ export class Server {
 	// private textEncoder = new TextEncoder();
 	private textDecoder = new TextDecoder();
 	private tools = new BlockcoreIdentityTools();
+	private resolver!: Resolver;
 
 	constructor(location = './blockcore-vault-database', private didMethod: string = 'did:is') {
 		this.storage = new Storage(location);
@@ -27,6 +27,9 @@ export class Server {
 
 	async start() {
 		console.log('Starting Server...');
+
+		const isResolver = is.getResolver();
+		this.resolver = new Resolver(isResolver);
 
 		await this.storage.open();
 
@@ -263,7 +266,7 @@ export class Server {
 		return key1.x === key2.x && key1.y === key1.y && key1.crv === key2.crv;
 	}
 
-	private validateJws(jws: JWTDecoded) {
+	private validateJws(jws: any) {
 		if (jws.header.alg !== 'ES256K') {
 			throw new Error('The header.alg must be ES256K.');
 		}
@@ -289,6 +292,34 @@ export class Server {
 		const result = await verifyJWS(jws, verificationMethod);
 		return result;
 	}
+
+	public async verifyToken(jwt: string, did: string) {
+		const didResolution = await this.resolver.resolve(did);
+
+		if (!didResolution.didDocument) {
+			return null;
+		}
+
+		// TODO: Create some utility that resolves the authentication keys. Right now we'll simply use .verificationMethod, but this
+		// MUST be changed later on to only use authentication keys.
+		const verificationMethods = didResolution.didDocument.verificationMethod as VerificationMethod[];
+
+		// We could DecodeJws (not exposed from did-jwt) ourself, get the kid and only send that to verifyJWS. Need to look more into
+		// the implementation of verifyJWS later.
+		// this.getAuthenticationMethod();
+
+		const verificationMethod = verifyJWS(jwt, verificationMethods);
+
+		// If the verification failed, it should have thrown an exception by now. We can generate an JWT and make a cookie for it.
+		
+
+
+		console.log('verifyJWS COMPLETED, RESULTS:', verificationMethod);
+		// const { payload } = await verifyJWT(jwt, { this.resolver, audience: 'did:is:43eecb783ca67406b88e2ee70ba44e51dbf75566f4a30e53e7ae2147f22dd42b' });
+		return verificationMethod;
+	}
+
+	// const { payload } = await verifyJWT(jwt, { resolver, audience: 'did:is:43eecb783ca67406b88e2ee70ba44e51dbf75566f4a30e53e7ae2147f22dd42b' });
 
 	private validateKey(jwk: JsonWebKey | undefined) {
 		if (jwk == null) {

@@ -1,9 +1,14 @@
 import { Component, Inject, HostBinding } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VaultService } from '../services/vault.service';
+import { WebProvider } from '@blockcore/provider';
 
 @Component({
   selector: 'app-connect',
@@ -12,6 +17,7 @@ import { VaultService } from '../services/vault.service';
 })
 export class ConnectComponent {
   @HostBinding('class.content-centered') hostClass = true;
+  provider?: WebProvider;
 
   constructor(
     private api: ApiService,
@@ -20,8 +26,8 @@ export class ConnectComponent {
     public appState: ApplicationState,
     private router: Router,
     private route: ActivatedRoute,
-    @Inject('BASE_URL') private baseUrl: string) {
-
+    @Inject('BASE_URL') private baseUrl: string
+  ) {
     this.appState.vault = null;
     this.appState.authenticated = false;
 
@@ -35,7 +41,7 @@ export class ConnectComponent {
     // this.appState.apiKey = '';
 
     this.vault = {
-      remember: true
+      remember: true,
     };
   }
 
@@ -47,17 +53,58 @@ export class ConnectComponent {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    var vault = this.vaultService.vaults.find(v => v.id == id);
+    var vault = this.vaultService.vaults.find((v) => v.id == id);
 
     if (vault) {
       this.vault = vault;
     }
   }
 
-  login() {
-    
+  async login() {
+    if (!this.provider) {
+      this.provider = await WebProvider.Create();
+    }
 
+    // First get a challenge from the API.
+    const response = await fetch('/1.0/authenticate', {});
+    const json = await response.json();
+    const challenge = json.challenge;
 
+    // Request a JWS from the Web5 wallet.
+    const result = await this.request('did.request', [
+      {
+        challenge: challenge,
+        methods: 'did:is',
+        reason: 'Choose a DID that has permission to this Blockcore Vault.',
+      },
+    ]);
+
+    // Provide the proof which will result in jwt being written as HttpOnly cookie.
+    const postResponse = await fetch('/1.0/authenticate', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(result.response),
+    });
+
+    const content = await postResponse.json();
+    console.log(content);
+  }
+
+  async request(method: string, params?: object | unknown[]) {
+    if (!params) {
+      params = [];
+    }
+
+    const result: any = await this.provider!.request({
+      method: method,
+      params: params,
+    });
+    console.log('Result:', result);
+
+    return result;
   }
 
   handleError(error: any) {
@@ -68,10 +115,10 @@ export class ConnectComponent {
         this.error = `Error: ${error.message}`;
       } else {
         switch (error.status) {
-          case 401:      //login
+          case 401: //login
             this.error = `Error: ${error.statusText} (${error.status})`;
             break;
-          case 403:     //forbidden
+          case 403: //forbidden
             this.error = `Error: ${error.statusText} (${error.status})`;
             break;
           default:
@@ -97,7 +144,7 @@ export class ConnectComponent {
   set vault(value: any) {
     if (!value) {
       value = {
-        remember: true
+        remember: true,
       };
     }
 
@@ -108,8 +155,7 @@ export class ConnectComponent {
       this.appState.vaultUrl = value.url;
       this.appState.apiKey = value.key;
       this.appState.rememberLogin = value.remember;
-    }
-    else {
+    } else {
       this.appState.vaultUrl = '';
       this.appState.apiKey = '';
     }
@@ -143,8 +189,7 @@ export class ConnectComponent {
     if (this.vault.url.indexOf('http') < -1) {
       console.log('Perform DID query...');
       console.log('Currently unsupported!! Use direct URL.');
-    }
-    else {
+    } else {
       console.log('Perform .well-known query...');
 
       var headers = new HttpHeaders();
@@ -153,53 +198,59 @@ export class ConnectComponent {
         headers = headers.append('Vault-Api-Key', this.vault.key);
       }
 
-      this.http.get<any>(this.vault.url + '.well-known/did-configuration.json', {
-        headers: headers
-      }).subscribe(result => {
+      this.http
+        .get<any>(this.vault.url + '.well-known/did-configuration.json', {
+          headers: headers,
+        })
+        .subscribe(
+          (result) => {
+            console.log('RESULT: ', result);
 
-        console.log('RESULT: ', result);
+            this.http
+              .get<any>(this.vault.url + 'management/setup', {
+                headers: headers,
+              })
+              .subscribe(
+                (result) => {
+                  console.log('RESULT: ', result);
 
-        this.http.get<any>(this.vault.url + 'management/setup', {
-          headers: headers
-        }).subscribe(result => {
-          console.log('RESULT: ', result);
+                  if (!this.hasVaultSelected) {
+                    // Query and authentication went well, register the vault.
 
-          if (!this.hasVaultSelected) {
-            // Query and authentication went well, register the vault.
+                    // We don't know the name yet, so we'll use the URL.
+                    this.vault.name = this.vault.url;
 
-            // We don't know the name yet, so we'll use the URL.
-            this.vault.name = this.vault.url;
+                    // Generate a random local unique ID for this vault.
+                    this.vault.id = Math.floor(Math.random() * 100000 + 1);
 
-            // Generate a random local unique ID for this vault.
-            this.vault.id = Math.floor((Math.random() * 100000) + 1);;
+                    this.vaultService.addVault(this.vault);
+                  }
 
-            this.vaultService.addVault(this.vault);
+                  // The user might have updated the Api Key, make sure we persist the vaults.
+                  this.vaultService.persist();
+
+                  // If there is an error, it is most likely not configured yet.
+                  if (result.error) {
+                    // Make sure we keep the URL which is used by the setup account page.
+                    this.appState.vaultUrl = this.vault.url;
+                    this.appState.authenticated = true;
+                    this.router.navigateByUrl('/setup/account');
+                  } else {
+                    // Make the current vault available in the app state.
+                    this.appState.vault = result;
+                    this.appState.authenticated = true;
+                    this.router.navigateByUrl('/');
+                  }
+                },
+                (error) => {
+                  this.handleError(error);
+                }
+              );
+          },
+          (error) => {
+            this.handleError(error);
           }
-
-          // The user might have updated the Api Key, make sure we persist the vaults.
-          this.vaultService.persist();
-
-          // If there is an error, it is most likely not configured yet.
-          if (result.error) {
-            // Make sure we keep the URL which is used by the setup account page.
-            this.appState.vaultUrl = this.vault.url;
-            this.appState.authenticated = true;
-            this.router.navigateByUrl('/setup/account');
-          } else {
-            // Make the current vault available in the app state.
-            this.appState.vault = result;
-            this.appState.authenticated = true;
-            this.router.navigateByUrl('/');
-          }
-
-        }, error => {
-          this.handleError(error);
-        });
-
-      }, error => {
-        this.handleError(error);
-      });
-
+        );
     }
   }
 }

@@ -4,10 +4,14 @@ import path from 'path';
 import url from 'url';
 import cors from 'cors';
 import compression from 'cors';
+import cookie from 'cookie-parser';
+import cache from 'memory-cache';
 import rateLimit from 'express-rate-limit';
 import { log } from './services/logger';
 import { Server } from './server';
 import { SyncProcess } from './sync';
+import { v4 as uuidv4 } from 'uuid';
+// import { verifyJWT } from 'did-jwt';
 
 const rateLimitMinute = process.env['RATELIMIT'] ? Number(process.env['RATELIMIT']) : 30;
 const port = process.env['PORT'] ? Number(process.env['PORT']) : 4250;
@@ -63,6 +67,7 @@ app.use(limiter);
 
 app.use(cors());
 app.use(express.json());
+app.use(cookie());
 app.use(
 	compression({
 		threshold: 512,
@@ -70,6 +75,28 @@ app.use(
 );
 
 app.disable('x-powered-by');
+
+app.get('/1.0/authenticate', (_req, res) => {
+	const challenge = uuidv4();
+
+	// Put the challenge in cache for 5 minute.
+	cache.put(`challenge:${challenge}`, true, 60 * 1000);
+
+	res.send({ challenge: challenge });
+});
+
+app.post(
+	'/1.0/authenticate',
+	asyncHandler(async (req, res) => {
+		if (!req.body.proof) {
+			return res.status(404);
+		}
+
+		await server.verifyToken(req.body.proof, req.body.did);
+
+		return res.send({ status: 'ok' });
+	})
+);
 
 app.post(
 	'/',

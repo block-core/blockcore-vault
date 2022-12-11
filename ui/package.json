@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^14.0.6",
     "@angular/router": "^14.0.6",
     "@blockcore/identity": "0.0.1",
+    "@blockcore/provider": "^0.0.13",
     "angular-animations": "^0.11.0",
     "bigi": "^1.4.2",
     "bitcoinjs-lib": "^6.0.1",
