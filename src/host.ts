@@ -172,7 +172,7 @@ app.post(
 			httpOnly: true,
 			secure: production,
 			sameSite: 'strict',
-			maxAge: 60 * 60 * 24 * 30,
+			maxAge: 60 * 60 * 24 * 1, // 1 day, should this cookie be used to issue session cookies and be long-lived? The JWT itself is only valid 1h.
 			path: '/',
 		});
 
