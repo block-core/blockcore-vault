@@ -53,7 +53,7 @@ To set up the application, first clone the repo. Then, install the dependencies 
 npm run setup
 ```
 
-## Build and Watch
+## Build and Serve
 
 You can easily build and serve the app:
 

@@ -124,19 +124,4 @@ export class AppComponent implements OnInit, OnDestroy {
     const name = identity.user_claims.find((c: { typ: string; }) => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname').val;
     this.welcomeName = name;
   }
-
-  connectTo(vault: any) {
-    this.appState.key = '';
-    this.appState.vaultUrl = '';
-
-    if (!vault) {
-      // this.appState.key = '';
-      // this.appState.vaultUrl = '';
-      this.router.navigate(['/connect']);
-    } else {
-      // this.appState.apiKey = vault.apiKey;
-      // this.appState.vaultUrl = vault.vaultUrl;
-      this.router.navigate(['/connect', vault.id]);
-    }
-  }
 }

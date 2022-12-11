@@ -28,7 +28,10 @@
     </mat-toolbar>
 
     <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
-      <button mat-menu-item (click)="connectTo(null)">Connect to new...</button>
+      <a mat-menu-item href="https://id.blockcore.net/">Blockcore DID Server</a>
+      <a mat-menu-item href="https://did.is/">did:is DID Method</a>
+      <a mat-menu-item href="https://identity.city-chain.org/">City Chain Identity</a>
+      <a mat-menu-item href="https://registry.city-chain.org/">City Chain Registry</a>
       <!-- <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button> -->
     </mat-menu>
 
@@ -113,7 +116,7 @@
 
       <span class="example-spacer">{{appState.title}}</span>
 
-      <span *ngIf="appState.authenticated">{{appState.identity}}</span>
+      <span *ngIf="appState.authenticated">{{appState.short}}</span>
 
       <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button
         [matTooltip]="action.tooltip">
