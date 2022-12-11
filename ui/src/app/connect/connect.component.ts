@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
@@ -15,21 +15,24 @@ export class ConnectComponent {
   @HostBinding('class.content-centered') hostClass = true;
   provider?: WebProvider;
   error: string;
+  authenticateUrl: string;
 
   constructor(
     private api: ApiService,
     private http: HttpClient,
     public appState: ApplicationState,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    @Inject('API_BASE_URL') private baseUrl: string
   ) {
     this.appState.vault = null;
     this.appState.authenticated = false;
 
+    this.authenticateUrl = `${baseUrl}1.0/authenticate`;
+    console.log('authenticateUrl:', this.authenticateUrl);
+
     // this.appState.vaultUrl = 'http://localhost:4250';
   }
-
-  authenticateUrl = '/1.0/authenticate';
 
   removeError(): void {
     this.error = '';

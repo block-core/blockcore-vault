@@ -51,6 +51,10 @@ import { ServersComponent } from './servers/servers.component';
 import { ServerViewComponent } from './servers/view/server-view.component';
 import { ServerEditComponent } from './servers/edit/server-edit.component';
 
+export function getBaseUrl() {
+  return document.getElementsByTagName('base')[0].href;
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -74,7 +78,7 @@ import { ServerEditComponent } from './servers/edit/server-edit.component';
     EventComponent,
     ServersComponent,
     ServerViewComponent,
-    ServerEditComponent
+    ServerEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -108,12 +112,10 @@ import { ServerEditComponent } from './servers/edit/server-edit.component';
     MatStepperModule,
     MatProgressSpinnerModule,
     MatChipsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
   ],
-  exports: [
-    ScrollDirective,
-  ],
+  exports: [ScrollDirective],
   providers: [AuthGuardService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

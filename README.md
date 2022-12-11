@@ -55,17 +55,30 @@ npm run setup
 
 ## Build and Serve
 
-You can easily build and serve the app:
+You can easily build and serve the app in production mode:
+
+```sh
+npm run static
+```
+
+This will run both `api` and `ui` build and hosting in parallel, there are no auto-reloads.
+
+You can access the UI:
+
+[http://localhost:4250](http://localhost:4250)
+
+## Run and Reload
 
 ```sh
 npm start
 ```
 
-This will run both `api` and `ui` build and hosting in parallel.
+This will perform a static build of the API, serve that API and then host an dynamic instance of the UI with auto-reload.
 
-You can access the UI:
+Both API and UI is hosted on different ports:
 
-[http://localhost:4250](http://localhost:4250)
+UI: [http://localhost:4202](http://localhost:4202)   
+API: [http://localhost:4250](http://localhost:4250)
 
 ## Build and Deploy
 

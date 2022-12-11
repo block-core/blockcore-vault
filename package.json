@@ -13,7 +13,8 @@
 	},
 	"scripts": {
 		"setup": "npm install && npm install --prefix ui",
-		"start": "npm run build && node --es-module-specifier-resolution=node dist/host.js",
+		"start": "npm run build:api && npm-run-all --parallel start:*",
+		"static": "npm run build && node --es-module-specifier-resolution=node dist/host.js",
 		"start2": "set DATABASE=blockcore-vault-database2 && set PORT=4251 && set SERVERS= && node --es-module-specifier-resolution=node dist/host.js",
 		"start:api": "node --es-module-specifier-resolution=node dist/host.js",
 		"start:ui": "npm run --prefix ui start",
