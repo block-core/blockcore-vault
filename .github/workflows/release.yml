@@ -36,9 +36,9 @@ jobs:
         ls -R
 
     - name: Build the Docker container image
-      run: docker build . -t blockcore/blockcore-vault:latest -t blockcore/blockcore-vault:${{ github.event.release.tag_name }}
+      run: docker build . -t blockcore/vault:latest -t blockcore/vault:${{ github.event.release.tag_name }}
 
     - name: Login and Push to Docker Registry
       run: |
         docker login -u "sondreb" -p "${{secrets.DOCKER_KEY}}"
-        docker push --all-tags blockcore/blockcore-vault
+        docker push --all-tags blockcore/vault
