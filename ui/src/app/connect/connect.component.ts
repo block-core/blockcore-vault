@@ -1,8 +1,5 @@
 import { Component, HostBinding } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,6 +14,7 @@ import { WebProvider } from '@blockcore/provider';
 export class ConnectComponent {
   @HostBinding('class.content-centered') hostClass = true;
   provider?: WebProvider;
+  error: string;
 
   constructor(
     private api: ApiService,
@@ -28,83 +26,89 @@ export class ConnectComponent {
   ) {
     this.appState.vault = null;
     this.appState.authenticated = false;
-    this.appState.vaultUrl = 'http://localhost:4250';
-
-    this.clear();
+    
+    // this.appState.vaultUrl = 'http://localhost:4250';
   }
-
-  clear() {}
-
-  error: string;
 
   removeError(): void {
     this.error = '';
   }
 
   async login() {
+    this.removeError();
+
     if (!this.provider) {
       this.provider = await WebProvider.Create();
     }
 
-    console.log(this.appState.vaultUrl + '/1.0/authenticate');
-
-    // First get a challenge from the API.
-    const response = await fetch(
-      this.appState.vaultUrl + '/1.0/authenticate',
-      {}
-    );
-    const json = await response.json();
-    const challenge = json.challenge;
-
-    // Request a JWS from the Web5 wallet.
-    const result = await this.request('did.request', [
-      {
-        challenge: challenge,
-        methods: 'did:is',
-        reason: 'Choose a DID that has permission to this Blockcore Vault.',
-      },
-    ]);
-
-    // Provide the proof which will result in jwt being written as HttpOnly cookie.
-    const postResponse = await fetch(
-      this.appState.vaultUrl + '/1.0/authenticate',
-      {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(result.response),
-      }
-    );
-
-    const content = await postResponse.json();
-    console.log(content);
-
     try {
-      const postResponse2 = await fetch(
-        this.appState.vaultUrl + '/1.0/authenticate/protected',
+      console.log(this.appState.vaultUrl + '/1.0/authenticate');
+
+      // First get a challenge from the API.
+      const response = await fetch(
+        this.appState.vaultUrl + '/1.0/authenticate',
+        {}
+      );
+      const json = await response.json();
+      const challenge = json.challenge;
+
+      if (response.status != 200) {
+        throw new Error('Unable to receive authentication challenge.');
+      }
+
+      // Request a JWS from the Web5 wallet.
+      const result = await this.request('did.request', [
         {
-          method: 'GET',
+          challenge: challenge,
+          methods: 'did:is',
+          reason: 'Choose a DID that has permission to this Blockcore Vault.',
+        },
+      ]);
+
+      // Provide the proof which will result in jwt being written as HttpOnly cookie.
+      const postResponse = await fetch(
+        this.appState.vaultUrl + '/1.0/authenticate',
+        {
+          method: 'POST',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify(result.response),
         }
       );
 
-      if (postResponse2.status == 200) {
-        const content2 = await postResponse2.json();
+      if (postResponse.status == 200) {
+        const content = await postResponse.json();
+        console.log(content);
 
-        console.log('DID THIS HAPPEN_');
-        console.log(content2);
+        const postResponse2 = await fetch(
+          this.appState.vaultUrl + '/1.0/authenticate/protected',
+          {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (postResponse2.status == 200) {
+          const content2 = await postResponse2.json();
+          console.log(content2);
+        } else {
+          this.error = postResponse.statusText;
+        }
       } else {
-        console.log('Failed to access protected part of service.');
-        console.log(postResponse2);
+        this.error = postResponse.statusText;
+        console.log(
+          'Failed to authenticate. Status: ',
+          postResponse.statusText
+        );
       }
     } catch (err) {
-      console.log('Failed to access protected part of service.');
-      console.log(err);
+      this.error = err.toString();
+      console.error('Failed to authenticate.', err);
     }
   }
 

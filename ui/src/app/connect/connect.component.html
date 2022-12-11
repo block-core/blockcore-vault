@@ -14,7 +14,6 @@
         >
       </mat-card-header>
       <mat-card-content>
-
         <!-- <button
           mat-raised-button
           color="primary"
@@ -24,7 +23,8 @@
           Login with Web5 Wallet
         </button> -->
 
-        <button (click)="login()"
+        <button
+          (click)="login()"
           mat-raised-button
           color="primary"
           class="login-button login-button-blockcore"
@@ -32,6 +32,10 @@
           <mat-icon mat-list-icon>wallet</mat-icon>
           Login with Blockcore Wallet
         </button>
+
+        <mat-card *ngIf="error" class="login-status">
+          Error: {{ error }}
+        </mat-card>
 
         <!-- <button
           mat-raised-button

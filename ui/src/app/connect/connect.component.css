@@ -49,3 +49,9 @@ a {
 .login-button-coinvault {
    background-color: #206997;
 }
+
+.login-status {
+   color:rgb(172, 0, 0);
+   background-color: white;
+   font-weight: bold;
+}
