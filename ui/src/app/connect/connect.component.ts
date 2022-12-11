@@ -26,9 +26,11 @@ export class ConnectComponent {
   ) {
     this.appState.vault = null;
     this.appState.authenticated = false;
-    
+
     // this.appState.vaultUrl = 'http://localhost:4250';
   }
+
+  authenticateUrl = '/1.0/authenticate';
 
   removeError(): void {
     this.error = '';
@@ -42,13 +44,11 @@ export class ConnectComponent {
     }
 
     try {
-      console.log(this.appState.vaultUrl + '/1.0/authenticate');
+      console.log('authenticateUrl:', this.authenticateUrl);
 
       // First get a challenge from the API.
-      const response = await fetch(
-        this.appState.vaultUrl + '/1.0/authenticate',
-        {}
-      );
+      const response = await fetch(this.authenticateUrl, {});
+
       const json = await response.json();
       const challenge = json.challenge;
 
@@ -66,36 +66,40 @@ export class ConnectComponent {
       ]);
 
       // Provide the proof which will result in jwt being written as HttpOnly cookie.
-      const postResponse = await fetch(
-        this.appState.vaultUrl + '/1.0/authenticate',
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(result.response),
-        }
-      );
+      const postResponse = await fetch(this.authenticateUrl, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(result.response),
+      });
 
       if (postResponse.status == 200) {
         const content = await postResponse.json();
         console.log(content);
 
-        const postResponse2 = await fetch(
-          this.appState.vaultUrl + '/1.0/authenticate/protected',
-          {
-            method: 'GET',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const postResponse2 = await fetch(this.authenticateUrl + '/protected', {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
 
         if (postResponse2.status == 200) {
           const content2 = await postResponse2.json();
           console.log(content2);
+
+          // Make sure we keep the URL which is used by the setup account page.
+          // this.appState.vaultUrl = this.vault.url;
+          this.appState.authenticated = true;
+          this.router.navigateByUrl('/');
+
+          // Make the current vault available in the app state.
+          // this.appState.vault = result;
+          // this.appState.authenticated = true;
+          // this.router.navigateByUrl('/');
         } else {
           this.error = postResponse.statusText;
         }

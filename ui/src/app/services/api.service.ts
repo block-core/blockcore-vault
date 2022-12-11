@@ -47,7 +47,7 @@ export class ApiService {
          headers = new HttpHeaders();
       }
 
-      headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
+      // headers = headers.append('Vault-Api-Key', this.vaultService.vault.key);
 
       return headers;
    }

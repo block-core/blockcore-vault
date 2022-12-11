@@ -14,11 +14,11 @@ export class HomeComponent {
     private router: Router) {
 
     if (appState.authenticated) {
-      if (appState.vault) {
+      // if (appState.vault) {
         router.navigateByUrl('/dashboard');
-      } else {
-        router.navigateByUrl('/setup/account');
-      }
+      // } else {
+      //   router.navigateByUrl('/setup/account');
+      // }
     } else {
       router.navigateByUrl('/connect');
     }

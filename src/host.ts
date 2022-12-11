@@ -158,10 +158,8 @@ app.post(
 
 		if (!admins?.includes(payload.did)) {
 			return res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({
-				success: false,
-				user: {
-					did: payload.did,
-				},
+				status: 'error',
+				error: 'Unauthorized',
 			});
 		}
 

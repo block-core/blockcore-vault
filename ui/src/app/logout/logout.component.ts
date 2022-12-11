@@ -1,39 +1,24 @@
-import { Component, ViewChild, Inject, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Component, OnInit } from '@angular/core';
 import { ApplicationState } from '../services/applicationstate.service';
-import { HubService } from '../services/hub.service';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-logout',
-    templateUrl: './logout.component.html'
+  selector: 'app-logout',
+  templateUrl: './logout.component.html',
 })
 export class LogoutComponent implements OnInit {
+  constructor(private appState: ApplicationState, private router: Router) {}
 
-    constructor(
-        private appState: ApplicationState,
-        private router: Router) {
+  ngOnInit(): void {
+    this.logout();
+  }
 
-    }
+  async logout() {
+    await fetch('/1.0/authenticate/logout');
 
-    ngOnInit(): void {
-        this.logout();
-    }
+    this.appState.authenticated = false;
+    this.appState.vault = null;
 
-    logout() {
-        this.appState.authenticated = false;
-
-        // If user decided not to store API key, we'll reset the UI input on exit.
-        if (!this.appState.rememberLogin) {
-            this.appState.apiKey = '';
-            this.appState.vaultUrl = '';
-        }
-
-        this.appState.vault = null;
-
-        this.router.navigateByUrl('/connect');
-    }
+    this.router.navigateByUrl('/connect');
+  }
 }
