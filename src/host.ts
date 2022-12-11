@@ -27,9 +27,11 @@ const database = process.env['DATABASE'];
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); // const __filename = url.fileURLToPath(import.meta.url);
 const root = path.join(__dirname, '..', 'ui', 'dist');
 const key = process.env['JWT_KEY'];
+const admins = process.env['ADMIN']?.split(';').filter((i) => i.trim());
 
 log.info(`RATE LIMIT: ${rateLimitMinute} rpm`);
 log.info(`MAX SIZE: ${maxsize}`);
+log.info(`ADMINS: ${admins}`);
 
 const server = new Server(database, didMethod);
 await server.start();
@@ -154,9 +156,16 @@ app.post(
 			did: req.body.did,
 		};
 
-		const token = jwt.sign(payload, key, { expiresIn: '1h' });
+		if (!admins?.includes(payload.did)) {
+			return res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({
+				success: false,
+				user: {
+					did: payload.did,
+				},
+			});
+		}
 
-		console.log('AUTH TOKEN:', token);
+		const token = jwt.sign(payload, key, { expiresIn: '1h' });
 
 		// If the verification failed, it should have thrown an exception by now. We can generate an JWT and make a cookie for it.
 		const serialized = serialize('token', token, {
@@ -166,8 +175,6 @@ app.post(
 			maxAge: 60 * 60 * 24 * 30,
 			path: '/',
 		});
-
-		console.log('COOKIE:', serialized);
 
 		res.setHeader('Set-Cookie', serialized);
 
