@@ -1,7 +1,7 @@
 {
-	"name": "@blockcore/did-server",
+	"name": "@blockcore/vault",
 	"version": "0.0.12",
-	"description": "DID Server implementation that supports public sync and sharing",
+	"description": "Blockcore Vault",
 	"main": "dist/host.js",
 	"type": "module",
 	"files": [

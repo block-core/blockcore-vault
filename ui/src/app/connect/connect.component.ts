@@ -23,12 +23,12 @@ export class ConnectComponent {
     public appState: ApplicationState,
     private router: Router,
     private route: ActivatedRoute,
-    @Inject('API_BASE_URL') private baseUrl: string
+    @Inject('API_BASE_URL') private apiBaseUrl: string
   ) {
     this.appState.vault = null;
     this.appState.authenticated = false;
 
-    this.authenticateUrl = `${baseUrl}1.0/authenticate`;
+    this.authenticateUrl = `${apiBaseUrl}1.0/authenticate`;
     console.log('authenticateUrl:', this.authenticateUrl);
 
     // this.appState.vaultUrl = 'http://localhost:4250';
@@ -36,6 +36,26 @@ export class ConnectComponent {
 
   removeError(): void {
     this.error = '';
+  }
+
+  async ngOnInit() {
+    if (!this.appState.authenticated) {
+      const response = await fetch(
+        this.apiBaseUrl + '1.0/authenticate/protected',
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status == 200) {
+        this.appState.authenticated = true;
+        this.router.navigateByUrl('/dashboard');
+      }
+    }
   }
 
   async login() {

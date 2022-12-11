@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationState } from '../services/applicationstate.service';
 
@@ -10,17 +10,32 @@ export class HomeComponent {
   @HostBinding('class.content-centered') hostClass = true;
 
   constructor(
+    @Inject('API_BASE_URL') private apiBaseUrl: string,
     private appState: ApplicationState,
-    private router: Router) {
+    private router: Router
+  ) {}
 
-    if (appState.authenticated) {
-      // if (appState.vault) {
-        router.navigateByUrl('/dashboard');
-      // } else {
-      //   router.navigateByUrl('/setup/account');
-      // }
+  async ngOnInit() {
+    if (this.appState.authenticated) {
+      this.router.navigateByUrl('/dashboard');
     } else {
-      router.navigateByUrl('/connect');
+      const response = await fetch(
+        this.apiBaseUrl + '1.0/authenticate/protected',
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status == 200) {
+        this.appState.authenticated = true;
+        this.router.navigateByUrl('/dashboard');
+      } else {
+        this.router.navigateByUrl('/connect');
+      }
     }
   }
 }
