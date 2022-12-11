@@ -13,4 +13,4 @@ RUN npm install --omit=dev
 #RUN mkdir ./blockcore-vault-database
 #USER node
 CMD ["dumb-init", "node", "--es-module-specifier-resolution=node", "dist/host.js"]
-EXPOSE 4250
+EXPOSE 4350

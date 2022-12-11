@@ -30,8 +30,6 @@ export class ConnectComponent {
 
     this.authenticateUrl = `${apiBaseUrl}1.0/authenticate`;
     console.log('authenticateUrl:', this.authenticateUrl);
-
-    // this.appState.vaultUrl = 'http://localhost:4250';
   }
 
   removeError(): void {

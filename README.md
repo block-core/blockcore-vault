@@ -65,7 +65,7 @@ This will run both `api` and `ui` build and hosting in parallel, there are no au
 
 You can access the UI:
 
-[http://localhost:4250](http://localhost:4250)
+[http://localhost:4350](http://localhost:4350)
 
 ## Run and Reload
 
@@ -78,7 +78,7 @@ This will perform a static build of the API, serve that API and then host an dyn
 Both API and UI is hosted on different ports:
 
 UI: [http://localhost:4202](http://localhost:4202)   
-API: [http://localhost:4250](http://localhost:4250)
+API: [http://localhost:4350](http://localhost:4350)
 
 ## Build and Deploy
 

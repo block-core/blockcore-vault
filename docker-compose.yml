@@ -9,6 +9,6 @@ services:
       - NODE_ENV=production
       #- API_KEY= # Use to specify the initial API KEY to be used.
     ports:
-      - 4250:4250
+      - 4350:4350
     # volumes:
     #   - ./:/code
