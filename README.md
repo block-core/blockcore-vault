@@ -18,14 +18,24 @@ Server for Verifiable Credentials ([VC](https://www.w3.org/TR/vc-data-model/)) m
 
 This software provides a generic interface for storing and serving VCs in a manner that is easy to use.
 
+![](/docs/blockcore-vault.png)
+
+## Setup
+
+You must configure your instance of Blockcore Vault using the environment variables. An sample .env.sample is provided, rename this to .env only.
+
+### Environment variables
+
+**ADMIN**: This is important to set and required for authentication (login) to work.
+
+**JWT_KEY**: This is important to change, generate your own new secret before you start using Blockcore Vault.
+
 ## What about Decentralized Web Nodes?
 
 DWN are the future for VC storage, but the specification is currently only in `draft` state. In preparation for a fully fledge DWN specification and implementations, the Blockcore Vault is an alternative with a simpler API interface.
 
 Source code: [blockcore-dwn](https://github.com/block-core/blockcore-dwn)   
 Specification: [decentralized-web-node](https://identity.foundation/decentralized-web-node/spec/)
-
-![](/docs/blockcore-vault.png)
 
 ## What is Web5?
 
@@ -90,39 +100,9 @@ npm run build
 
 This will build both the `api` (Node.js) and the `ui` (Angular) and copy the output from the `ui` into the API. This allows both the API and UI to be hosted on same web server.
 
-## Development, Testing & Production
-
-To run with the different environment configuration, you can set the ENV variable like this:
-
-```sh
-# Windows
-set NODE_ENV=production
-
-# PowerShell
-$env:NODE_ENV="production"
-
-# Linux/Mac
-export NODE_ENV=production
-```
-
-Available options is `production`, `development`, `test`.
-
-The different configuration is available under `./config/env/*.ts`
-
-You can also use an .env file during development to configure environment variables. See the `.env.sample` file.
-
 ## Docker
 
-The Dockerfile will take pre-built output and copy that into the image. The `docker-compose.yml` will build the dev image and run local instance of both
-the vault and the mongodb database.
-
-`deploy/docker-compose.yml` is the file to use if you want to deploy to production of ready-built docker image that is public available on Docker Hub.
-
-```sh
-$ npm run build
-$ docker-compose build
-$ docker-compose up
-```
+The `dockerfile` will take pre-built output and copy that into the image.
 
 ## Making Requests
 
@@ -156,16 +136,6 @@ All operations on the Vault requires requests to be signed by the keys specified
 Replication configuration is part of the vault creation operation.
 
 Vault type should be part of the vault creation operation. Vault types could be encrypted, unencrypted, immutable, mutable, etc.
-
-### Identity ("DID") API
-
-Allows operations for decentralized identity (DID), including registering new DIDs, updating DID Documents and resolving DID Documents.
-
-Example public permalink for an `did:is` (DID Method) identity profile:
-
-https://did.is/PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd
-
-The ID of this identity: `did:is:PMW1Ks7h4brpN8FdDVLwhPDKJ7LdA7mVdd`
 
 ### Server ("Management") API
 
@@ -242,32 +212,6 @@ It is of course possible to run just a single vault instance, or a single public
 Upon registration of a trusted vault, the user can decide if a full sync should be performed. By default a full sync is only done on the first connection, not on secondary. If there are two distinct network of vault that should be joint together, this option is useful to ensure all data exists in both networks (and the vaults that belongs to them). Essentially making the two networks into one.
 
 If a client vault receives an event, it will forward that to all registered and connected server vaults.
-
-# Key Management
-
-The keys for identities is based upon standard HD-wallet practices with the specific purpose of 302.
-
-Normal HD wallet pattern:
-
-`m / purpose' / coin_type' / account' / change / address_index`
-
-The purpose and coin_type used for Blockcore Vault is:
-
-`m / purpose' / identity_type' / identity' / operation / key_index`
-
-Example:
-
-```
-m/302'/616'/0'/0/0
-```
-
-# UI
-
-Adding a new Vault can be done in two ways:
-
-- Entering the URL to the Vault, which uses .well-known URL to discover DID. DID Resolve is then performed.
-
-- Entering the DID to the Vault, which will perform DID Resolve and find the `VerifiableDataRegistry` (formally `EncryptedDataVault`) service registered in the DID Document. This should contain the endpoint for the Vault, which is then used to query the .well-known URL to grab additional metadata.
 
 # Vocabulary
 
