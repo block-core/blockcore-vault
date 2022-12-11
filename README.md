@@ -55,21 +55,17 @@ npm run setup
 
 ## Build and Watch
 
-You can easily build and watch the code for changes and automatically reload using:
+You can easily build and serve the app:
 
 ```sh
 npm start
 ```
 
-This will run both `api` and `ui` build, watch and hosting in parallel.
+This will run both `api` and `ui` build and hosting in parallel.
 
 You can access the UI:
 
-[http://localhost:4202](http://localhost:4202)
-
-And the API:
-
-[http://localhost:3000/docs](http://localhost:3000/docs)
+[http://localhost:4250](http://localhost:4250)
 
 ## Build and Deploy
 
@@ -80,12 +76,6 @@ npm run build
 ```
 
 This will build both the `api` (Node.js) and the `ui` (Angular) and copy the output from the `ui` into the API. This allows both the API and UI to be hosted on same web server.
-
-To run the compiled output, use:
-
-```sh
-npm run run
-```
 
 ## Development, Testing & Production
 

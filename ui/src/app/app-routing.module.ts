@@ -3,12 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { LoadingResolverService } from './shared/loading.resolver';
-import { SetupComponent } from './setup/setup.component';
 import { IdentityComponent } from './identity/identity.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { VaultsComponent } from './vaults/vaults.component';
-import { AccountComponent } from './setup/account/account.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService as AuthGuard } from './services/auth-guard.service';
 import { LogoutComponent } from './logout/logout.component';
@@ -49,16 +47,6 @@ const routes: Routes = [
   {
     path: 'identities', component: IdentitiesComponent, resolve: {
       chain: LoadingResolverService,
-    }, canActivate: [AuthGuard]
-  },
-  {
-    path: 'setup', component: SetupComponent, resolve: {
-      chain: LoadingResolverService,
-    }, canActivate: [AuthGuard]
-  },
-  {
-    path: 'setup/account', component: AccountComponent, resolve: {
-      chain: LoadingResolverService
     }, canActivate: [AuthGuard]
   },
   {

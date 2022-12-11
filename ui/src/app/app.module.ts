@@ -14,7 +14,6 @@ import { AmountPipe } from './shared/amount';
 import { ErrorComponent } from './error/error.component';
 import { YesPipe } from './shared/yes.pipe';
 import { HubsComponent } from './hubs/hubs.component';
-import { SetupComponent } from './setup/setup.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IdentityComponent } from './identity/identity.component';
 import { MatInputModule } from '@angular/material/input';
@@ -41,7 +40,6 @@ import { SettingsComponent } from './settings/settings.component';
 import { VaultsComponent } from './vaults/vaults.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AccountComponent } from './setup/account/account.component';
 import { ConnectComponent } from './connect/connect.component';
 import { AuthGuardService } from './services/auth-guard.service';
 import { MatChipsModule } from '@angular/material/chips';
@@ -66,12 +64,10 @@ import { ServerEditComponent } from './servers/edit/server-edit.component';
     ErrorComponent,
     YesPipe,
     HubsComponent,
-    SetupComponent,
     IdentityComponent,
     DashboardComponent,
     SettingsComponent,
     VaultsComponent,
-    AccountComponent,
     ConnectComponent,
     IdentitiesComponent,
     EventsComponent,

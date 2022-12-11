@@ -2,7 +2,6 @@ import { Component, Inject, HostBinding, OnInit, ViewChild, AfterViewInit } from
 import { HttpClient } from '@angular/common/http';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ApiService } from '../services/api.service';
-import { VaultService } from '../services/vault.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -66,7 +65,6 @@ export class IdentityComponent implements OnInit, AfterViewInit {
 
   constructor(private api: ApiService,
     private http: HttpClient,
-    public vaultService: VaultService,
     public appState: ApplicationState,
     private router: Router,
     private bus: EventBusService,

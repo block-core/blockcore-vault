@@ -19,6 +19,8 @@ export class ApplicationState {
 
    identity: any;
 
+   short: any;
+
    /** The key pair when unlocked. */
    key: any;
 

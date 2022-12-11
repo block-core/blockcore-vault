@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { ApplicationState } from './applicationstate.service';
-import { VaultService } from './vault.service';
 import { Observable } from 'rxjs';
 
 export class HttpError extends Error {
@@ -37,7 +36,6 @@ export class ApiService {
    constructor(
       private http: HttpClient,
       private appState: ApplicationState,
-      private vaultService: VaultService
    ) {
       console.log('CREATING INSTANCE OF API SERVICE!!');
    }

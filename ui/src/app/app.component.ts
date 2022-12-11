@@ -7,7 +7,6 @@ import { map, shareReplay } from 'rxjs/operators';
 import { ApplicationState } from './services/applicationstate.service';
 import { fadeInOnEnterAnimation, fadeOutOnLeaveAnimation, flipInYOnEnterAnimation, flipOutYOnLeaveAnimation, fadeInUpAnimation, fadeOutDownAnimation, fadeInUpOnEnterAnimation, fadeOutDownOnLeaveAnimation, zoomOutOnLeaveAnimation, fadeOutLeftOnLeaveAnimation, fadeOutLeftBigOnLeaveAnimation, bounceOutLeftOnLeaveAnimation, fadeInDownOnEnterAnimation, fadeOutUpOnLeaveAnimation } from 'angular-animations';
 import { HttpClient } from '@angular/common/http';
-import { VaultService } from './services/vault.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { EventBusService, EventBusSubscription } from './services/event-bus.service';
 
@@ -51,7 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     @Inject('BASE_URL') private baseUrl: string,
     public appState: ApplicationState,
-    public vaultService: VaultService,
     private api: ApiService,
     private bus: EventBusService,
     private router: Router,

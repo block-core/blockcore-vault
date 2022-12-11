@@ -3,8 +3,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ApiService } from '../services/api.service';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VaultService } from '../services/vault.service';
 import { WebProvider } from '@blockcore/provider';
+import { BlockcoreIdentity } from '@blockcore/identity';
 
 @Component({
   selector: 'app-connect',
@@ -19,7 +19,6 @@ export class ConnectComponent {
   constructor(
     private api: ApiService,
     private http: HttpClient,
-    public vaultService: VaultService,
     public appState: ApplicationState,
     private router: Router,
     private route: ActivatedRoute
@@ -77,32 +76,40 @@ export class ConnectComponent {
 
       if (postResponse.status == 200) {
         const content = await postResponse.json();
-        console.log(content);
+        console.log('CONTENT FROM AUTH CALL:', content);
 
-        const postResponse2 = await fetch(this.authenticateUrl + '/protected', {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
+        const identity = new BlockcoreIdentity(null);
+        this.appState.identity = content.user.did;
+        this.appState.short = identity.shorten(content.user.did);
+        console.log(this.appState);
 
-        if (postResponse2.status == 200) {
-          const content2 = await postResponse2.json();
-          console.log(content2);
+        this.appState.authenticated = true;
+        this.router.navigateByUrl('/');
 
-          // Make sure we keep the URL which is used by the setup account page.
-          // this.appState.vaultUrl = this.vault.url;
-          this.appState.authenticated = true;
-          this.router.navigateByUrl('/');
+        // const postResponse2 = await fetch(this.authenticateUrl + '/protected', {
+        //   method: 'GET',
+        //   headers: {
+        //     Accept: 'application/json',
+        //     'Content-Type': 'application/json',
+        //   },
+        // });
 
-          // Make the current vault available in the app state.
-          // this.appState.vault = result;
-          // this.appState.authenticated = true;
-          // this.router.navigateByUrl('/');
-        } else {
-          this.error = postResponse.statusText;
-        }
+        // if (postResponse2.status == 200) {
+        //   const content2 = await postResponse2.json();
+        //   console.log(content2);
+
+        //   // Make sure we keep the URL which is used by the setup account page.
+        //   // this.appState.vaultUrl = this.vault.url;
+        //   this.appState.authenticated = true;
+        //   this.router.navigateByUrl('/');
+
+        //   // Make the current vault available in the app state.
+        //   // this.appState.vault = result;
+        //   // this.appState.authenticated = true;
+        //   // this.router.navigateByUrl('/');
+        // } else {
+        //   this.error = postResponse.statusText;
+        // }
       } else {
         this.error = postResponse.statusText;
         console.log(

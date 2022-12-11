@@ -1,7 +1,6 @@
 import { Component, HostBinding, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ApplicationState } from '../services/applicationstate.service';
 import { ApiService } from '../services/api.service';
-import { VaultService } from '../services/vault.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -18,7 +17,6 @@ export class EventComponent implements OnInit, AfterViewInit {
   decoded: any;
 
   constructor(private api: ApiService,
-    public vaultService: VaultService,
     public appState: ApplicationState,
     private route: ActivatedRoute) {
     appState.title = 'Event';

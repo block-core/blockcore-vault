@@ -29,7 +29,7 @@
 
     <mat-menu #animals="matMenu" hasBackdrop="true" backdropClass="menu-mode-backdrop" overlapTrigger="false">
       <button mat-menu-item (click)="connectTo(null)">Connect to new...</button>
-      <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button>
+      <!-- <button mat-menu-item [matMenuTriggerFor]="servers">Vaults</button> -->
     </mat-menu>
 
     <mat-menu #accounts="matMenu">
@@ -37,44 +37,44 @@
       <button mat-menu-item>John Doe</button>
     </mat-menu>
 
-    <mat-menu #servers="matMenu">
+    <!-- <mat-menu #servers="matMenu">
       <button mat-menu-item (click)="connectTo(vault)" *ngFor="let vault of vaultService.vaults" [value]="vault">{{vault.name}}</button>
-    </mat-menu>
+    </mat-menu> -->
 
     <mat-nav-list class="menu-options">
-      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon>dashboard</mat-icon>
         <div mat-line>Dashboard</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/servers']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/servers']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon>computer</mat-icon>
         <div mat-line>Servers</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/vaults']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon matBadge="2" matBadgeColor="primary">device_hub</mat-icon>
         <div mat-line>Vaults</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/identities']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/identities']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon>people</mat-icon>
         <div mat-line>Identities</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/events']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/events']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon>category</mat-icon>
         <div mat-line>Events</div>
       </a>
 
       <mat-divider></mat-divider>
 
-      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/setup']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon>perm_identity</mat-icon>
         <div mat-line>Setup</div>
       </a>
 
-      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.vault">
+      <a mat-list-item [routerLink]="['/settings']" routerLinkActive="active-link" *ngIf="appState.authenticated">
         <mat-icon mat-list-icon mat-list-icon>settings</mat-icon>
         <div mat-line>Settings</div>
       </a>
@@ -112,6 +112,8 @@
       </button>
 
       <span class="example-spacer">{{appState.title}}</span>
+
+      <span *ngIf="appState.authenticated">{{appState.identity}}</span>
 
       <button *ngFor="let action of appState.actions" (click)="action.click()" mat-icon-button
         [matTooltip]="action.tooltip">

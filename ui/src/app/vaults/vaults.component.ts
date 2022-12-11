@@ -1,6 +1,5 @@
-import { Component, ViewChild, Inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Component, Inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { ApplicationState } from '../services/applicationstate.service';
 import { HubService } from '../services/hub.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
