@@ -50,16 +50,17 @@ export class SettingsComponent implements OnDestroy {
     private hub: HubService) {
 
     appState.title = 'Settings';
+    this.settings = {};
 
     this.load();
   }
 
   load() {
-    this.apiService.getSettings().subscribe(result => {
-      console.log(result);
-      this.settings = result;
-      this.previousSettings = JSON.stringify(result); // clone
-    }, error => console.error(error));
+    // this.apiService.getSettings().subscribe(result => {
+    //   console.log(result);
+    //   this.settings = result;
+    //   this.previousSettings = JSON.stringify(result); // clone
+    // }, error => console.error(error));
   }
 
   save() {

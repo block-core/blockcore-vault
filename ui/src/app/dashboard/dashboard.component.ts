@@ -97,9 +97,9 @@ export class DashboardComponent implements OnInit {
   public stats: any;
 
   ngOnInit() {
-    this.apiService.getStatistics().subscribe(result => {
-      this.stats = result;
-      console.log(this.stats);
-    }, error => console.error(error));
+    // this.apiService.getStatistics().subscribe(result => {
+    //   this.stats = result;
+    //   console.log(this.stats);
+    // }, error => console.error(error));
   }
 }

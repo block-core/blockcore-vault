@@ -1,158 +1,52 @@
 <mat-sidenav-container class="container">
-   <mat-sidenav #drawer [(opened)]="isEditing" mode="side" position="end" class="sidepanel">
-
-      <div class="sidepanel-top" *ngIf="item">
-
-         <span *ngIf="!item._id">Create</span>
-         <span *ngIf="item._id">Edit</span>
-
-         <button (click)="drawer.toggle()" mat-icon-button color="primary">
-            <mat-icon>close</mat-icon>
-         </button>
-
-      </div>
-
-      <mat-card class="profile-card" *ngIf="item">
-         <mat-card-header>
-
-            <!-- <div mat-card-avatar></div> -->
-            <!-- <mat-icon mat-card-avatar mat-list-icon class="request-header-image">{{icon(message.category)}}
-        </mat-icon> -->
-
-            <mat-card-title>Connect to Server</mat-card-title>
-            <mat-card-subtitle>Connect to other servers to sync data</mat-card-subtitle>
-         </mat-card-header>
-         <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg"
-           alt="Photo of a Shiba Inu"> -->
-         <mat-card-content>
-
-            <!-- <mat-form-field appearance="fill">
-          <mat-label>Category</mat-label>
-          <mat-select [(ngModel)]="message.category">
-            <mat-option value="general"></mat-option>
-            <mat-option value="communication"></mat-option>
-            <mat-option value="invoice"></mat-option>
-            <mat-option value="energy"></mat-option>
-            <mat-option value="consumption"></mat-option>
-          </mat-select>
-        </mat-form-field> -->
-
-            <mat-form-field appearance="outline" class="input-full-width">
-               <mat-label>DID or URL</mat-label>
-               <input matInput [(ngModel)]="item.url" placeholder="Url or DID to Server" (blur)="onUrlEntered()">
-            </mat-form-field>
-
-            <div *ngIf="didResolution">
-
-               <div *ngIf="didResolution.didDocument.id == appState.vault.id">
-                  <p *ngIf="didResolution.didDocument">DID: {{didResolution.didDocument.id}}</p>
-                  <p>The DID is same as current server. You cannot add the server to itself.</p>
-               </div>
-
-               <div *ngIf="didResolution.didDocument.id != appState.vault.id">
-                  <p *ngIf="didResolution.didResolutionMetadata.error">Error:
-                     {{didResolution.didResolutionMetadata.error}}</p>
-                  <p *ngIf="didResolution.didDocument">DID: {{didResolution.didDocument.id}}</p>
-                  <!-- TODO: This will obviously crash if the DID Document has zero endpoints. Add validation that the DID has services. -->
-                  <p *ngIf="didResolution.didDocument">URL: {{didResolution.didDocument.service[0].serviceEndpoint}}</p>
-
-                  <p *ngIf="didResolution.didDocument">
-                     <mat-form-field appearance="outline" class="input-full-width">
-                        <mat-label>Name</mat-label>
-                        <input matInput [(ngModel)]="name" autocomplete="off" placeholder="Name for this server">
-                     </mat-form-field>
-                  </p>
-               </div>
-
-            </div>
-
-            <!-- <button mat-flat-button color="primary" [disabled]="!item.url" (click)="saveEdit()">Query</button> -->
-
-            <!-- <mat-form-field appearance="outline" class="input-full-width">
-          <mat-label>Id</mat-label>
-          <input matInput readonly="true" [(ngModel)]="item.id" placeholder="Category">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="input-full-width">
-          <mat-label>Name</mat-label>
-          <input matInput readonly="true" [(ngModel)]="item.name" placeholder="Key">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="input-full-width">
-          <mat-label>Description</mat-label>
-          <textarea matInput readonly="true" rows="8" [(ngModel)]="item.description" placeholder="Description"></textarea>
-        </mat-form-field> -->
-
-         </mat-card-content>
-         <mat-card-actions>
-            <button mat-flat-button [disabled]="saveDisabled" color="primary" (click)="saveEdit()">Add Server</button>
-            <button mat-stroked-button (click)="cancelEdit()">Cancel</button>
-         </mat-card-actions>
-      </mat-card>
-
-      <!-- <mat-accordion class="example-headers-align" multi>
-
-      
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Actions
-          </mat-panel-title>
-          <mat-panel-description>
-            Danger Zone
-            <mat-icon>build_circle</mat-icon>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <button mat-flat-button (click)="deleteItem(item)" color="warn">Delete</button>
-
-      </mat-expansion-panel>
-    </mat-accordion> -->
-
-   </mat-sidenav>
-
-   <div class="message-log">
-
-      <!-- <mat-tab-group>
+  <div class="message-log">
+    <!-- <mat-tab-group>
          <mat-tab>
             <ng-template mat-tab-label>
                <mat-icon class="example-tab-icon">computer</mat-icon>&nbsp;
                Servers
             </ng-template>
             <br> -->
-      <mat-list>
-         <mat-list-item *ngFor="let item of dataSource">
+    <mat-list>
+      <mat-list-item *ngFor="let item of dataSource">
+        <mat-icon mat-list-icon *ngIf="item.self">public</mat-icon>
+        <mat-icon mat-list-icon *ngIf="!item.self">vpn_lock</mat-icon>
+        <div mat-line>
+          <a [routerLink]="['/servers', 'view', item.id]">{{ item.id }}</a>
+        </div>
+        <div mat-line *ngIf="item.self" class="dimmed">
+          SELF: {{ item.name }}
+        </div>
+        <div mat-line *ngIf="!item.self" class="dimmed">{{ item.name }}</div>
 
-            <mat-icon mat-list-icon *ngIf="item.self">public</mat-icon>
-            <mat-icon mat-list-icon *ngIf="!item.self">vpn_lock</mat-icon>
-            <div mat-line> <a [routerLink]="['/servers', 'view', item.id]">{{item.id}}</a> </div>
-            <div mat-line *ngIf="item.self" class="dimmed">SELF: {{item.name}}</div>
-            <div mat-line *ngIf="!item.self" class="dimmed">{{item.name}}</div>
+        <p>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item [routerLink]="['/servers', 'view', item.id]">
+              <mat-icon>source</mat-icon>
+              <span>View Server</span>
+            </button>
+            <button mat-menu-item [routerLink]="['/servers', 'edit', item.id]">
+              <mat-icon>edit</mat-icon>
+              <span>Edit Server</span>
+            </button>
+            <mat-divider *ngIf="!item.self"></mat-divider>
+            <!-- <button (click)="deleteItem(item)" mat-menu-item *ngIf="!item.self">
+              <mat-icon>delete</mat-icon>
+              <span>Remove Server</span>
+            </button> -->
+          </mat-menu>
+        </p>
+      </mat-list-item>
+    </mat-list>
 
-            <p><button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                  <mat-icon>more_vert</mat-icon>
-               </button>
-               <mat-menu #menu="matMenu">
-                  <button mat-menu-item [routerLink]="['/servers', 'view', item.id]">
-                     <mat-icon>source</mat-icon>
-                     <span>View Server</span>
-                  </button>
-                  <button mat-menu-item [routerLink]="['/servers', 'edit', item.id]">
-                     <mat-icon>edit</mat-icon>
-                     <span>Edit Server</span>
-                  </button>
-                  <mat-divider *ngIf="!item.self"></mat-divider>
-                  <button (click)="deleteItem(item)" mat-menu-item *ngIf="!item.self">
-                     <mat-icon>delete</mat-icon>
-                     <span>Remove Server</span>
-                  </button>
-               </mat-menu>
-            </p>
-
-         </mat-list-item>
-      </mat-list>
-
-      <!-- </mat-tab>
+    <!-- </mat-tab>
 
          <mat-tab>
             <ng-template mat-tab-label>
@@ -212,7 +106,5 @@
 
          </mat-tab>
       </mat-tab-group> -->
-
-   </div>
-
+  </div>
 </mat-sidenav-container>
