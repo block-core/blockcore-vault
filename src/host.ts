@@ -154,7 +154,7 @@ app.post(
 			did: req.body.did,
 		};
 
-		const token = jwt.sign(payload, key);
+		const token = jwt.sign(payload, key, { expiresIn: '1h' });
 
 		console.log('AUTH TOKEN:', token);
 
