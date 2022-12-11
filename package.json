@@ -20,6 +20,8 @@
 		"test2": "npm run lint && ava",
 		"start": "npm run build && node --es-module-specifier-resolution=node dist/host.js",
 		"start2": "set DATABASE=blockcore-vault-database2 && set PORT=4251 && set SERVERS= && node --es-module-specifier-resolution=node dist/host.js",
+		"start:api": "node --es-module-specifier-resolution=node dist/host.js",
+		"start:ui": "npm run --prefix ui start",
 		"version": "node -p \"require('./package.json').version\"",
 		"changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
 		"schemas": "node --loader ts-node/esm ./schemas.ts"
