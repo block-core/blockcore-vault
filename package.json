@@ -6,6 +6,7 @@
 	"type": "module",
 	"files": [
 		"dist/**/*",
+		"ui/dist/**/*",
 		".env.sample"
 	],
 	"engines": {
