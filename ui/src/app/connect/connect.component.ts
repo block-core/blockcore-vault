@@ -91,6 +91,17 @@ export class ConnectComponent {
 
     const content = await postResponse.json();
     console.log(content);
+
+    const postResponse2 = await fetch('/1.0/authenticate/protected', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const content2 = await postResponse2.json();
+    console.log(content2);
   }
 
   async request(method: string, params?: object | unknown[]) {

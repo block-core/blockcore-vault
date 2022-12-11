@@ -7,12 +7,17 @@ import compression from 'cors';
 import cookie from 'cookie-parser';
 import cache from 'memory-cache';
 import rateLimit from 'express-rate-limit';
+import jwt from 'jsonwebtoken';
+import { serialize } from 'cookie';
 import { log } from './services/logger';
 import { Server } from './server';
 import { SyncProcess } from './sync';
 import { v4 as uuidv4 } from 'uuid';
+// import HTTPMethod from 'http-method-enum';
+import HTTP_STATUS_CODES from 'http-status-enum';
 // import { verifyJWT } from 'did-jwt';
 
+const production = process.env['NODE_ENV'] === 'production';
 const rateLimitMinute = process.env['RATELIMIT'] ? Number(process.env['RATELIMIT']) : 30;
 const port = process.env['PORT'] ? Number(process.env['PORT']) : 4250;
 const syncInterval = process.env['SYNC_INTERVAL'] ? Number(process.env['SYNC_INTERVAL']) : 60;
@@ -21,6 +26,7 @@ const didMethod = process.env['DID_METHOD'] ?? 'did:is';
 const database = process.env['DATABASE'];
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); // const __filename = url.fileURLToPath(import.meta.url);
 const root = path.join(__dirname, '..', 'ui', 'dist');
+const key = process.env['JWT_KEY'];
 
 log.info(`RATE LIMIT: ${rateLimitMinute} rpm`);
 log.info(`MAX SIZE: ${maxsize}`);
@@ -85,6 +91,56 @@ app.get('/1.0/authenticate', (_req, res) => {
 	res.send({ challenge: challenge });
 });
 
+app.get('/1.0/authenticate/protected', (req, res) => {
+	const { cookies } = req;
+	const token = cookies.token;
+
+	if (!token) {
+		return res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({
+			status: 'error',
+			error: 'Unauthorized',
+		});
+	} else {
+		// First let us verify the token.
+		const decoded = jwt.verify(token, key);
+		console.log(decoded);
+
+		return res.status(HTTP_STATUS_CODES.OK).json({
+			user: {
+				did: decoded.did,
+			},
+		});
+	}
+});
+
+app.get('/1.0/authenticate/logout', (req, res) => {
+	const { cookies } = req;
+	const jwt = cookies.token;
+
+	if (!jwt) {
+		return res.status(401).json({
+			status: 'error',
+			error: 'Unauthorized',
+		});
+	}
+
+	const serialized = serialize('token', null, {
+		httpOnly: true,
+		secure: production,
+		sameSite: 'strict',
+		maxAge: -1,
+		path: '/',
+	});
+	res.setHeader('Set-Cookie', serialized);
+
+	return res.status(200).json({
+		status: 'success',
+		message: 'Logged out',
+	});
+
+	// res.send({ logout: true });
+});
+
 app.post(
 	'/1.0/authenticate',
 	asyncHandler(async (req, res) => {
@@ -94,7 +150,33 @@ app.post(
 
 		await server.verifyToken(req.body.proof, req.body.did);
 
-		return res.send({ status: 'ok' });
+		const payload = {
+			did: req.body.did,
+		};
+
+		const token = jwt.sign(payload, key);
+
+		console.log('AUTH TOKEN:', token);
+
+		// If the verification failed, it should have thrown an exception by now. We can generate an JWT and make a cookie for it.
+		const serialized = serialize('token', token, {
+			httpOnly: true,
+			secure: production,
+			sameSite: 'strict',
+			maxAge: 60 * 60 * 24 * 30,
+			path: '/',
+		});
+
+		console.log('COOKIE:', serialized);
+
+		res.setHeader('Set-Cookie', serialized);
+
+		return res.status(HTTP_STATUS_CODES.OK).json({
+			success: true,
+			user: {
+				did: payload.did,
+			},
+		});
 	})
 );
 

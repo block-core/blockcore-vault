@@ -307,19 +307,10 @@ export class Server {
 		// We could DecodeJws (not exposed from did-jwt) ourself, get the kid and only send that to verifyJWS. Need to look more into
 		// the implementation of verifyJWS later.
 		// this.getAuthenticationMethod();
-
 		const verificationMethod = verifyJWS(jwt, verificationMethods);
 
-		// If the verification failed, it should have thrown an exception by now. We can generate an JWT and make a cookie for it.
-		
-
-
-		console.log('verifyJWS COMPLETED, RESULTS:', verificationMethod);
-		// const { payload } = await verifyJWT(jwt, { this.resolver, audience: 'did:is:43eecb783ca67406b88e2ee70ba44e51dbf75566f4a30e53e7ae2147f22dd42b' });
 		return verificationMethod;
 	}
-
-	// const { payload } = await verifyJWT(jwt, { resolver, audience: 'did:is:43eecb783ca67406b88e2ee70ba44e51dbf75566f4a30e53e7ae2147f22dd42b' });
 
 	private validateKey(jwk: JsonWebKey | undefined) {
 		if (jwk == null) {
