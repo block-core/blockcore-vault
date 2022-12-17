@@ -1,5 +1,5 @@
 import { Level } from 'level';
-import { DocumentEntry, DocumentUpdate, ServerState } from '../interfaces/index.js';
+import { DocumentEntry, DocumentUpdate, ServerSettings, ServerState } from '../interfaces/index.js';
 import { sleep } from '../utils.js';
 import * as lexint from 'lexicographic-integer-encoding';
 
@@ -55,6 +55,29 @@ export class Storage {
 	async putServerState(url: string, document: ServerState) {
 		const db = this.db.sublevel<string, ServerState>('serverstate', { keyEncoding: 'utf8', valueEncoding: 'json' });
 		return db.put(url, document);
+	}
+
+	/** Save the settings for this server. */
+	async putSettings(document: ServerSettings) {
+		const db = this.db.sublevel<string, ServerSettings>('settings', { keyEncoding: 'utf8', valueEncoding: 'json' });
+		return db.put('settings', document);
+	}
+
+	/** Get the settings for this server. */
+	async getSettings(): Promise<ServerSettings> {
+		let settings = await this.get<ServerSettings>('settings', 'settings');
+
+		if (!settings) {
+			settings = {
+				allowDataWrite: true,
+				allowDataRead: true,
+			};
+		}
+
+		return settings;
+
+		// const db = this.db.sublevel<string, ServerSettings>('serverstate', { keyEncoding: 'utf8', valueEncoding: 'json' });
+		// return db.put('settings', document);
 	}
 
 	/** The ID provided should be without DID Method prefix. */

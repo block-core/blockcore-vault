@@ -116,20 +116,22 @@ export class ConnectComponent {
         // });
 
         // if (postResponse2.status == 200) {
-        //   const content2 = await postResponse2.json();
-        //   console.log(content2);
+        //   console.log('PROTECTED WORKS!!!!');
+        //   // const content2 = await postResponse2.json();
+        //   // console.log(content2);
 
-        //   // Make sure we keep the URL which is used by the setup account page.
-        //   // this.appState.vaultUrl = this.vault.url;
-        //   this.appState.authenticated = true;
-        //   this.router.navigateByUrl('/');
+        //   // // Make sure we keep the URL which is used by the setup account page.
+        //   // // this.appState.vaultUrl = this.vault.url;
+        //   // this.appState.authenticated = true;
+        //   // this.router.navigateByUrl('/');
 
         //   // Make the current vault available in the app state.
         //   // this.appState.vault = result;
         //   // this.appState.authenticated = true;
         //   // this.router.navigateByUrl('/');
         // } else {
-        //   this.error = postResponse.statusText;
+        //   console.log('PROTECTED NO!');
+        //   // this.error = postResponse.statusText;
         // }
       } else {
         this.error = postResponse.statusText;

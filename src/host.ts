@@ -27,7 +27,7 @@ const database = process.env['DATABASE'];
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); // const __filename = url.fileURLToPath(import.meta.url);
 const root = path.join(__dirname, '..', 'ui', 'dist');
 const key = process.env['JWT_KEY'];
-const admins = process.env['ADMIN']?.split(';').filter((i) => i.trim());
+const admins = process.env['ADMIN']?.split(',').filter((i) => i.trim());
 
 log.info(`RATE LIMIT: ${rateLimitMinute} rpm`);
 log.info(`MAX SIZE: ${maxsize}`);
@@ -115,6 +115,54 @@ app.get('/1.0/authenticate/protected', (req, res) => {
 	}
 });
 
+app.post('/1.0/settings', (req, res) => {
+	const { cookies } = req;
+	const token = cookies.token;
+
+	if (!token) {
+		return res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({
+			status: 'error',
+			error: 'Unauthorized',
+		});
+	} else {
+		// First let us verify the token.
+		const decoded = jwt.verify(token, key);
+
+		console.log('BODY!!');
+		server.setSettings(req.body);
+		console.log(decoded);
+
+		return res.status(HTTP_STATUS_CODES.OK).json({
+			message: 'ok',
+			user: {
+				did: decoded.did,
+			},
+		});
+	}
+});
+
+app.get(
+	'/1.0/settings',
+	asyncHandler(async (req, res) => {
+		const { cookies } = req;
+		const token = cookies.token;
+
+		if (!token) {
+			return res.status(HTTP_STATUS_CODES.UNAUTHORIZED).json({
+				status: 'error',
+				error: 'Unauthorized',
+			});
+		} else {
+			// First let us verify the token.
+			jwt.verify(token, key);
+
+			const settings = await server.getSettings();
+
+			return res.status(HTTP_STATUS_CODES.OK).json(settings);
+		}
+	})
+);
+
 app.get('/1.0/authenticate/logout', (req, res) => {
 	const { cookies } = req;
 	const jwt = cookies.token;
@@ -169,7 +217,7 @@ app.post(
 		const serialized = serialize('token', token, {
 			httpOnly: true,
 			secure: production,
-			sameSite: production ? 'strict' : 'none',
+			sameSite: 'strict',
 			maxAge: 60 * 60 * 24 * 1, // 1 day, should this cookie be used to issue session cookies and be long-lived? The JWT itself is only valid 1h.
 			path: '/',
 		});

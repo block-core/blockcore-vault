@@ -1,3 +1,11 @@
+## <small>0.0.2 (2022-12-11)</small>
+
+* Update and clean up README ([44987df](https://github.com/block-core/blockcore-did-server/commit/44987df))
+* Update the name of the docker image ([919b959](https://github.com/block-core/blockcore-did-server/commit/919b959))
+* Update version and changelog ([f136df5](https://github.com/block-core/blockcore-did-server/commit/f136df5))
+
+
+
 ## <small>0.0.1 (2022-12-11)</small>
 
 * Add a functional prototype for Blockcore Vault (#6) ([75ffa2a](https://github.com/block-core/blockcore-did-server/commit/75ffa2a)), closes [#6](https://github.com/block-core/blockcore-did-server/issues/6)
@@ -59,7 +67,6 @@
 * Simplify the workflow ([0115351](https://github.com/block-core/blockcore-did-server/commit/0115351))
 * Start adding support for setup using Blockcore Wallet ([792aea7](https://github.com/block-core/blockcore-did-server/commit/792aea7))
 * Tune the initial setup dialog with a toggle to show setup document ([7b77010](https://github.com/block-core/blockcore-did-server/commit/7b77010))
-* Update and clean up README ([44987df](https://github.com/block-core/blockcore-did-server/commit/44987df))
 * Update and improve the package tasks ([4eb546e](https://github.com/block-core/blockcore-did-server/commit/4eb546e))
 * Update Angular 11 to 12 ([4dfe232](https://github.com/block-core/blockcore-did-server/commit/4dfe232))
 * Update Angular 12 to 13 ([d918b10](https://github.com/block-core/blockcore-did-server/commit/d918b10))

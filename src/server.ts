@@ -1,6 +1,6 @@
 import { decodeJWT, verifyJWS } from 'did-jwt';
 import { JsonWebKey, DIDResolutionResult, DIDDocument, VerificationMethod, Resolver } from 'did-resolver';
-import { DocumentEntry, ServerState } from './interfaces/index.js';
+import { DocumentEntry, ServerSettings, ServerState } from './interfaces/index.js';
 import { Storage } from './store/storage.js';
 import { BlockcoreIdentityTools } from '@blockcore/identity';
 import * as lexint from 'lexicographic-integer-encoding';
@@ -41,7 +41,15 @@ export class Server {
 	}
 
 	async getState(url: string) {
-		return await this.storage.get<ServerState>(url, 'serverstate');
+		return this.storage.get<ServerState>(url, 'serverstate');
+	}
+
+	async getSettings() {
+		return this.storage.getSettings();
+	}
+
+	async setSettings(settings: ServerSettings) {
+		return this.storage.putSettings(settings);
 	}
 
 	async setState(server: string, state: ServerState) {

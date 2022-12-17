@@ -19,6 +19,11 @@ import { JWTDecoded } from 'did-jwt/lib/JWT';
 // 	initialize(): Promise<void>;
 // }
 
+export interface ServerSettings {
+	allowDataRead: boolean;
+	allowDataWrite: boolean;
+}
+
 export interface DocumentEntry {
 	date: Date;
 	jws: JWTDecoded;
